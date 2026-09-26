@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"on-surface-variant":"#c2c6d6","surface-container-lowest":"#0a0e14","background":"#10141a","surface-bright":"#353940","primary-fixed":"#d9e2ff","on-secondary-fixed":"#002106","inverse-on-surface":"#2d3137","on-primary-fixed-variant":"#004299","surface-container-highest":"#31353c","on-tertiary":"#561f00","on-secondary-fixed-variant":"#005319","outline-variant":"#424754","on-primary-fixed":"#001944","surface-tint":"#afc6ff","error":"#ffb4ab","on-secondary":"#00390e","inverse-surface":"#dfe2eb","surface-variant":"#31353c","on-surface":"#dfe2eb","on-error-container":"#ffdad6","primary-container":"#1f6feb","surface-dim":"#10141a","on-primary":"#002d6d","tertiary-container":"#c55100","primary-fixed-dim":"#afc6ff","on-tertiary-fixed":"#351000","tertiary-fixed":"#ffdbcc","secondary":"#7bdb80","surface-container-low":"#181c22","on-secondary-container":"#91f294","error-container":"#93000a","tertiary-fixed-dim":"#ffb693","secondary-container":"#007124","tertiary":"#ffb693","on-error":"#690005","on-background":"#dfe2eb","surface":"#10141a","on-primary-container":"#fffcff","outline":"#8c90a0","on-tertiary-container":"#fffdff","secondary-fixed":"#97f999","on-tertiary-fixed-variant":"#7a3000","inverse-primary":"#0059c8","secondary-fixed-dim":"#7bdb80","surface-container":"#1c2026","primary":"#afc6ff","surface-container-high":"#262a31"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"md":"16px","xl":"32px","margin":"24px","lg":"24px","base":"4px","sm":"8px","xs":"4px","gutter":"16px"},"fontFamily":{"headline-lg":["Inter"],"body-lg":["Inter"],"label-caps":["Inter"],"code-md":["JetBrains Mono"],"headline-md":["Inter"],"headline-sm":["Inter"],"body-md":["Inter"],"body-sm":["Inter"],"code-sm":["JetBrains Mono"]},"fontSize":{"headline-lg":["32px",{"lineHeight":"1.25","letterSpacing":"-0.02em","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"1.5","fontWeight":"400"}],"label-caps":["11px",{"lineHeight":"1.2","letterSpacing":"0.05em","fontWeight":"600"}],"code-md":["14px",{"lineHeight":"1.6","fontWeight":"400"}],"headline-md":["24px",{"lineHeight":"1.25","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"1.5","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"1.5","fontWeight":"400"}],"body-sm":["12px",{"lineHeight":"1.5","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"1.6","fontWeight":"400"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest border-r border-outline-variant/40 z-50 flex flex-col"><div class="h-16 px-lg flex items-center justify-between border-b border-outline-variant/40 bg-surface-container-low"><div class="flex items-center gap-sm"><div class="w-8 h-8 rounded bg-surface-container-high border border-outline-variant flex items-center justify-center"><span class="material-symbols-outlined text-primary text-[20px]">security</span></div><div class="flex flex-col"><span class="font-headline-sm text-body-sm font-semibold tracking-tight text-on-surface leading-none">SAT-SA</span><span class="font-code-sm text-body-sm text-outline tracking-wider scale-90 -ml-1">NCIIPC v3.2</span></div></div><div class="px-xs py-0.5 rounded bg-surface-container-high border border-outline-variant/60 font-code-sm text-on-surface-variant scale-90">FIPS</div></div><div class="flex-1 overflow-y-auto px-sm py-md space-y-md"><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Overview</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="overview" href="#"><span class="material-symbols-outlined text-[18px]">dashboard</span><span>Overview</span></a></nav></div><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Supervision</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="cse-assessments" href="#"><span class="material-symbols-outlined text-[18px]">policy</span><span>CSE Assessments</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="priority-queue" href="#"><span class="material-symbols-outlined text-[18px]">low_priority</span><span>Priority Queue</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="recommended-samples" href="#"><span class="material-symbols-outlined text-[18px]">biotech</span><span>Recommended Samples</span></a></nav></div><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Analytics</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="execution-gaps" href="#"><span class="material-symbols-outlined text-[18px]">difference</span><span>Execution Gaps</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="negative-space" href="#"><span class="material-symbols-outlined text-[18px]">radar</span><span>Negative Space</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="process-analysis" href="#"><span class="material-symbols-outlined text-[18px]">account_tree</span><span>Process Analysis</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="evidence-quality" href="#"><span class="material-symbols-outlined text-[18px]">verified</span><span>Evidence Quality</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="behavioural-analysis" href="#"><span class="material-symbols-outlined text-[18px]">query_stats</span><span>Behavioural Analysis</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="coverage" href="#"><span class="material-symbols-outlined text-[18px]">grid_view</span><span>Coverage</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="consistency" href="#"><span class="material-symbols-outlined text-[18px]">rule</span><span>Consistency</span></a></nav></div><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Assessment</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="findings" href="#"><span class="material-symbols-outlined text-[18px]">troubleshoot</span><span>Findings</span></a><a aria-current="page" class="flex items-center gap-sm px-sm py-1.5 transition-colors bg-primary-container text-on-primary-container font-medium rounded" data-path="evidence-explorer" href="#"><span class="material-symbols-outlined text-[18px]">folder_eye</span><span>Evidence Explorer</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="remediation" href="#"><span class="material-symbols-outlined text-[18px]">healing</span><span>Remediation</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="verification" href="#"><span class="material-symbols-outlined text-[18px]">checklist_rtl</span><span>Verification</span></a></nav></div><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Intelligence</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="historical-trends" href="#"><span class="material-symbols-outlined text-[18px]">stacked_line_chart</span><span>Historical Trends</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="peer-comparison" href="#"><span class="material-symbols-outlined text-[18px]">compare_arrows</span><span>Peer Comparison</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="signal-discovery" href="#"><span class="material-symbols-outlined text-[18px]">online_prediction</span><span>Signal Discovery</span></a></nav></div><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Governance</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="audit-trail" href="#"><span class="material-symbols-outlined text-[18px]">history_edu</span><span>Audit</span></a><a class="flex items-center gap-sm px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="administration" href="#"><span class="material-symbols-outlined text-[18px]">admin_panel_settings</span><span>Administration</span></a></nav></div></div><div class="p-sm border-t border-outline-variant/40 bg-surface-container-lowest"><div class="p-xs rounded bg-surface-container-low border border-outline-variant/40 flex items-center justify-between font-code-sm text-body-sm"><span class="text-outline">ENCLAVE NODE</span><span class="text-secondary flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>ACTIVE</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-low/95 backdrop-blur-md border-b border-outline-variant/40 z-40 flex items-center justify-between px-lg"><div class="flex items-center gap-md"><div class="flex flex-col"><div class="flex items-center gap-xs font-label-caps text-label-caps text-outline tracking-wider uppercase"><span>Govt of India</span><span>/</span><span>NCIIPC</span></div><div class="font-headline-sm text-body-md font-semibold text-on-surface">SAT-SA Supervisory Analytics Tool</div></div><span class="h-6 w-px bg-outline-variant/50"></span><div class="flex items-center gap-sm"><span class="inline-flex items-center gap-1.5 px-sm py-0.5 rounded bg-surface-container-high border border-outline-variant/50 font-code-sm text-body-sm text-on-surface-variant"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>Audit: SYNCED</span><span class="inline-flex items-center gap-1 px-sm py-0.5 rounded bg-surface-container-high border border-outline-variant/50 font-code-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-[14px] text-primary">lock</span>TLS 1.3 / FIPS-140-2</span><span class="inline-flex items-center gap-1 px-sm py-0.5 rounded bg-surface-container-highest/60 border border-outline-variant font-code-sm text-body-sm text-tertiary"><span class="material-symbols-outlined text-[14px]">cloud_off</span>Air-Gapped Internal</span></div></div><div class="flex items-center gap-md"><button aria-label="Notifications" class="p-1.5 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors relative"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-error rounded-full"></span></button><div class="h-6 w-px bg-outline-variant/50"></div><div class="flex items-center gap-sm"><div class="text-right"><div class="font-body-sm font-semibold text-on-surface leading-tight">Supervisor NCIIPC</div><div class="font-code-sm text-body-sm text-outline leading-none">SUPERVISOR-ID: NC-8841</div></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="relative pt-16 bg-background min-h-screen"><div class="flex flex-col w-full p-gutter space-y-md">
+<!-- 1. BREADCRUMB, HEADER & TELEMETRY CONTROLS -->
+<div class="flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<!-- Breadcrumb -->
+<nav aria-label="Breadcrumb" class="flex items-center gap-xs font-code-sm text-body-sm text-outline">
+<span class="hover:text-on-surface transition-colors cursor-pointer">SAT-SA</span>
+<span>/</span>
+<span class="hover:text-on-surface transition-colors cursor-pointer">Assessment</span>
+<span>/</span>
+<span class="text-primary font-medium">Evidence Explorer</span>
+</nav>
+<!-- Enclave & Engine Integrity Tag -->
+<div class="flex items-center gap-xs font-code-sm text-body-sm bg-surface-container-low px-sm py-1 rounded border-0 text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>ENCLAVE: SUB-2026-0148 PROVENANCE VALID</span>
+</div>
+</div>
+<!-- Title & Executive Subtitle with Action Buttons -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-md mt-1">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Evidence Explorer</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl mt-0.5">
+          Inspect, trace, and validate evidence records supporting supervisory assessments, execution gaps, and findings under NCIIPC supervisory mandate.
+        </p>
+</div>
+<!-- Action Cluster -->
+<div class="flex items-center gap-xs flex-wrap">
+<button class="inline-flex items-center gap-1.5 px-md py-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm transition-colors cursor-pointer" id="btnExportModal">
+<span class="material-symbols-outlined text-[18px] text-outline">file_download</span>
+<span>Export Index</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-md py-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm transition-colors cursor-pointer" id="btnRefreshTelemetry">
+<span class="material-symbols-outlined text-[18px] text-outline">sync</span>
+<span>Refresh Telemetry</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-md py-2 rounded bg-primary-container text-on-primary-container hover:brightness-110 font-body-sm font-semibold transition-all cursor-pointer" id="btnOpenRequestEvidenceModal">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+<span>Request Evidence</span>
+</button>
+</div>
+</div>
+<!-- Context Chips & Scopes -->
+<div class="flex items-center gap-sm flex-wrap mt-1">
+<div class="inline-flex items-center gap-1.5 px-sm py-1 rounded bg-surface-container-high font-body-sm text-on-surface">
+<span class="text-outline font-label-caps uppercase text-label-caps">Focus:</span>
+<span class="font-semibold text-primary">CSE-014 (NorthGrid Energy)</span>
+<button class="material-symbols-outlined text-[14px] text-outline hover:text-on-surface ml-0.5" title="Reset Focus">close</button>
+</div>
+<div class="inline-flex items-center gap-1.5 px-sm py-1 rounded bg-surface-container-high font-body-sm text-on-surface">
+<span class="text-outline font-label-caps uppercase text-label-caps">Period:</span>
+<span class="font-code-sm text-body-sm">Q3 2026 (Jul 01 - Sep 30)</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-sm py-1 rounded bg-surface-container-high font-body-sm text-secondary">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+<span>Enclave Ingestion: Verified</span>
+</div>
+<div class="inline-flex items-center gap-1 px-sm py-1 rounded bg-surface-container-low font-code-sm text-body-sm text-outline">
+<span>FIPS 140-2 Level 3 HSM Enclave</span>
+</div>
+</div>
+</div>
+<!-- 2. KPI SUMMARY STRIP (6 compact cards + ratio sub-strip) -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-xs bg-surface-container-lowest p-xs rounded">
+<!-- Total -->
+<div class="bg-surface-container-low p-sm rounded flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Total Evidence</span>
+<span class="material-symbols-outlined text-outline text-[16px]">inventory_2</span>
+</div>
+<div class="mt-2 flex items-baseline gap-1.5">
+<span class="font-headline-md text-headline-md text-on-surface font-semibold">250</span>
+<span class="font-code-sm text-body-sm text-outline">records</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline mt-1">100% scope</span>
+</div>
+<!-- Present -->
+<div class="bg-surface-container-low p-sm rounded flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Present</span>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+<div class="mt-2 flex items-baseline gap-1.5">
+<span class="font-headline-md text-headline-md text-secondary font-semibold">214</span>
+<span class="font-code-sm text-body-sm text-secondary">85.6%</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline mt-1">Validated ingest</span>
+</div>
+<!-- Absent Confirmed -->
+<div class="bg-surface-container-low p-sm rounded flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Absent Confirmed</span>
+<span class="w-2 h-2 rounded-full bg-error"></span>
+</div>
+<div class="mt-2 flex items-baseline gap-1.5">
+<span class="font-headline-md text-headline-md text-error font-semibold">8</span>
+<span class="font-code-sm text-body-sm text-error">3.2%</span>
+</div>
+<span class="font-body-sm text-body-sm text-error/80 mt-1">Gap Candidate</span>
+</div>
+<!-- Not Submitted -->
+<div class="bg-surface-container-low p-sm rounded flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Not Submitted</span>
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+</div>
+<div class="mt-2 flex items-baseline gap-1.5">
+<span class="font-headline-md text-headline-md text-tertiary font-semibold">15</span>
+<span class="font-code-sm text-body-sm text-tertiary">6.0%</span>
+</div>
+<span class="font-body-sm text-body-sm text-tertiary/90 mt-1 truncate" title="Missing submission ≠ Confirmed violation">Missing ≠ Violation</span>
+</div>
+<!-- Not Applicable -->
+<div class="bg-surface-container-low p-sm rounded flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Not Applicable</span>
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+</div>
+<div class="mt-2 flex items-baseline gap-1.5">
+<span class="font-headline-md text-headline-md text-on-surface-variant font-semibold">5</span>
+<span class="font-code-sm text-body-sm text-outline">2.0%</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline mt-1">Exempt Architecture</span>
+</div>
+<!-- Unknown -->
+<div class="bg-surface-container-low p-sm rounded flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Unknown Status</span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+</div>
+<div class="mt-2 flex items-baseline gap-1.5">
+<span class="font-headline-md text-headline-md text-primary font-semibold">8</span>
+<span class="font-code-sm text-body-sm text-primary">3.2%</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline mt-1">Awaiting Dispatch</span>
+</div>
+<!-- Ratio Sub-strip (Spanning all 6 columns) -->
+<div class="col-span-2 md:col-span-3 lg:col-span-6 bg-surface-container px-md py-sm rounded flex flex-col lg:flex-row lg:items-center justify-between gap-sm">
+<div class="flex items-center gap-md text-body-sm font-code-sm">
+<span class="text-on-surface flex items-center gap-1.5">
+<span class="text-outline">Evidence Coverage:</span>
+<strong class="text-secondary font-semibold">86%</strong>
+</span>
+<span class="text-outline">|</span>
+<span class="text-on-surface flex items-center gap-1.5">
+<span class="text-outline">Integrity Verified:</span>
+<strong class="text-primary font-semibold">97%</strong>
+</span>
+<span class="text-outline">|</span>
+<span class="text-on-surface flex items-center gap-1.5">
+<span class="text-outline">Source Consistency:</span>
+<strong class="text-secondary font-semibold">92%</strong>
+</span>
+<span class="text-outline">|</span>
+<span class="text-on-surface flex items-center gap-1.5">
+<span class="text-outline">Mapping Confidence:</span>
+<span class="px-1.5 py-0.2 rounded bg-secondary/20 text-secondary font-semibold">HIGH</span>
+</span>
+</div>
+<div class="flex items-center gap-1 font-body-sm text-outline">
+<span class="material-symbols-outlined text-[16px] text-tertiary">info</span>
+<span class="text-on-surface-variant font-code-sm">Statutory Notice: Missing submission ≠ Confirmed statutory violation</span>
+</div>
+</div>
+</div>
+<!-- 3. CATEGORY PILL SELECTOR & FILTER TOOLBAR -->
+<div class="flex flex-col gap-sm bg-surface-container-low p-md rounded">
+<!-- Category Tabs -->
+<div class="flex items-center gap-xs overflow-x-auto pb-1">
+<button class="px-sm py-1 rounded bg-primary-container text-on-primary-container font-body-sm font-medium flex items-center gap-1.5 shrink-0">
+<span>All</span>
+<span class="px-1.5 py-0.2 bg-primary/20 rounded-full font-code-sm text-body-sm">250</span>
+</button>
+<button class="px-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm flex items-center gap-1.5 shrink-0 transition-colors">
+<span>Alerts</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest rounded-full font-code-sm text-body-sm text-outline">250</span>
+</button>
+<button class="px-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm flex items-center gap-1.5 shrink-0 transition-colors">
+<span>Cases</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest rounded-full font-code-sm text-body-sm text-outline">100</span>
+</button>
+<button class="px-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm flex items-center gap-1.5 shrink-0 transition-colors">
+<span>Investigations</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest rounded-full font-code-sm text-body-sm text-outline">70</span>
+</button>
+<button class="px-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm flex items-center gap-1.5 shrink-0 transition-colors">
+<span>Actions</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest rounded-full font-code-sm text-body-sm text-outline">54</span>
+</button>
+<button class="px-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm flex items-center gap-1.5 shrink-0 transition-colors">
+<span>Evidence Items</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest rounded-full font-code-sm text-body-sm text-outline">82</span>
+</button>
+<button class="px-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-tertiary hover:text-on-surface font-body-sm flex items-center gap-1.5 shrink-0 transition-colors">
+<span>Escalations</span>
+<span class="px-1.5 py-0.2 bg-tertiary-container/30 text-tertiary rounded-full font-code-sm text-body-sm">18</span>
+</button>
+<button class="px-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm flex items-center gap-1.5 shrink-0 transition-colors">
+<span>Responses</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest rounded-full font-code-sm text-body-sm text-outline">42</span>
+</button>
+<button class="px-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm flex items-center gap-1.5 shrink-0 transition-colors">
+<span>Closures</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest rounded-full font-code-sm text-body-sm text-outline">36</span>
+</button>
+<button class="px-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm flex items-center gap-1.5 shrink-0 transition-colors">
+<span>Assets</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest rounded-full font-code-sm text-body-sm text-outline">120</span>
+</button>
+<button class="px-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm flex items-center gap-1.5 shrink-0 transition-colors">
+<span>Exceptions</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest rounded-full font-code-sm text-body-sm text-outline">14</span>
+</button>
+<button class="px-sm py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm flex items-center gap-1.5 shrink-0 transition-colors">
+<span>Remediation</span>
+<span class="px-1.5 py-0.2 bg-surface-container-highest rounded-full font-code-sm text-body-sm text-outline">10</span>
+</button>
+</div>
+<!-- Filter Control Toolbar -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-xs items-center">
+<!-- Search Input -->
+<div class="xl:col-span-4 relative">
+<span class="material-symbols-outlined text-[18px] text-outline absolute left-3 top-2.5">search</span>
+<input class="w-full bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-sm pl-9 pr-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-primary border-0" placeholder="Search evidence ID (e.g. EVD-742), case, hash, signal..." type="text"/>
+</div>
+<!-- Dropdowns -->
+<div class="xl:col-span-2">
+<select class="w-full bg-surface-container text-on-surface font-body-sm px-2.5 py-2 rounded border-0 focus:ring-1 focus:ring-primary">
+<option>CSE: CSE-014 (NorthGrid)</option>
+<option>CSE-002 (PowerGrid East)</option>
+<option>CSE-028 (HydroTrans)</option>
+</select>
+</div>
+<div class="xl:col-span-1">
+<select class="w-full bg-surface-container text-on-surface font-body-sm px-2 py-2 rounded border-0 focus:ring-1 focus:ring-primary">
+<option>Status: All</option>
+<option>Present</option>
+<option>Absent Confirmed</option>
+<option>Not Submitted</option>
+<option>Unknown</option>
+</select>
+</div>
+<div class="xl:col-span-2">
+<select class="w-full bg-surface-container text-on-surface font-body-sm px-2.5 py-2 rounded border-0 focus:ring-1 focus:ring-primary">
+<option>Control: CTRL-07 Escalation</option>
+<option>CTRL-04 Forensic Capture</option>
+<option>CTRL-12 HSM Auth</option>
+<option>All Controls</option>
+</select>
+</div>
+<div class="xl:col-span-1">
+<select class="w-full bg-surface-container text-on-surface font-body-sm px-2 py-2 rounded border-0 focus:ring-1 focus:ring-primary">
+<option>Integrity: Verified</option>
+<option>Pending</option>
+<option>Unverified</option>
+</select>
+</div>
+<!-- Quick Action Buttons -->
+<div class="xl:col-span-2 flex items-center justify-end gap-xs">
+<button class="px-sm py-2 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm transition-colors cursor-pointer">
+          Apply
+        </button>
+<button class="px-sm py-2 rounded bg-surface-container text-outline hover:text-on-surface font-body-sm transition-colors cursor-pointer">
+          Clear
+        </button>
+<button class="px-sm py-2 rounded bg-surface-container text-outline font-body-sm flex items-center gap-1 cursor-not-allowed opacity-60" id="btnExportSelected">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+<span>Selected (<span id="selectedCountDisplay">0</span>)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- BULK SELECTION ACTION FLOATING BAR (Hidden by default, shown via inline JS when items checked) -->
+<div class="hidden items-center justify-between bg-primary-container text-on-primary-container px-md py-sm rounded" id="bulkActionBar">
+<div class="flex items-center gap-sm font-body-sm font-semibold">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+<span id="bulkSelectedText">3 Evidence Records Selected</span>
+</div>
+<div class="flex items-center gap-xs">
+<button class="px-sm py-1 rounded bg-on-primary-container/10 hover:bg-on-primary-container/20 text-on-primary-container font-body-sm">Export Selected Index</button>
+<button class="px-sm py-1 rounded bg-on-primary-container/10 hover:bg-on-primary-container/20 text-on-primary-container font-body-sm">Mark Reviewed</button>
+<button class="px-sm py-1 rounded bg-on-primary-container/10 hover:bg-on-primary-container/20 text-on-primary-container font-body-sm">Add to Examination Set</button>
+<button class="px-sm py-1 rounded hover:bg-on-primary-container/20 text-on-primary-container font-body-sm underline ml-2" id="btnClearBulkSelection">Clear</button>
+</div>
+</div>
+<!-- 4. DENSE ENTERPRISE EVIDENCE TABLE -->
+<div class="bg-surface-container-low rounded overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm">
+<thead class="bg-surface-container-lowest font-label-caps text-label-caps text-outline uppercase tracking-wider">
+<tr>
+<th class="p-sm w-10 text-center">
+<input class="rounded bg-surface-container border-0 focus:ring-0 cursor-pointer" id="masterCheckbox" type="checkbox"/>
+</th>
+<th class="p-sm">Evidence ID / Type</th>
+<th class="p-sm">CSE &amp; Incident Entity</th>
+<th class="p-sm">Source System</th>
+<th class="p-sm">Timestamp (UTC+05:30)</th>
+<th class="p-sm">Status</th>
+<th class="p-sm">Integrity (Cryptographic)</th>
+<th class="p-sm">Related Signal / Gap</th>
+<th class="p-sm text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 font-body-sm text-on-surface">
+<!-- Row 1: Exemplar Highlight Selected (EVD-742) -->
+<tr class="bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer group" onclick="selectRowDetail('EVD-742')">
+<td class="p-sm text-center" onclick="event.stopPropagation()">
+<input checked="" class="row-checkbox rounded bg-surface-container border-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-sm">
+<div class="flex items-center gap-2">
+<span class="font-code-md text-code-md font-semibold text-primary">EVD-742</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+</div>
+<span class="font-body-sm text-body-sm text-outline block">Investigation Record</span>
+</td>
+<td class="p-sm">
+<div class="font-code-sm text-body-sm text-on-surface font-semibold">CSE-014 (NorthGrid)</div>
+<div class="font-code-sm text-body-sm text-outline">CASE-1042 / INV-338</div>
+</td>
+<td class="p-sm">
+<div class="text-on-surface">SOC Case Management</div>
+<div class="font-code-sm text-body-sm text-outline">API::enclave_agent_v3</div>
+</td>
+<td class="p-sm font-code-sm text-body-sm text-on-surface-variant">
+<div>26 Sep 2026</div>
+<div class="text-outline">09:42:18 IST</div>
+</td>
+<td class="p-sm">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container/30 text-secondary font-code-sm text-body-sm font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                PRESENT
+              </span>
+</td>
+<td class="p-sm font-code-sm text-body-sm">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span>VERIFIED (SHA-256)</span>
+</div>
+<span class="text-outline block truncate w-32" title="9f8a3c22b918a99477e6f8812dd014a9">9f8a3c22b918...</span>
+</td>
+<td class="p-sm">
+<div class="flex items-center gap-1">
+<span class="px-1.5 py-0.2 rounded bg-tertiary-container/30 text-tertiary font-code-sm text-body-sm">GAP-0071</span>
+<span class="px-1.5 py-0.2 rounded bg-error-container/30 text-error font-code-sm text-body-sm">FND-0142</span>
+</div>
+<span class="font-body-sm text-body-sm text-outline block mt-0.5">Escalation breach</span>
+</td>
+<td class="p-sm text-right" onclick="event.stopPropagation()">
+<button class="px-sm py-1 rounded bg-primary-container text-on-primary-container hover:brightness-110 font-body-sm font-medium cursor-pointer" onclick="selectRowDetail('EVD-742')">
+                View Dossier
+              </button>
+</td>
+</tr>
+<!-- Row 2: EVD-761 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer" onclick="selectRowDetail('EVD-761')">
+<td class="p-sm text-center" onclick="event.stopPropagation()">
+<input class="row-checkbox rounded bg-surface-container border-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-sm">
+<div class="font-code-md text-code-md font-semibold text-on-surface">EVD-761</div>
+<span class="font-body-sm text-body-sm text-outline block">Response Record</span>
+</td>
+<td class="p-sm">
+<div class="font-code-sm text-body-sm text-on-surface">CSE-014</div>
+<div class="font-code-sm text-body-sm text-outline">CASE-1042 / RSP-089</div>
+</td>
+<td class="p-sm">
+<div class="text-on-surface">SOC Response System</div>
+<div class="font-code-sm text-body-sm text-outline">SOAR Playbook Auto</div>
+</td>
+<td class="p-sm font-code-sm text-body-sm text-on-surface-variant">
+<div>26 Sep 2026</div>
+<div class="text-outline">11:08:44 IST</div>
+</td>
+<td class="p-sm">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container/30 text-secondary font-code-sm text-body-sm font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                PRESENT
+              </span>
+</td>
+<td class="p-sm font-code-sm text-body-sm">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span>VERIFIED (SHA-256)</span>
+</div>
+<span class="text-outline block truncate w-32">d4a1b028ec31...</span>
+</td>
+<td class="p-sm">
+<span class="px-1.5 py-0.2 rounded bg-error-container/30 text-error font-code-sm text-body-sm">FND-0142</span>
+</td>
+<td class="p-sm text-right" onclick="event.stopPropagation()">
+<button class="px-sm py-1 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm cursor-pointer" onclick="selectRowDetail('EVD-761')">
+                View Dossier
+              </button>
+</td>
+</tr>
+<!-- Row 3: ESC-221 (Critical Missing Not Submitted Item) -->
+<tr class="bg-tertiary-container/10 hover:bg-tertiary-container/20 transition-colors cursor-pointer" onclick="selectRowDetail('ESC-221')">
+<td class="p-sm text-center" onclick="event.stopPropagation()">
+<input checked="" class="row-checkbox rounded bg-surface-container border-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-sm">
+<div class="flex items-center gap-1.5">
+<span class="font-code-md text-code-md font-semibold text-tertiary">ESC-221</span>
+<span class="material-symbols-outlined text-[14px] text-tertiary">warning</span>
+</div>
+<span class="font-body-sm text-body-sm text-tertiary">Escalation Evidence</span>
+</td>
+<td class="p-sm">
+<div class="font-code-sm text-body-sm text-on-surface">CSE-014</div>
+<div class="font-code-sm text-body-sm text-outline">CASE-1042 / [MISSING]</div>
+</td>
+<td class="p-sm">
+<div class="text-on-surface">SOC Case Management</div>
+<div class="font-code-sm text-body-sm text-tertiary">Expected Feed Absent</div>
+</td>
+<td class="p-sm font-code-sm text-body-sm text-on-surface-variant">
+<div>26 Sep 2026</div>
+<div class="text-tertiary">10:45:00 IST (Exp)</div>
+</td>
+<td class="p-sm">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-tertiary-container/40 text-tertiary font-code-sm text-body-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                NOT_SUBMITTED
+              </span>
+</td>
+<td class="p-sm font-code-sm text-body-sm">
+<span class="text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">hourglass_empty</span>
+                PENDING DIGEST
+              </span>
+</td>
+<td class="p-sm">
+<div class="flex items-center gap-1">
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-on-surface-variant font-code-sm text-body-sm">NS-0041</span>
+<span class="px-1.5 py-0.2 rounded bg-tertiary-container/30 text-tertiary font-code-sm text-body-sm">GAP-0071</span>
+</div>
+<span class="font-body-sm text-body-sm text-tertiary block mt-0.5">Expected per CTRL-07</span>
+</td>
+<td class="p-sm text-right" onclick="event.stopPropagation()">
+<button class="px-sm py-1 rounded bg-tertiary-container text-on-tertiary hover:brightness-110 font-body-sm font-semibold cursor-pointer" onclick="openRequestEvidenceModal('ESC-221', 'CASE-1042')">
+                Request Evidence
+              </button>
+</td>
+</tr>
+<!-- Row 4: EVD-681 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer" onclick="selectRowDetail('EVD-681')">
+<td class="p-sm text-center" onclick="event.stopPropagation()">
+<input class="row-checkbox rounded bg-surface-container border-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-sm">
+<div class="font-code-md text-code-md font-semibold text-on-surface">EVD-681</div>
+<span class="font-body-sm text-body-sm text-outline block">Alert Telemetry</span>
+</td>
+<td class="p-sm">
+<div class="font-code-sm text-body-sm text-on-surface">CSE-014</div>
+<div class="font-code-sm text-body-sm text-outline">CASE-1011 / ALR-8821</div>
+</td>
+<td class="p-sm">
+<div class="text-on-surface">SOC SIEM Pipeline</div>
+<div class="font-code-sm text-body-sm text-outline">Kafka Enclave Sink</div>
+</td>
+<td class="p-sm font-code-sm text-body-sm text-on-surface-variant">
+<div>14 Sep 2026</div>
+<div class="text-outline">08:31:02 IST</div>
+</td>
+<td class="p-sm">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container/30 text-secondary font-code-sm text-body-sm font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                PRESENT
+              </span>
+</td>
+<td class="p-sm font-code-sm text-body-sm">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span>VERIFIED</span>
+</div>
+<span class="text-outline block truncate w-32">5b3a98ce1122...</span>
+</td>
+<td class="p-sm">
+<span class="px-1.5 py-0.2 rounded bg-error-container/30 text-error font-code-sm text-body-sm">FND-0131</span>
+</td>
+<td class="p-sm text-right" onclick="event.stopPropagation()">
+<button class="px-sm py-1 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm cursor-pointer" onclick="selectRowDetail('EVD-681')">
+                View Dossier
+              </button>
+</td>
+</tr>
+<!-- Row 5: EVD-604 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer" onclick="selectRowDetail('EVD-604')">
+<td class="p-sm text-center" onclick="event.stopPropagation()">
+<input class="row-checkbox rounded bg-surface-container border-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-sm">
+<div class="font-code-md text-code-md font-semibold text-on-surface">EVD-604</div>
+<span class="font-body-sm text-body-sm text-outline block">Closure Record</span>
+</td>
+<td class="p-sm">
+<div class="font-code-sm text-body-sm text-on-surface">CSE-014</div>
+<div class="font-code-sm text-body-sm text-outline">CASE-1007 / CLS-421</div>
+</td>
+<td class="p-sm">
+<div class="text-on-surface">SOC Case Management</div>
+<div class="font-code-sm text-body-sm text-outline">Closure Workflow Sign</div>
+</td>
+<td class="p-sm font-code-sm text-body-sm text-on-surface-variant">
+<div>12 Sep 2026</div>
+<div class="text-outline">17:21:40 IST</div>
+</td>
+<td class="p-sm">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container/30 text-secondary font-code-sm text-body-sm font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                PRESENT
+              </span>
+</td>
+<td class="p-sm font-code-sm text-body-sm">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span>VERIFIED</span>
+</div>
+<span class="text-outline block truncate w-32">cc238b7e0991...</span>
+</td>
+<td class="p-sm">
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-on-surface-variant font-code-sm text-body-sm">PD-0031</span>
+</td>
+<td class="p-sm text-right" onclick="event.stopPropagation()">
+<button class="px-sm py-1 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm cursor-pointer" onclick="selectRowDetail('EVD-604')">
+                View Dossier
+              </button>
+</td>
+</tr>
+<!-- Row 6: EVD-519 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer" onclick="selectRowDetail('EVD-519')">
+<td class="p-sm text-center" onclick="event.stopPropagation()">
+<input class="row-checkbox rounded bg-surface-container border-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-sm">
+<div class="font-code-md text-code-md font-semibold text-on-surface">EVD-519</div>
+<span class="font-body-sm text-body-sm text-outline block">Cryptographic Auth Log</span>
+</td>
+<td class="p-sm">
+<div class="font-code-sm text-body-sm text-on-surface">CSE-014</div>
+<div class="font-code-sm text-body-sm text-outline">CASE-0982 / GW-04</div>
+</td>
+<td class="p-sm">
+<div class="text-on-surface">Air-Gapped HSM Vault</div>
+<div class="font-code-sm text-body-sm text-outline">PKCS#11 Session Audit</div>
+</td>
+<td class="p-sm font-code-sm text-body-sm text-on-surface-variant">
+<div>08 Sep 2026</div>
+<div class="text-outline">14:10:11 IST</div>
+</td>
+<td class="p-sm">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container/30 text-secondary font-code-sm text-body-sm font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                PRESENT
+              </span>
+</td>
+<td class="p-sm font-code-sm text-body-sm">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span>VERIFIED</span>
+</div>
+<span class="text-outline block truncate w-32">1198ae42c900...</span>
+</td>
+<td class="p-sm">
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-on-surface-variant font-code-sm text-body-sm">CTRL-12</span>
+</td>
+<td class="p-sm text-right" onclick="event.stopPropagation()">
+<button class="px-sm py-1 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm cursor-pointer" onclick="selectRowDetail('EVD-519')">
+                View Dossier
+              </button>
+</td>
+</tr>
+<!-- Row 7: ESC-194 (Absent Confirmed) -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer" onclick="selectRowDetail('ESC-194')">
+<td class="p-sm text-center" onclick="event.stopPropagation()">
+<input class="row-checkbox rounded bg-surface-container border-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-sm">
+<div class="flex items-center gap-1.5">
+<span class="font-code-md text-code-md font-semibold text-error">ESC-194</span>
+<span class="material-symbols-outlined text-[14px] text-error">error</span>
+</div>
+<span class="font-body-sm text-body-sm text-error/90 block">Tier-3 Escalation Dispatch</span>
+</td>
+<td class="p-sm">
+<div class="font-code-sm text-body-sm text-on-surface">CSE-014</div>
+<div class="font-code-sm text-body-sm text-outline">CASE-0982 / DISP-T3</div>
+</td>
+<td class="p-sm">
+<div class="text-on-surface">SOC Dispatch System</div>
+<div class="font-code-sm text-body-sm text-outline">Log Sink Audited</div>
+</td>
+<td class="p-sm font-code-sm text-body-sm text-on-surface-variant">
+<div>08 Sep 2026</div>
+<div class="text-outline">14:35:10 IST</div>
+</td>
+<td class="p-sm">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-error-container/40 text-error font-code-sm text-body-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                ABSENT_CONFIRMED
+              </span>
+</td>
+<td class="p-sm font-code-sm text-body-sm">
+<span class="text-error flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">cancel</span>
+                UNVERIFIED
+              </span>
+</td>
+<td class="p-sm">
+<span class="px-1.5 py-0.2 rounded bg-error-container/30 text-error font-code-sm text-body-sm">GAP-0051 (Hist)</span>
+</td>
+<td class="p-sm text-right" onclick="event.stopPropagation()">
+<button class="px-sm py-1 rounded bg-error-container text-on-error hover:brightness-110 font-body-sm cursor-pointer" onclick="selectRowDetail('ESC-194')">
+                Inspect Absence
+              </button>
+</td>
+</tr>
+<!-- Row 8: EVD-488 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer" onclick="selectRowDetail('EVD-488')">
+<td class="p-sm text-center" onclick="event.stopPropagation()">
+<input class="row-checkbox rounded bg-surface-container border-0 cursor-pointer" type="checkbox"/>
+</td>
+<td class="p-sm">
+<div class="font-code-md text-code-md font-semibold text-on-surface">EVD-488</div>
+<span class="font-body-sm text-body-sm text-outline block">Forensics Memory Dump</span>
+</td>
+<td class="p-sm">
+<div class="font-code-sm text-body-sm text-on-surface">CSE-014</div>
+<div class="font-code-sm text-body-sm text-outline">CASE-0955 / DUMP-01</div>
+</td>
+<td class="p-sm">
+<div class="text-on-surface">Enclave Forensic Store</div>
+<div class="font-code-sm text-body-sm text-outline">Encrypted Volatile RAM</div>
+</td>
+<td class="p-sm font-code-sm text-body-sm text-on-surface-variant">
+<div>29 Aug 2026</div>
+<div class="text-outline">03:15:00 IST</div>
+</td>
+<td class="p-sm">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-secondary-container/30 text-secondary font-code-sm text-body-sm font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                PRESENT
+              </span>
+</td>
+<td class="p-sm font-code-sm text-body-sm">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span>VERIFIED</span>
+</div>
+<span class="text-outline block truncate w-32">0a8f9211c471...</span>
+</td>
+<td class="p-sm">
+<span class="px-1.5 py-0.2 rounded bg-surface-container-highest text-on-surface-variant font-code-sm text-body-sm">CTRL-04</span>
+</td>
+<td class="p-sm text-right" onclick="event.stopPropagation()">
+<button class="px-sm py-1 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm cursor-pointer" onclick="selectRowDetail('EVD-488')">
+                View Dossier
+              </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination Footer -->
+<div class="bg-surface-container-lowest p-sm flex items-center justify-between text-body-sm font-code-sm text-outline">
+<span>Displaying 8 of 250 filtered records (Page 1 of 32)</span>
+<div class="flex items-center gap-1">
+<button class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface disabled:opacity-40" disabled="">Previous</button>
+<span class="px-2 py-1 text-on-surface bg-surface-container-high rounded font-semibold">1</span>
+<button class="px-2 py-1 rounded hover:bg-surface-container text-outline">2</button>
+<button class="px-2 py-1 rounded hover:bg-surface-container text-outline">3</button>
+<span>...</span>
+<button class="px-2 py-1 rounded hover:bg-surface-container text-outline">32</button>
+<button class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface">Next</button>
+</div>
+</div>
+</div>
+<!-- 5. INTERACTIVE EVIDENCE DETAIL DOSSIER & RELATIONAL GRAPH -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-md bg-surface-container-low p-md rounded" id="dossierSection">
+<!-- Left Column: Primary Evidence Record Breakdown -->
+<div class="xl:col-span-7 flex flex-col gap-md">
+<!-- Dossier Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-sm bg-surface-container p-sm rounded">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+<span class="material-symbols-outlined">folder_open</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface" id="dossierId">EVD-742</span>
+<span class="px-2 py-0.5 rounded bg-secondary-container/40 text-secondary font-code-sm text-body-sm font-semibold" id="dossierStatusBadge">PRESENT</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant" id="dossierType">Investigation Record • CASE-1042 / INV-338</span>
+</div>
+</div>
+<div class="flex items-center gap-xs">
+<button class="px-sm py-1.5 rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm flex items-center gap-1 transition-colors" onclick="copyHashToClipboard()">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span id="copyFeedback">Copy Hash</span>
+</button>
+<button class="px-sm py-1.5 rounded bg-primary-container text-on-primary-container hover:brightness-110 font-body-sm font-semibold flex items-center gap-1 transition-colors" onclick="verifyCryptographicIntegrity()">
+<span class="material-symbols-outlined text-[16px]">security_update_good</span>
+<span>Verify HSM</span>
+</button>
+</div>
+</div>
+<!-- Telemetry Attributes Card -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-xs bg-surface-container-lowest p-sm rounded text-body-sm">
+<div>
+<span class="font-label-caps text-label-caps uppercase text-outline block">Investigator</span>
+<span class="font-code-sm text-body-sm text-on-surface font-medium">USR-204 (Sr Incident Handler)</span>
+</div>
+<div>
+<span class="font-label-caps text-label-caps uppercase text-outline block">Ingestion Stamp</span>
+<span class="font-code-sm text-body-sm text-on-surface">26 Sep 2026 08:41:00</span>
+</div>
+<div>
+<span class="font-label-caps text-label-caps uppercase text-outline block">Related Finding</span>
+<a class="font-code-sm text-body-sm text-error underline font-semibold" href="#">FND-0142</a>
+</div>
+<div>
+<span class="font-label-caps text-label-caps uppercase text-outline block">Primary Gap</span>
+<a class="font-code-sm text-body-sm text-tertiary underline font-semibold" href="#">GAP-0071</a>
+</div>
+</div>
+<!-- Structured Content Preview -->
+<div class="bg-surface-container p-sm rounded space-y-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Structured Payload &amp; Observation Log</span>
+<span class="font-code-sm text-body-sm text-outline">Format: JSON Normalized</span>
+</div>
+<div class="bg-surface-container-lowest p-sm rounded font-code-sm text-body-sm space-y-1 text-on-surface-variant overflow-x-auto">
+<div class="text-secondary"><span class="text-outline">01</span> { "trigger_event": "SCADA_RTU_GATEWAY_ALARM_ALR-8821",</div>
+<div><span class="text-outline">02</span>   "severity_assessment": "CRITICAL_FIPS_FAILURE",</div>
+<div><span class="text-outline">03</span>   "triage_action": "Automated diagnostic triage executed via Playbook-44",</div>
+<div class="text-tertiary"><span class="text-outline">04</span>   "escalation_threshold": "REACHED_EXCEEDED_SLA_15M",</div>
+<div class="text-error font-semibold"><span class="text-outline">05</span>   "escalation_record_observed": false /* NOT OBSERVED IN CANONICAL FEED; TRIGGERS ESC-221 GAP QUERY */,</div>
+<div><span class="text-outline">06</span>   "containment_status": "ISOLATED_PORT_4821",</div>
+<div><span class="text-outline">07</span>   "examiner_signoff": null }</div>
+</div>
+</div>
+<!-- Cryptographic Provenance Card -->
+<div class="bg-surface-container p-sm rounded flex flex-col gap-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Cryptographic Provenance &amp; Pipeline Attestation</span>
+<span class="inline-flex items-center gap-1 font-code-sm text-body-sm text-secondary">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+            Signed by CSE-014 CISO Office
+          </span>
+</div>
+<div class="bg-surface-container-lowest p-sm rounded flex flex-col gap-1 font-code-sm text-body-sm">
+<div class="flex items-center justify-between">
+<span class="text-outline">Submission Package ID:</span>
+<span class="text-on-surface font-semibold">SUB-2026-0148</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-outline">Canonical SHA-256 Digest:</span>
+<span class="text-primary truncate max-w-md" id="sha256Digest">9f8a3c22b918a99477e6f8812dd014a9ecba19001258d4a9821</span>
+</div>
+<div class="flex items-center justify-between pt-1 border-0">
+<span class="text-outline">Control Baseline:</span>
+<span class="text-on-surface">CTRL-07 v3.2 (Supervisory Escalation Schedule)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-outline">Analytics Engine Rule:</span>
+<span class="text-on-surface">R-2.4 (Execution Disconnect Detector)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-outline">Enclave Ingestion Agent:</span>
+<span class="text-on-surface">SAT-SA AN-1.8 Air-Gapped Connector</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Evidence Relational Graph & Cross-Evidence Traceability -->
+<div class="xl:col-span-5 flex flex-col gap-md">
+<!-- Relational Graph Visual Card -->
+<div class="bg-surface-container p-sm rounded flex flex-col gap-sm flex-1">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-primary text-[18px]">account_tree</span>
+<span class="font-headline-sm text-body-sm text-on-surface font-semibold">Relational Lineage Chain</span>
+</div>
+<span class="font-code-sm text-body-sm text-outline">Traceability Level: L4 Statutory</span>
+</div>
+<!-- Vertical Interactive Chain Graph -->
+<div class="relative pl-6 space-y-4 before:content-[''] before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-outline-variant/60">
+<!-- Node 1: Evidence (Active) -->
+<div class="relative flex items-start gap-2">
+<span class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-surface-container"></span>
+<div class="bg-surface-container-high p-2 rounded w-full">
+<span class="font-label-caps text-label-caps text-outline uppercase">Target Evidence</span>
+<div class="font-code-sm text-body-sm text-primary font-bold">EVD-742 (Investigation Record)</div>
+</div>
+</div>
+<!-- Node 2: Investigation -->
+<div class="relative flex items-start gap-2">
+<span class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-outline ring-4 ring-surface-container"></span>
+<div class="bg-surface-container-lowest p-2 rounded w-full">
+<span class="font-label-caps text-label-caps text-outline uppercase">Parent Investigation</span>
+<div class="font-code-sm text-body-sm text-on-surface">INV-338 (RTU Failover Analysis)</div>
+</div>
+</div>
+<!-- Node 3: Case -->
+<div class="relative flex items-start gap-2">
+<span class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-outline ring-4 ring-surface-container"></span>
+<div class="bg-surface-container-lowest p-2 rounded w-full">
+<span class="font-label-caps text-label-caps text-outline uppercase">Root Security Case</span>
+<div class="font-code-sm text-body-sm text-on-surface">CASE-1042 (Substation Comms Drop)</div>
+</div>
+</div>
+<!-- Node 4: Gap Detection (Breakage Highlight) -->
+<div class="relative flex items-start gap-2">
+<span class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-tertiary ring-4 ring-surface-container animate-pulse"></span>
+<div class="bg-tertiary-container/20 p-2 rounded w-full">
+<span class="font-label-caps text-label-caps text-tertiary uppercase font-bold">Execution Gap Detected</span>
+<div class="font-code-sm text-body-sm text-tertiary font-bold">GAP-0071 (Missing Escalation Telemetry)</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant block mt-0.5">Missing link to ESC-221 within 30 min window</span>
+</div>
+</div>
+<!-- Node 5: Finding Generation -->
+<div class="relative flex items-start gap-2">
+<span class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-error ring-4 ring-surface-container"></span>
+<div class="bg-error-container/20 p-2 rounded w-full">
+<span class="font-label-caps text-label-caps text-error uppercase font-bold">Supervisory Finding Candidate</span>
+<div class="font-code-sm text-body-sm text-error font-bold">FND-0142 (CTRL-07 Breach)</div>
+</div>
+</div>
+<!-- Node 6: Recommended Remediation -->
+<div class="relative flex items-start gap-2">
+<span class="absolute -left-6 top-1 w-3 h-3 rounded-full bg-secondary ring-4 ring-surface-container"></span>
+<div class="bg-surface-container-lowest p-2 rounded w-full">
+<span class="font-label-caps text-label-caps text-outline uppercase">Remediation Action Item</span>
+<div class="font-code-sm text-body-sm text-secondary">REM-0038 (Escalation Relay Hardening)</div>
+</div>
+</div>
+</div>
+<!-- Cross-Evidence Missing Linkage Notice -->
+<div class="bg-tertiary-container/30 p-sm rounded mt-2 flex flex-col gap-2">
+<div class="flex items-center gap-1.5 text-tertiary font-semibold font-body-sm">
+<span class="material-symbols-outlined text-[18px]">link_off</span>
+<span>Unlinked Mandatory Evidence: ESC-221</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+            Control baseline CTRL-07 mandates a certified Tier-3 escalation log within 15 minutes of threshold breach. This item was omitted from submission package SUB-2026-0148.
+          </p>
+<div class="flex items-center justify-end">
+<button class="px-sm py-1 rounded bg-tertiary-container text-on-tertiary hover:brightness-110 font-body-sm font-semibold cursor-pointer" onclick="openRequestEvidenceModal('ESC-221', 'CASE-1042')">
+              Launch Direct Evidence Query
+            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- 6. EXPECTED EVIDENCE VS OBSERVED EVIDENCE MATRIX (CTRL-07 BASELINE) -->
+<div class="bg-surface-container-low p-md rounded flex flex-col gap-sm">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-sm">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">checklist_rtl</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Expected Evidence Baseline Matrix</h2>
+<span class="font-body-sm text-body-sm text-outline">Mandated by NCIIPC Framework: CTRL-07 Incident Escalation Schedule</span>
+</div>
+</div>
+<!-- View Toggle & Negative Space shortcut -->
+<div class="flex items-center gap-xs">
+<div class="inline-flex rounded bg-surface-container p-0.5">
+<button class="px-sm py-1 rounded bg-surface-container-highest text-on-surface font-body-sm font-medium">Observed View</button>
+<button class="px-sm py-1 rounded text-outline hover:text-on-surface font-body-sm transition-colors">Baseline Schedule</button>
+</div>
+<a class="px-sm py-1.5 rounded bg-surface-container-high hover:bg-surface-bright text-primary font-body-sm flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">radar</span>
+<span>Negative Space Analysis (NS-0041)</span>
+</a>
+</div>
+</div>
+<!-- The 5 Baseline Elements -->
+<div class="grid grid-cols-1 md:grid-cols-5 gap-xs pt-1">
+<!-- Item 1: Investigation Record -->
+<div class="bg-surface-container p-sm rounded flex flex-col justify-between gap-2">
+<div class="flex items-center justify-between">
+<span class="font-code-sm text-body-sm text-secondary font-semibold">✓ PRESENT</span>
+<span class="material-symbols-outlined text-secondary text-[18px]">task_alt</span>
+</div>
+<div>
+<span class="font-body-sm text-body-sm text-on-surface font-semibold block">Investigation Record</span>
+<span class="font-code-sm text-body-sm text-outline">EVD-742 (INV-338)</span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary bg-secondary-container/20 p-1 rounded">
+          Canonical hash verified
+        </div>
+</div>
+<!-- Item 2: Escalation Record (Breakage) -->
+<div class="bg-tertiary-container/20 p-sm rounded flex flex-col justify-between gap-2">
+<div class="flex items-center justify-between">
+<span class="font-code-sm text-body-sm text-tertiary font-bold">✕ NOT_SUBMITTED</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]">cancel</span>
+</div>
+<div>
+<span class="font-body-sm text-body-sm text-tertiary font-semibold block">Escalation Record</span>
+<span class="font-code-sm text-body-sm text-outline">ESC-221 (Expected)</span>
+</div>
+<div class="font-body-sm text-body-sm text-tertiary bg-tertiary-container/30 p-1 rounded">
+          Missing ≠ Confirmed Failure
+        </div>
+</div>
+<!-- Item 3: Escalation Rationale -->
+<div class="bg-surface-container p-sm rounded flex flex-col justify-between gap-2">
+<div class="flex items-center justify-between">
+<span class="font-code-sm text-body-sm text-outline font-semibold">? UNKNOWN</span>
+<span class="material-symbols-outlined text-outline text-[18px]">help_outline</span>
+</div>
+<div>
+<span class="font-body-sm text-body-sm text-on-surface font-semibold block">Escalation Rationale</span>
+<span class="font-code-sm text-body-sm text-outline">Pending Dispatch Log</span>
+</div>
+<div class="font-body-sm text-body-sm text-outline bg-surface-container-highest p-1 rounded">
+          Dependent on ESC-221
+        </div>
+</div>
+<!-- Item 4: Response Record -->
+<div class="bg-surface-container p-sm rounded flex flex-col justify-between gap-2">
+<div class="flex items-center justify-between">
+<span class="font-code-sm text-body-sm text-secondary font-semibold">✓ PRESENT</span>
+<span class="material-symbols-outlined text-secondary text-[18px]">task_alt</span>
+</div>
+<div>
+<span class="font-body-sm text-body-sm text-on-surface font-semibold block">Response Record</span>
+<span class="font-code-sm text-body-sm text-outline">EVD-761 (RSP-089)</span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary bg-secondary-container/20 p-1 rounded">
+          Contained 11:08 IST
+        </div>
+</div>
+<!-- Item 5: Closure Evidence -->
+<div class="bg-surface-container p-sm rounded flex flex-col justify-between gap-2">
+<div class="flex items-center justify-between">
+<span class="font-code-sm text-body-sm text-secondary font-semibold">✓ PRESENT</span>
+<span class="material-symbols-outlined text-secondary text-[18px]">task_alt</span>
+</div>
+<div>
+<span class="font-body-sm text-body-sm text-on-surface font-semibold block">Closure Evidence</span>
+<span class="font-code-sm text-body-sm text-outline">CLS-421 (Formal Sign)</span>
+</div>
+<div class="font-body-sm text-body-sm text-secondary bg-secondary-container/20 p-1 rounded">
+          Closed 12:03 IST
+        </div>
+</div>
+</div>
+<!-- Matrix Summary & Coverage Bar -->
+<div class="bg-surface-container p-sm rounded flex flex-col sm:flex-row sm:items-center justify-between gap-sm">
+<div class="flex items-center gap-md">
+<span class="font-code-sm text-body-sm text-on-surface font-semibold">CTRL-07 Evidence Fulfillment: 78%</span>
+<!-- Inline Visual Mini-Progress Bar -->
+<div class="w-48 h-2 bg-surface-container-highest rounded-full overflow-hidden flex">
+<div class="bg-secondary h-full" style="width: 78%"></div>
+<div class="bg-tertiary h-full" style="width: 22%"></div>
+</div>
+</div>
+<span class="font-code-sm text-body-sm text-outline">1 of 5 items absent from submission package</span>
+</div>
+</div>
+<!-- 7. EVIDENCE TIMELINE (CASE-1042 RECONSTRUCTION) -->
+<div class="bg-surface-container-low p-md rounded flex flex-col gap-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">history_toggle_off</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Audit Chronology: CASE-1042 Incident Reconstruction</h2>
+<span class="font-body-sm text-body-sm text-outline">Chronological evidence sequencing highlighting execution disconnects</span>
+</div>
+</div>
+<span class="font-code-sm text-body-sm text-outline">Clock: Asia/Kolkata (IST)</span>
+</div>
+<!-- Horizontal / Step Timeline Strip -->
+<div class="grid grid-cols-1 md:grid-cols-7 gap-xs relative">
+<!-- Step 1: 09:12 -->
+<div class="bg-surface-container p-sm rounded flex flex-col justify-between">
+<div class="font-code-sm text-body-sm text-error font-semibold">09:12 IST</div>
+<div class="my-2">
+<div class="font-code-sm text-body-sm text-on-surface font-semibold">ALR-8821</div>
+<span class="font-body-sm text-body-sm text-outline block">Alert Generated</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-error-container/30 text-error font-code-sm text-body-sm w-max">Sev: Critical</span>
+</div>
+<!-- Step 2: 09:18 -->
+<div class="bg-surface-container p-sm rounded flex flex-col justify-between">
+<div class="font-code-sm text-body-sm text-primary font-semibold">09:18 IST</div>
+<div class="my-2">
+<div class="font-code-sm text-body-sm text-on-surface font-semibold">CASE-1042</div>
+<span class="font-body-sm text-body-sm text-outline block">Case Opened</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-code-sm text-body-sm w-max">SOC Core</span>
+</div>
+<!-- Step 3: 09:42 -->
+<div class="bg-surface-container p-sm rounded flex flex-col justify-between">
+<div class="font-code-sm text-body-sm text-secondary font-semibold">09:42 IST</div>
+<div class="my-2">
+<div class="font-code-sm text-body-sm text-on-surface font-semibold">INV-338 / EVD-742</div>
+<span class="font-body-sm text-body-sm text-outline block">Investigation Commenced</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/30 text-secondary font-code-sm text-body-sm w-max">USR-204</span>
+</div>
+<!-- Step 4: 10:17 -->
+<div class="bg-surface-container p-sm rounded flex flex-col justify-between">
+<div class="font-code-sm text-body-sm text-secondary font-semibold">10:17 IST</div>
+<div class="my-2">
+<div class="font-code-sm text-body-sm text-on-surface font-semibold">EVD-742 Att.</div>
+<span class="font-body-sm text-body-sm text-outline block">Forensic Snapshot</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/30 text-secondary font-code-sm text-body-sm w-max">Verified</span>
+</div>
+<!-- Step 5: 10:45 (EXECUTION GAP CANDIDATE) -->
+<div class="bg-tertiary-container/30 p-sm rounded flex flex-col justify-between">
+<div class="font-code-sm text-body-sm text-tertiary font-bold">10:45 IST</div>
+<div class="my-2">
+<div class="font-code-sm text-body-sm text-tertiary font-bold">[EXPECTED ESC]</div>
+<span class="font-body-sm text-body-sm text-tertiary block font-medium">MISSING SUBMISSION</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-tertiary-container text-on-tertiary font-code-sm text-body-sm font-semibold w-max">GAP-0071</span>
+</div>
+<!-- Step 6: 11:08 -->
+<div class="bg-surface-container p-sm rounded flex flex-col justify-between">
+<div class="font-code-sm text-body-sm text-secondary font-semibold">11:08 IST</div>
+<div class="my-2">
+<div class="font-code-sm text-body-sm text-on-surface font-semibold">EVD-761 (RSP-089)</div>
+<span class="font-body-sm text-body-sm text-outline block">Containment Logged</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-secondary-container/30 text-secondary font-code-sm text-body-sm w-max">SOAR Auto</span>
+</div>
+<!-- Step 7: 12:03 -->
+<div class="bg-surface-container p-sm rounded flex flex-col justify-between">
+<div class="font-code-sm text-body-sm text-on-surface-variant font-semibold">12:03 IST</div>
+<div class="my-2">
+<div class="font-code-sm text-body-sm text-on-surface font-semibold">CLS-421</div>
+<span class="font-body-sm text-body-sm text-outline block">Case Closed</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-code-sm text-body-sm w-max">Signed</span>
+</div>
+</div>
+<!-- Visual Chronology Callout -->
+<div class="bg-surface-container p-sm rounded flex items-center gap-sm">
+<span class="material-symbols-outlined text-[20px] text-tertiary shrink-0">crisis_alert</span>
+<p class="font-body-sm text-body-sm text-on-surface">
+<strong class="text-tertiary">Chronology Disconnect:</strong> The 10:45 IST mandatory escalation window is unaccounted for in canonical feeds. While subsequent containment (11:08) succeeded, the supervisory candidate <strong class="text-on-surface">GAP-0071 / FND-0142</strong> requires accredited examiner validation before any non-compliance notation.
+      </p>
+</div>
+</div>
+<!-- 8. STATUTORY HUMAN-IN-THE-LOOP SAFEGUARDS & NAVIGATION BAR -->
+<div class="bg-surface-container-low p-md rounded flex flex-col lg:flex-row lg:items-center justify-between gap-md">
+<div class="flex items-start gap-sm max-w-3xl">
+<span class="material-symbols-outlined text-[24px] text-primary shrink-0 mt-0.5">gavel</span>
+<div>
+<h3 class="font-headline-sm text-body-md text-on-surface font-semibold">Statutory Supervisory Safeguard (Human-in-the-Loop)</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+          Evidence Explorer provides factual traceability, hash validation, and metadata normalization. The absence or presence of telemetry does not autonomously establish statutory non-compliance. Final supervisory conclusions remain the sole authority of the accredited examiner under NCIIPC guidelines.
+        </p>
+</div>
+</div>
+<!-- Examiner Action Links -->
+<div class="flex items-center gap-xs flex-wrap shrink-0">
+<a class="px-md py-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm font-medium transition-colors" href="#">
+        CSE Assessment (CSE-014)
+      </a>
+<a class="px-md py-2 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm font-medium transition-colors" href="#">
+        Negative Space
+      </a>
+<a class="px-md py-2 rounded bg-primary-container text-on-primary-container hover:brightness-110 font-body-sm font-semibold transition-all" href="#">
+        Open Examiner Workspace (FND-0142)
+      </a>
+</div>
+</div>
+<!-- MODAL: REQUEST EVIDENCE (Hidden by default) -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-md" id="requestEvidenceModal">
+<div class="bg-surface-container-low w-full max-w-2xl rounded p-lg flex flex-col gap-md shadow-2xl relative">
+<div class="flex items-center justify-between pb-sm border-0">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">send</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Issue Evidence Request Notice</h3>
+<span class="font-body-sm text-body-sm text-outline">Statutory Query under NCIIPC Sec 70A Mandate</span>
+</div>
+</div>
+<button class="material-symbols-outlined text-outline hover:text-on-surface cursor-pointer" onclick="closeRequestEvidenceModal()">close</button>
+</div>
+<div class="space-y-sm">
+<div class="grid grid-cols-2 gap-sm">
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline block mb-1">Target Entity</label>
+<input class="w-full bg-surface-container-lowest text-on-surface font-body-sm px-sm py-2 rounded border-0" disabled="" id="reqCseField" type="text" value="CSE-014 (NorthGrid Energy)"/>
+</div>
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline block mb-1">Related Case / Incident</label>
+<input class="w-full bg-surface-container-lowest text-on-surface font-body-sm px-sm py-2 rounded border-0" id="reqCaseField" type="text" value="CASE-1042"/>
+</div>
+</div>
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline block mb-1">Expected Evidence Identifier</label>
+<input class="w-full bg-surface-container-lowest text-on-surface font-body-sm px-sm py-2 rounded border-0" id="reqEvidenceIdField" type="text" value="ESC-221 (Escalation Dispatch Log)"/>
+</div>
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline block mb-1">Statutory Rationale &amp; Baseline Control</label>
+<textarea class="w-full bg-surface-container-lowest text-on-surface font-body-sm p-sm rounded border-0 focus:ring-1 focus:ring-primary" rows="3">Inquiry regarding unaccounted 30m escalation dispatch interval observed during triage of ALR-8821. Submission package SUB-2026-0148 lacks corresponding tier-3 dispatch telemetry mandated by CTRL-07.</textarea>
+</div>
+<div class="p-sm bg-surface-container rounded text-body-sm text-on-surface-variant flex items-start gap-2">
+<span class="material-symbols-outlined text-tertiary text-[18px] shrink-0 mt-0.5">info</span>
+<span>Entity will be allocated standard 72-hour formal telemetry ingestion window. This notice does not assert fault.</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-sm pt-sm border-0">
+<button class="px-md py-2 rounded bg-surface-container text-on-surface hover:bg-surface-container-high font-body-sm cursor-pointer" onclick="closeRequestEvidenceModal()">
+          Cancel
+        </button>
+<button class="px-md py-2 rounded bg-primary-container text-on-primary-container font-body-sm font-semibold hover:brightness-110 cursor-pointer" onclick="submitEvidenceRequest()">
+          Transmit Formal Notice
+        </button>
+</div>
+</div>
+</div>
+<!-- MODAL: EXPORT EVIDENCE INDEX -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-md" id="exportIndexModal">
+<div class="bg-surface-container-low w-full max-w-lg rounded p-lg flex flex-col gap-md shadow-2xl">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Export Cryptographic Index</h3>
+<button class="material-symbols-outlined text-outline hover:text-on-surface cursor-pointer" onclick="closeExportModal()">close</button>
+</div>
+<div class="space-y-sm text-body-sm">
+<p class="text-on-surface-variant">
+          Exporting complete normalized evidence catalog including SHA-256 digests and air-gapped enclave provenance attestations.
+        </p>
+<div class="space-y-xs">
+<label class="flex items-center gap-2 p-sm bg-surface-container rounded cursor-pointer">
+<input checked="" class="text-primary focus:ring-0" name="exportFormat" type="radio"/>
+<div>
+<span class="text-on-surface font-semibold block">JSON Ledger (Canonical Provenance)</span>
+<span class="text-outline text-body-sm">Full cryptographic chain with FIPS-140-2 verification tokens</span>
+</div>
+</label>
+<label class="flex items-center gap-2 p-sm bg-surface-container rounded cursor-pointer">
+<input class="text-primary focus:ring-0" name="exportFormat" type="radio"/>
+<div>
+<span class="text-on-surface font-semibold block">CSV Flat Index (Supervisory Audit)</span>
+<span class="text-outline text-body-sm">Normalized tabular metadata suitable for spreadsheet review</span>
+</div>
+</label>
+</div>
+</div>
+<div class="flex items-center justify-end gap-sm">
+<button class="px-md py-2 rounded bg-surface-container text-on-surface font-body-sm cursor-pointer" onclick="closeExportModal()">Cancel</button>
+<button class="px-md py-2 rounded bg-primary-container text-on-primary-container font-body-sm font-semibold hover:brightness-110 cursor-pointer" onclick="triggerExportDownload()">
+          Generate &amp; Download Export
+        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- INTERACTIVE SCRIPTS FOR ROW SELECTION, DOSSIER UPDATE, AND MODAL TOGGLES -->
+<script>
+  // Row selection & Bulk Action Bar
+  const checkboxes = document.querySelectorAll('.row-checkbox');
+  const masterCheckbox = document.getElementById('masterCheckbox');
+  const bulkBar = document.getElementById('bulkActionBar');
+  const bulkText = document.getElementById('bulkSelectedText');
+  const selectedCountDisplay = document.getElementById('selectedCountDisplay');
+  const btnExportSelected = document.getElementById('btnExportSelected');
+
+  function updateBulkState() {
+    let checkedCount = 0;
+    checkboxes.forEach(cb => {
+      if (cb.checked) checkedCount++;
+    });
+
+    selectedCountDisplay.textContent = checkedCount;
+
+    if (checkedCount > 0) {
+      bulkBar.classList.remove('hidden');
+      bulkBar.classList.add('flex');
+      bulkText.textContent = checkedCount + ' Evidence Records Selected';
+      btnExportSelected.classList.remove('cursor-not-allowed', 'opacity-60');
+      btnExportSelected.classList.add('text-primary', 'hover:bg-surface-container-high', 'cursor-pointer');
+    } else {
+      bulkBar.classList.remove('flex');
+      bulkBar.classList.add('hidden');
+      btnExportSelected.classList.add('cursor-not-allowed', 'opacity-60');
+      btnExportSelected.classList.remove('text-primary', 'hover:bg-surface-container-high', 'cursor-pointer');
+    }
+  }
+
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', updateBulkState);
+  });
+
+  if (masterCheckbox) {
+    masterCheckbox.addEventListener('change', function() {
+      checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
+      updateBulkState();
+    });
+  }
+
+  document.getElementById('btnClearBulkSelection')?.addEventListener('click', function() {
+    checkboxes.forEach(cb => cb.checked = false);
+    if (masterCheckbox) masterCheckbox.checked = false;
+    updateBulkState();
+  });
+
+  // Dynamic Dossier Switching (Mock implementation)
+  const dossierData = {
+    'EVD-742': {
+      id: 'EVD-742',
+      type: 'Investigation Record • CASE-1042 / INV-338',
+      status: 'PRESENT',
+      statusClass: 'bg-secondary-container/40 text-secondary',
+      hash: '9f8a3c22b918a99477e6f8812dd014a9ecba19001258d4a9821'
+    },
+    'ESC-221': {
+      id: 'ESC-221',
+      type: 'Escalation Evidence • CASE-1042 / [MISSING]',
+      status: 'NOT_SUBMITTED',
+      statusClass: 'bg-tertiary-container/40 text-tertiary',
+      hash: 'PENDING_CANONICAL_SUBMISSION'
+    },
+    'EVD-761': {
+      id: 'EVD-761',
+      type: 'Response Record • CASE-1042 / RSP-089',
+      status: 'PRESENT',
+      statusClass: 'bg-secondary-container/40 text-secondary',
+      hash: 'd4a1b028ec31a0029bce83719001e389291bacef98104'
+    },
+    'ESC-194': {
+      id: 'ESC-194',
+      type: 'Tier-3 Escalation Dispatch • CASE-0982',
+      status: 'ABSENT_CONFIRMED',
+      statusClass: 'bg-error-container/40 text-error',
+      hash: 'HASH_NULL_OMITTED_BY_ENTITY'
+    }
+  };
+
+  function selectRowDetail(id) {
+    const item = dossierData[id] || {
+      id: id,
+      type: 'Evidence Record • CASE-1042',
+      status: 'PRESENT',
+      statusClass: 'bg-secondary-container/40 text-secondary',
+      hash: '2b4c891900aef7182901928374619283019283'
+    };
+
+    document.getElementById('dossierId').textContent = item.id;
+    document.getElementById('dossierType').textContent = item.type;
+    const badge = document.getElementById('dossierStatusBadge');
+    badge.textContent = item.status;
+    badge.className = 'px-2 py-0.5 rounded font-code-sm text-body-sm font-semibold ' + item.statusClass;
+    document.getElementById('sha256Digest').textContent = item.hash;
+
+    // Smooth scroll down to dossier preview if on mobile
+    if (window.innerWidth < 1024) {
+      document.getElementById('dossierSection').scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  // Copy Feedback
+  function copyHashToClipboard() {
+    const hash = document.getElementById('sha256Digest').textContent;
+    navigator.clipboard.writeText(hash);
+    const feedback = document.getElementById('copyFeedback');
+    feedback.textContent = 'Copied!';
+    setTimeout(() => { feedback.textContent = 'Copy Hash'; }, 1800);
+  }
+
+  function verifyCryptographicIntegrity() {
+    alert("Enclave FIPS 140-2 Level 3 integrity verification completed.\nDigest Matches Signed HSM Payload SUB-2026-0148.");
+  }
+
+  // Modal Handlers
+  const reqModal = document.getElementById('requestEvidenceModal');
+  const exportModal = document.getElementById('exportIndexModal');
+
+  function openRequestEvidenceModal(evidenceId, caseId) {
+    if (evidenceId) document.getElementById('reqEvidenceIdField').value = evidenceId;
+    if (caseId) document.getElementById('reqCaseField').value = caseId;
+    reqModal.classList.remove('hidden');
+  }
+
+  function closeRequestEvidenceModal() {
+    reqModal.classList.add('hidden');
+  }
+
+  function submitEvidenceRequest() {
+    alert("Supervisory Telemetry Query Transmitted to CSE-014 CISO Office Enclave. 72-Hour Response Timer Initiated.");
+    closeRequestEvidenceModal();
+  }
+
+  document.getElementById('btnOpenRequestEvidenceModal')?.addEventListener('click', () => {
+    openRequestEvidenceModal('ESC-221', 'CASE-1042');
+  });
+
+  document.getElementById('btnExportModal')?.addEventListener('click', () => {
+    exportModal.classList.remove('hidden');
+  });
+
+  function closeExportModal() {
+    exportModal.classList.add('hidden');
+  }
+
+  function triggerExportDownload() {
+    alert("Export generation initiated. File: SAT_SA_EVIDENCE_INDEX_CSE014_Q3_2026.json");
+    closeExportModal();
+  }
+
+  document.getElementById('btnRefreshTelemetry')?.addEventListener('click', function() {
+    this.classList.add('animate-spin');
+    setTimeout(() => {
+      this.classList.remove('animate-spin');
+      alert("Enclave Telemetry Synced with NCIIPC Node NC-8841.");
+    }, 600);
+  });
+
+  // Initialize selection count on load
+  updateBulkState();
+</script>
+</main></div></body></html>

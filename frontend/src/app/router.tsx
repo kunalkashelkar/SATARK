@@ -19,13 +19,7 @@ const ProcessAnalysisPage = () => (
     <p className="text-xs text-slate-400">Reconstructed Petri net / event-log transition deviations across alert-to-closure nodes.</p>
   </div>
 );
-
-const EvidenceQualityPage = () => (
-  <div className="p-6 rounded-lg bg-[#0e1626] border border-slate-800 text-slate-300">
-    <h2 className="text-lg font-bold mb-2">Evidence Quality & Schema Validation</h2>
-    <p className="text-xs text-slate-400">Completeness, schema conformance, duplicate checks, and cross-file consistency diagnostics.</p>
-  </div>
-);
+import { EvidenceQualityPage } from '@/pages/EvidenceQuality/EvidenceQualityPage';
 
 const EvidenceExplorerPage = () => (
   <div className="p-6 rounded-lg bg-[#0e1626] border border-slate-800 text-slate-300">

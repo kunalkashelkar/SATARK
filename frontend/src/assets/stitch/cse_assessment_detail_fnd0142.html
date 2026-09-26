@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"on-tertiary-fixed":"#351000","surface-container-highest":"#31353c","on-tertiary-fixed-variant":"#7a3000","surface-dim":"#10141a","secondary":"#7bdb80","on-tertiary-container":"#fffdff","primary":"#afc6ff","on-surface-variant":"#c2c6d6","surface-container-high":"#262a31","primary-fixed-dim":"#afc6ff","surface-bright":"#353940","surface-container-lowest":"#0a0e14","on-tertiary":"#561f00","tertiary-container":"#c55100","outline":"#8c90a0","on-error-container":"#ffdad6","on-primary-fixed-variant":"#004299","background":"#10141a","surface":"#10141a","on-primary":"#002d6d","surface-tint":"#afc6ff","on-surface":"#dfe2eb","primary-fixed":"#d9e2ff","on-primary-fixed":"#001944","inverse-surface":"#dfe2eb","on-primary-container":"#fffcff","on-secondary-fixed-variant":"#005319","on-secondary":"#00390e","inverse-on-surface":"#2d3137","surface-variant":"#31353c","secondary-container":"#007124","surface-container":"#1c2026","outline-variant":"#424754","surface-container-low":"#181c22","on-secondary-container":"#91f294","error":"#ffb4ab","error-container":"#93000a","tertiary":"#ffb693","tertiary-fixed-dim":"#ffb693","tertiary-fixed":"#ffdbcc","inverse-primary":"#0059c8","on-error":"#690005","on-background":"#dfe2eb","primary-container":"#1f6feb","on-secondary-fixed":"#002106","secondary-fixed":"#97f999","secondary-fixed-dim":"#7bdb80"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"md":"16px","xl":"32px","margin":"24px","xs":"4px","lg":"24px","sm":"8px","base":"4px","gutter":"16px"},"fontFamily":{"code-md":["JetBrains Mono"],"code-sm":["JetBrains Mono"],"body-sm":["Inter"],"body-md":["Inter"],"headline-md":["Inter"],"body-lg":["Inter"],"label-caps":["Inter"],"headline-sm":["Inter"],"headline-lg":["Inter"]},"fontSize":{"code-md":["14px",{"lineHeight":"1.6","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"1.6","fontWeight":"400"}],"body-sm":["12px",{"lineHeight":"1.5","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"1.5","fontWeight":"400"}],"headline-md":["24px",{"lineHeight":"1.25","letterSpacing":"-0.01em","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"1.5","fontWeight":"400"}],"label-caps":["11px",{"lineHeight":"1.2","letterSpacing":"0.05em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"1.5","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"1.25","letterSpacing":"-0.02em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-[250px] bg-surface-container-low flex flex-col z-50 overflow-y-auto"><div class="p-md pb-sm bg-surface-container"><div class="flex items-center gap-sm mb-xs"><div class="w-sm h-sm rounded-full bg-secondary"></div><span class="font-label-caps text-label-caps uppercase text-on-surface tracking-wider font-bold">Govt of India / NCIIPC</span></div><div class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">SAT-SA</div><div class="font-body-sm text-body-sm text-on-surface-variant">Supervisory Analytics Tool</div></div><nav class="flex-1 px-sm py-sm flex flex-col gap-xs" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded"><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Overview</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="overview" href="#"><span class="material-symbols-outlined text-[16px]">dashboard</span><span>Overview</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Supervision</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="cse-assessments" href="#"><span class="material-symbols-outlined text-[16px]">domain_verification</span><span>CSE Assessments</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="priority-queue" href="#"><span class="material-symbols-outlined text-[16px]">low_priority</span><span>Priority Queue</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="recommended-samples" href="#"><span class="material-symbols-outlined text-[16px]">fact_check</span><span>Recommended Samples</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Analytics</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="execution-gaps" href="#"><span class="material-symbols-outlined text-[16px]">rule_folder</span><span>Execution Gaps</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="negative-space" href="#"><span class="material-symbols-outlined text-[16px]">contrast</span><span>Negative Space</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="process-analysis" href="#"><span class="material-symbols-outlined text-[16px]">account_tree</span><span>Process Analysis</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="evidence-quality" href="#"><span class="material-symbols-outlined text-[16px]">verified</span><span>Evidence Quality</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="behavioural-analysis" href="#"><span class="material-symbols-outlined text-[16px]">psychology</span><span>Behavioural Analysis</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="coverage" href="#"><span class="material-symbols-outlined text-[16px]">radar</span><span>Coverage</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="consistency" href="#"><span class="material-symbols-outlined text-[16px]">stacked_line_chart</span><span>Consistency</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Assessment</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="findings" href="#"><span class="material-symbols-outlined text-[16px]">warning</span><span>Findings</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="evidence" href="#"><span class="material-symbols-outlined text-[16px]">inventory</span><span>Evidence</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="remediation" href="#"><span class="material-symbols-outlined text-[16px]">published_with_changes</span><span>Remediation</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="verification" href="#"><span class="material-symbols-outlined text-[16px]">security</span><span>Verification</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Intelligence</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="historical-trends" href="#"><span class="material-symbols-outlined text-[16px]">timeline</span><span>Historical Trends</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="peer-comparison" href="#"><span class="material-symbols-outlined text-[16px]">compare_arrows</span><span>Peer Comparison</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="signal-discovery" href="#"><span class="material-symbols-outlined text-[16px]">bubble_chart</span><span>Signal Discovery</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Governance</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="audit" href="#"><span class="material-symbols-outlined text-[16px]">policy</span><span>Audit</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="administration" href="#"><span class="material-symbols-outlined text-[16px]">admin_panel_settings</span><span>Administration</span></a></nav><div class="p-sm bg-surface-container-lowest font-code-sm text-code-sm text-outline flex items-center justify-between"><span>SYS-ID: NC-4029</span><span class="w-2 h-2 rounded-full bg-secondary"></span></div></aside><div class="pl-[250px]"><header class="fixed top-0 left-[250px] right-0 h-14 bg-surface-container/95 backdrop-blur-md z-40 px-margin flex items-center justify-between"><div class="flex items-center gap-md"><div class="flex items-center gap-xs font-code-sm text-code-sm text-on-surface-variant"><span class="text-primary font-semibold">SAT-SA</span><span>/</span><span>Overview</span></div><div class="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-code-sm text-code-sm text-secondary font-medium tracking-wide">INTERNAL / AIR-GAPPED (TLS 1.3 / FIPS-140-2)</span></div></div><div class="flex items-center gap-md"><div class="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high"><span class="material-symbols-outlined text-[16px] text-secondary">verified_user</span><span class="font-code-sm text-code-sm text-on-surface">Audit: SYNCED</span></div><button class="relative p-xs rounded hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary"></span></button><div class="flex items-center gap-sm pl-sm"><div class="flex flex-col text-right"><span class="font-body-sm text-body-sm font-semibold text-on-surface leading-tight">Supervisor</span><span class="font-label-caps text-label-caps text-on-surface-variant leading-tight">NCIIPC</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-14 px-margin bg-surface"><div class="flex flex-col w-full text-on-surface antialiased pb-24">
+<!-- TOP BREADCRUMB & CONTEXT STRIP -->
+<div class="flex items-center justify-between py-2 border-b border-[#30363d]/40 mb-3 text-body-sm">
+<div class="flex items-center gap-2 font-code-sm text-body-sm">
+<span class="text-on-surface-variant">SAT-SA</span>
+<span class="text-outline">/</span>
+<span class="text-on-surface-variant">Assessment</span>
+<span class="text-outline">/</span>
+<a class="text-primary hover:underline hover:text-primary-fixed" href="#">Findings</a>
+<span class="text-outline">/</span>
+<span class="text-on-surface font-semibold bg-surface-container px-2 py-0.5 rounded text-code-sm">FND-0142</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high font-code-sm text-code-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-secondary">verified</span>
+<span>SUPERVISORY RECORD ID: <span class="text-on-surface font-medium">SR-2026-IND-0142</span></span>
+</div>
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-high font-code-sm text-code-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-primary">schedule</span>
+<span>SNAPSHOT: 26-SEP-2026 14:18:02 IST</span>
+</div>
+</div>
+</div>
+<!-- HEADER BLOCK -->
+<div class="bg-surface-container-low rounded-lg p-4 mb-4 border border-[#30363d]">
+<div class="flex flex-wrap items-start justify-between gap-4 mb-3">
+<div class="flex flex-col gap-1 min-w-0 max-w-4xl">
+<div class="flex flex-wrap items-center gap-2 mb-1">
+<span class="font-code-md text-headline-sm text-primary font-bold tracking-tight">FND-0142</span>
+<span class="px-2 py-0.5 rounded-full bg-error-container text-error text-[11px] font-bold font-label-caps tracking-wide flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-pulse"></span>
+            CRITICAL PRIORITY
+          </span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-container/30 text-tertiary text-[11px] font-bold font-label-caps tracking-wide flex items-center gap-1 border border-tertiary/30" id="currentStatusBadge">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+            UNDER REVIEW
+          </span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-code-sm text-code-sm">
+            CONTROL: <span class="text-on-surface font-semibold">CTRL-07 (v3.2)</span>
+</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-code-sm text-code-sm">
+            CASE: <span class="text-primary font-medium">CASE-1042</span>
+</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface font-semibold tracking-tight">
+          Execution Gap in Escalation Handling
+        </h1>
+<p class="font-body-md text-body-md text-on-surface-variant">
+          Investigation process bypassed mandatory Tier-2 regulatory transmission protocol within statutory time window.
+        </p>
+</div>
+<!-- Quick Metrics Gauges -->
+<div class="flex items-center gap-3 bg-surface-container px-3 py-2 rounded-lg border border-[#30363d]/60">
+<div class="flex flex-col items-center px-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Evidence Strength</span>
+<span class="font-code-md text-body-lg text-secondary font-bold">94%</span>
+<span class="text-[10px] text-secondary font-medium tracking-tight uppercase">STRONG</span>
+</div>
+<div class="w-[1px] h-8 bg-[#30363d]"></div>
+<div class="flex flex-col items-center px-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Completeness</span>
+<span class="font-code-md text-body-lg text-primary font-bold">78%</span>
+<span class="text-[10px] text-on-surface-variant uppercase">3 OF 4 ARTIFACTS</span>
+</div>
+<div class="w-[1px] h-8 bg-[#30363d]"></div>
+<div class="flex flex-col items-center px-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Uncertainty</span>
+<span class="font-code-md text-body-lg text-tertiary font-bold">MODERATE</span>
+<span class="text-[10px] text-tertiary uppercase">TRACEABLE GAP</span>
+</div>
+</div>
+</div>
+<!-- Metadata Sub-strip -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-2 pt-3 border-t border-[#30363d]/60 font-body-sm text-body-sm">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-outline">apartment</span>
+<span>Entity:</span>
+<span class="text-on-surface font-medium">CSE-014 (NorthGrid Energy System)</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-outline">bolt</span>
+<span>Sector:</span>
+<span class="text-on-surface font-medium">Critical Infrastructure / Power</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-outline">verified_user</span>
+<span>Statutory Baseline:</span>
+<span class="text-on-surface font-medium">NCIIPC-CSF-v3.2</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-outline">event_repeat</span>
+<span>Cycle:</span>
+<span class="text-on-surface font-medium">Q3 2026 (Active Regulatory Cycle)</span>
+</div>
+</div>
+<!-- Protocol Advisory Notice -->
+<div class="mt-3 flex items-center gap-2 p-2 rounded bg-surface-container-lowest/80 border border-[#30363d]/80 text-on-surface-variant text-body-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">info</span>
+<span class="font-code-sm text-code-sm">
+<strong class="text-on-surface">STATUTORY PROTOCOL NOTICE:</strong> System-generated supervisory signal — human examiner evaluation required. Does not constitute an automatic regulatory non-compliance verdict.
+      </span>
+</div>
+</div>
+<!-- TOP ACTION QUICK SWITCHER BAR -->
+<div class="flex items-center justify-between gap-2 overflow-x-auto pb-2 mb-4 text-body-sm">
+<div class="flex items-center gap-1.5 flex-nowrap">
+<a class="flex items-center gap-1 px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface border border-[#30363d] transition-colors font-medium text-code-sm whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[15px]">arrow_back</span>
+<span>Back to Findings</span>
+</a>
+<a class="flex items-center gap-1 px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-[#30363d] transition-colors text-code-sm whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[15px]">domain</span>
+<span>Open CSE-014 Assessment</span>
+</a>
+<a class="flex items-center gap-1 px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-[#30363d] transition-colors text-code-sm whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[15px]">rule_folder</span>
+<span>Execution Gap (GAP-0071)</span>
+</a>
+<a class="flex items-center gap-1 px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-[#30363d] transition-colors text-code-sm whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[15px]">contrast</span>
+<span>Negative Space (NS-0041)</span>
+</a>
+<a class="flex items-center gap-1 px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-[#30363d] transition-colors text-code-sm whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[15px]">folder_open</span>
+<span>Evidence Explorer (CASE-1042)</span>
+</a>
+<a class="flex items-center gap-1 px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-[#30363d] transition-colors text-code-sm whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[15px]">timeline</span>
+<span>Historical Intelligence</span>
+</a>
+</div>
+<div class="flex items-center gap-2">
+<button class="flex items-center gap-1 px-2.5 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-outline hover:text-on-surface border border-[#30363d] text-code-sm" onclick="copyAuditHash('SHA256:9f8a3c7198df5b3a4a4087bce920436d6a2f7c0042eb88b2c5890e0c1f4b321a')">
+<span class="material-symbols-outlined text-[14px]">key</span>
+<span>Copy Digest</span>
+</button>
+</div>
+</div>
+<!-- THREE COLUMN WORKSPACE -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start mb-6">
+<!-- LEFT COLUMN (3.5/12 ~ 29%): Finding Summary & Analytical Reasoning Chain -->
+<div class="lg:col-span-4 flex flex-col gap-4">
+<!-- Finding Summary Card -->
+<div class="bg-surface-container-low rounded-lg p-3.5 border border-[#30363d]">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-[#30363d]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[18px]">analytics</span>
+<span class="font-headline-sm text-body-md font-semibold text-on-surface">Finding Architecture</span>
+</div>
+<span class="text-code-sm font-code-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded">MULTI-SIGNAL</span>
+</div>
+<div class="space-y-2.5 text-body-sm">
+<div class="flex justify-between items-center py-1 border-b border-[#30363d]/40">
+<span class="text-on-surface-variant">Primary Trigger:</span>
+<span class="font-code-sm text-code-sm text-error bg-error-container/20 px-1.5 py-0.5 rounded">Execution Gap (GAP-0071)</span>
+</div>
+<div class="flex justify-between items-center py-1 border-b border-[#30363d]/40">
+<span class="text-on-surface-variant">Supporting Signals:</span>
+<span class="text-right font-code-sm text-code-sm text-on-surface">3 Signals Fused</span>
+</div>
+<div class="pl-2 space-y-1 font-code-sm text-code-sm">
+<div class="flex justify-between text-on-surface-variant">
+<span>• Negative Space:</span>
+<span class="text-tertiary">NS-0041 (Telemetry Void)</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span>• Temporal Recurrence:</span>
+<span class="text-on-surface">3rd Cycle Recurrence</span>
+</div>
+<div class="flex justify-between text-on-surface-variant">
+<span>• Sequence Anomaly:</span>
+<span class="text-primary">PD-0031 (Skip-Step)</span>
+</div>
+</div>
+<div class="pt-2">
+<div class="flex justify-between items-center text-label-caps font-label-caps text-on-surface-variant mb-1">
+<span>Signal Weight Distribution</span>
+<span class="font-code-sm text-code-sm text-primary">Fused Index: 0.89</span>
+</div>
+<!-- Multi-segment progress bar -->
+<div class="w-full h-2 rounded bg-surface-container-highest flex overflow-hidden">
+<div class="bg-error" style="width: 48%" title="GAP-0071: 48%"></div>
+<div class="bg-tertiary" style="width: 26%" title="NS-0041: 26%"></div>
+<div class="bg-primary" style="width: 16%" title="PD-0031: 16%"></div>
+<div class="bg-secondary" style="width: 10%" title="Historical: 10%"></div>
+</div>
+<div class="flex justify-between text-[10px] text-outline mt-1 font-code-sm">
+<span class="text-error">GAP 48%</span>
+<span class="text-tertiary">NS 26%</span>
+<span class="text-primary">PD 16%</span>
+<span class="text-secondary">HIST 10%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Explainable Reasoning Chain -->
+<div class="bg-surface-container-low rounded-lg p-3.5 border border-[#30363d]">
+<div class="flex items-center justify-between pb-2 mb-3 border-b border-[#30363d]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">account_tree</span>
+<span class="font-headline-sm text-body-md font-semibold text-on-surface">Supervisory Reasoning Chain</span>
+</div>
+<span class="font-code-sm text-[11px] text-secondary bg-secondary-container/20 px-1.5 py-0.5 rounded">DETERMINISTIC</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+          Verifiable audit trail detailing how the telemetry synthesis engine elevated this finding to examiner review:
+        </p>
+<!-- Vertical Timeline Steps -->
+<div class="relative pl-5 space-y-3.5 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-[1px] before:bg-[#30363d]">
+<!-- Step 1 -->
+<div class="relative group">
+<div class="absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full bg-primary border-2 border-surface-container-low"></div>
+<div class="font-code-sm text-code-sm text-primary font-semibold uppercase">Step 1 • Expected Mandate</div>
+<div class="text-body-sm text-on-surface font-medium">Statutory Baseline Mandate</div>
+<div class="text-[11px] text-on-surface-variant font-code-sm mt-0.5">
+              CTRL-07 requires Priority-1 SOC triage to generate Tier-2 escalation record within 60 minutes.
+            </div>
+</div>
+<!-- Step 2 -->
+<div class="relative group">
+<div class="absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full bg-tertiary border-2 border-surface-container-low"></div>
+<div class="font-code-sm text-code-sm text-tertiary font-semibold uppercase">Step 2 • Telemetry Observation</div>
+<div class="text-body-sm text-on-surface font-medium">Observed Ingestion Disparity</div>
+<div class="text-[11px] text-on-surface-variant font-code-sm mt-0.5">
+              Incident <span class="text-on-surface">INV-338</span> triaged at 09:42 IST marked P1 severity; zero transmission record followed before containment response.
+            </div>
+</div>
+<!-- Step 3 -->
+<div class="relative group">
+<div class="absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full bg-error border-2 border-surface-container-low"></div>
+<div class="font-code-sm text-code-sm text-error font-semibold uppercase">Step 3 • Execution Gap Flag</div>
+<div class="text-body-sm text-on-surface font-medium">Missing Procedural Node (GAP-0071)</div>
+<div class="text-[11px] text-on-surface-variant font-code-sm mt-0.5">
+              Gap engine confirmed 45-minute missing communication window between triage and local response.
+            </div>
+</div>
+<!-- Step 4 -->
+<div class="relative group">
+<div class="absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full bg-primary border-2 border-surface-container-low"></div>
+<div class="font-code-sm text-code-sm text-primary font-semibold uppercase">Step 4 • Corroboration</div>
+<div class="text-body-sm text-on-surface font-medium">Cryptographic Evidence Matched</div>
+<div class="text-[11px] text-on-surface-variant font-code-sm mt-0.5">
+              Verified records <span class="text-secondary font-mono">EVD-742</span> and <span class="text-secondary font-mono">EVD-761</span> ingested. Escalation telemetry absent from bundle.
+            </div>
+</div>
+<!-- Step 5 -->
+<div class="relative group">
+<div class="absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full bg-tertiary border-2 border-surface-container-low"></div>
+<div class="font-code-sm text-code-sm text-tertiary font-semibold uppercase">Step 5 • Negative Space Fusion</div>
+<div class="text-body-sm text-on-surface font-medium">Absence Corroborated with Cycle History</div>
+<div class="text-[11px] text-on-surface-variant font-code-sm mt-0.5">
+              Pattern identical to previous un-remediated non-compliances <span class="text-on-surface font-mono">GAP-0032</span> (Q2 2025) and <span class="text-on-surface font-mono">GAP-0051</span> (Q4 2025).
+            </div>
+</div>
+<!-- Step 6 -->
+<div class="relative group">
+<div class="absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full bg-error border-2 border-surface-container-low"></div>
+<div class="font-code-sm text-code-sm text-error font-semibold uppercase">Step 6 • Synthesis Output</div>
+<div class="text-body-sm text-on-surface font-medium">Candidate FND-0142 Constructed</div>
+<div class="text-[11px] text-on-surface-variant font-code-sm mt-0.5">
+              Synthesis algorithm scored candidate confidence at 94%, elevating to High Criticality queue.
+            </div>
+</div>
+<!-- Step 7 -->
+<div class="relative group">
+<div class="absolute -left-[17px] top-1 w-2.5 h-2.5 rounded-full bg-secondary border-2 border-surface-container-low"></div>
+<div class="font-code-sm text-code-sm text-secondary font-semibold uppercase">Step 7 • Human Boundary</div>
+<div class="text-body-sm text-on-surface font-medium">Statutory Adjudication Gate</div>
+<div class="text-[11px] text-on-surface-variant font-code-sm mt-0.5">
+              Awaiting certified supervisory verification or formal qualification from designated examiner.
+            </div>
+</div>
+</div>
+</div>
+<!-- Capability Discrepancy Widget -->
+<div class="bg-surface-container-low rounded-lg p-3.5 border border-[#30363d]">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-[#30363d]">
+<span class="font-headline-sm text-body-md font-semibold text-on-surface">Capability Discrepancy</span>
+<span class="font-code-sm text-[11px] text-error bg-error-container/20 px-1.5 py-0.5 rounded">DELTA: -20%</span>
+</div>
+<div class="space-y-2 font-body-sm text-body-sm">
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant">Self-Assessed Capability:</span>
+<span class="font-code-sm text-secondary font-semibold">HIGH (24 / 25 Controls)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-on-surface-variant">Supervisory Depth Rating:</span>
+<span class="font-code-sm text-tertiary font-semibold">MEDIUM (19 / 25 Controls)</span>
+</div>
+<div class="p-2 rounded bg-surface-container text-body-sm text-on-surface-variant border border-[#30363d]/50">
+<span class="text-on-surface font-medium">Analytical Note:</span> 5 controls across NorthGrid SOC exhibit "shallow documentation" pattern: self-attested procedures present in policy documentation, but zero operational log entries found in supervisory air-gap ingestion.
+          </div>
+</div>
+</div>
+</div>
+<!-- CENTER COLUMN (5.5/12 ~ 46%): Expected vs Observed & Evidence Timeline -->
+<div class="lg:col-span-5 flex flex-col gap-4">
+<!-- Visual Comparator (USP Core) -->
+<div class="bg-surface-container-low rounded-lg p-4 border border-[#30363d]">
+<div class="flex items-center justify-between pb-2 mb-3 border-b border-[#30363d]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[20px]">compare</span>
+<span class="font-headline-sm text-body-md font-semibold text-on-surface">Process Sequence: Expected vs. Observed</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline">TRACE: CASE-1042</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">
+          Comparative forensic reconstruction demonstrating the exact point of regulatory execution failure:
+        </p>
+<!-- EXPECTED FLOW -->
+<div class="p-3 rounded-lg bg-surface-container mb-3 border border-[#30363d]">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-caps text-label-caps text-secondary font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+              Statutory Expected Sequence (CTRL-07 Mandate)
+            </span>
+<span class="font-code-sm text-[11px] text-on-surface-variant">Required Artifacts: 5</span>
+</div>
+<div class="flex items-center gap-1.5 overflow-x-auto py-1 font-code-sm text-code-sm">
+<div class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-center min-w-[70px]">
+<div class="text-[10px] text-on-surface-variant">T0</div>
+<div class="font-medium text-[11px]">Alert</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[14px]">arrow_forward</span>
+<div class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-center min-w-[70px]">
+<div class="text-[10px] text-on-surface-variant">T+6m</div>
+<div class="font-medium text-[11px]">Case Open</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[14px]">arrow_forward</span>
+<div class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-center min-w-[70px]">
+<div class="text-[10px] text-on-surface-variant">T+30m</div>
+<div class="font-medium text-[11px]">Triage P1</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[14px]">arrow_forward</span>
+<div class="px-2.5 py-1 rounded bg-primary/20 text-primary border border-primary/40 text-center min-w-[90px]">
+<div class="text-[10px] text-primary-fixed">T+60m [MANDATORY]</div>
+<div class="font-bold text-[11px]">Escalation</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[14px]">arrow_forward</span>
+<div class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-center min-w-[70px]">
+<div class="text-[10px] text-on-surface-variant">T+116m</div>
+<div class="font-medium text-[11px]">Response</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[14px]">arrow_forward</span>
+<div class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-center min-w-[70px]">
+<div class="text-[10px] text-on-surface-variant">T+171m</div>
+<div class="font-medium text-[11px]">Closure</div>
+</div>
+</div>
+</div>
+<!-- OBSERVED FLOW -->
+<div class="p-3 rounded-lg bg-surface-container-lowest border border-error/50">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-caps text-label-caps text-error font-bold uppercase tracking-wider flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+              Observed Ingested Telemetry (NorthGrid SOC Logs)
+            </span>
+<span class="font-code-sm text-[11px] text-error font-semibold">FAIL: MISSING STEP</span>
+</div>
+<div class="flex items-center gap-1.5 overflow-x-auto py-1 font-code-sm text-code-sm">
+<div class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-center min-w-[70px]">
+<div class="text-[10px] text-secondary">09:12 IST</div>
+<div class="font-medium text-[11px]">ALR-8821</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[14px]">arrow_forward</span>
+<div class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-center min-w-[70px]">
+<div class="text-[10px] text-secondary">09:18 IST</div>
+<div class="font-medium text-[11px]">CASE-1042</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[14px]">arrow_forward</span>
+<div class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-center min-w-[70px]">
+<div class="text-[10px] text-secondary">09:42 IST</div>
+<div class="font-medium text-[11px]">INV-338</div>
+</div>
+<span class="material-symbols-outlined text-error text-[14px]">close</span>
+<!-- MISSING STEP CALLOUT -->
+<div class="px-2.5 py-1 rounded bg-error-container/30 text-error border border-dashed border-error text-center min-w-[105px]">
+<div class="text-[10px] text-error font-bold uppercase">NO LOG RECORD</div>
+<div class="font-bold text-[11px]">[GAP: ESCALATION]</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[14px]">arrow_forward</span>
+<div class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-center min-w-[70px]">
+<div class="text-[10px] text-secondary">11:08 IST</div>
+<div class="font-medium text-[11px]">RESP-104</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[14px]">arrow_forward</span>
+<div class="px-2 py-1 rounded bg-surface-container-high text-on-surface text-center min-w-[70px]">
+<div class="text-[10px] text-secondary">12:03 IST</div>
+<div class="font-medium text-[11px]">CLS-421</div>
+</div>
+</div>
+<div class="mt-2.5 p-2 rounded bg-surface-container text-body-sm font-code-sm text-on-surface-variant flex items-center justify-between">
+<span class="text-error font-medium">GAP-0071 Impact:</span>
+<span>Unmonitored Interval: <strong class="text-on-surface">1h 26m</strong> (Exceeded SLA by +26 mins)</span>
+</div>
+</div>
+</div>
+<!-- Execution Gap Details & Supporting Signals Grid -->
+<div class="bg-surface-container-low rounded-lg p-4 border border-[#30363d]">
+<div class="flex items-center justify-between pb-2 mb-3 border-b border-[#30363d]">
+<span class="font-headline-sm text-body-md font-semibold text-on-surface">Fused Supporting Signals (4 Nodes)</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">ENGINE: SAT-ANALYTICS v1.8</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+<!-- Signal 1 -->
+<div class="p-2.5 rounded bg-surface-container border border-error/40 hover:border-error transition-colors">
+<div class="flex items-center justify-between mb-1">
+<span class="font-code-sm text-code-sm text-error font-bold">GAP-0071 (Primary)</span>
+<span class="text-[10px] font-bold text-error uppercase px-1 rounded bg-error-container/30">CRITICAL</span>
+</div>
+<div class="text-body-sm font-semibold text-on-surface">Missing Sequential Process Step</div>
+<div class="text-[11px] text-on-surface-variant mt-1">
+              Telemetry pipeline registered zero transmission to CERT-In / NCIIPC within 60m threshold.
+            </div>
+</div>
+<!-- Signal 2 -->
+<div class="p-2.5 rounded bg-surface-container border border-tertiary/40 hover:border-tertiary transition-colors">
+<div class="flex items-center justify-between mb-1">
+<span class="font-code-sm text-code-sm text-tertiary font-bold">NS-0041 (Corroborator)</span>
+<span class="text-[10px] font-bold text-tertiary uppercase px-1 rounded bg-tertiary-container/30">CONFIRMED VOID</span>
+</div>
+<div class="text-body-sm font-semibold text-on-surface">Negative Space Telemetry Void</div>
+<div class="text-[11px] text-on-surface-variant mt-1">
+              Escalation Dossier schema completely unpopulated in air-gapped forensic capture bundle.
+            </div>
+</div>
+<!-- Signal 3 -->
+<div class="p-2.5 rounded bg-surface-container border border-[#30363d] hover:border-outline transition-colors">
+<div class="flex items-center justify-between mb-1">
+<span class="font-code-sm text-code-sm text-on-surface font-bold">HISTORICAL RECURRENCE</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase px-1 rounded bg-surface-container-high">3RD CYCLE</span>
+</div>
+<div class="text-body-sm font-semibold text-on-surface">Repeated Non-Compliance Profile</div>
+<div class="text-[11px] text-on-surface-variant mt-1">
+              Identical control execution failure noted in Q2 2025 (GAP-0032) and Q4 2025 (GAP-0051).
+            </div>
+</div>
+<!-- Signal 4 -->
+<div class="p-2.5 rounded bg-surface-container border border-primary/40 hover:border-primary transition-colors">
+<div class="flex items-center justify-between mb-1">
+<span class="font-code-sm text-code-sm text-primary font-bold">PD-0031 (Behavioral)</span>
+<span class="text-[10px] font-bold text-primary uppercase px-1 rounded bg-primary-container/30">DEVIATION</span>
+</div>
+<div class="text-body-sm font-semibold text-on-surface">Direct Investigation-to-Containment Jump</div>
+<div class="text-[11px] text-on-surface-variant mt-1">
+              Analyst jumped directly from local memory dump to IP isolation, bypassing statutory notification.
+            </div>
+</div>
+</div>
+</div>
+<!-- Interactive Evidence Timeline -->
+<div class="bg-surface-container-low rounded-lg p-4 border border-[#30363d]">
+<div class="flex items-center justify-between pb-2 mb-3 border-b border-[#30363d]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[20px]">history_toggle_off</span>
+<span class="font-headline-sm text-body-md font-semibold text-on-surface">Interactive Forensics Timeline</span>
+</div>
+<span class="font-code-sm text-[11px] text-on-surface-variant">CLICK NODE FOR RAW TELEMETRY</span>
+</div>
+<div class="space-y-2 font-code-sm text-code-sm">
+<!-- Event 1 -->
+<div class="p-2.5 rounded bg-surface-container hover:bg-surface-container-high cursor-pointer flex items-center justify-between border-l-2 border-secondary transition-all" onclick="inspectTimelineEvent('09:12:04 IST', 'ALR-8821', 'Critical SCADA Outstation Disconnect Alert triggered via SIEM collector #4.', 'EVD-742-A')">
+<div class="flex items-center gap-2">
+<span class="text-secondary font-semibold">09:12:04</span>
+<span class="text-on-surface font-medium">ALR-8821 Ingested</span>
+<span class="text-[11px] text-outline">SCADA Outstation 04</span>
+</div>
+<span class="text-[11px] text-secondary font-medium uppercase">Ingested &amp; Verified</span>
+</div>
+<!-- Event 2 -->
+<div class="p-2.5 rounded bg-surface-container hover:bg-surface-container-high cursor-pointer flex items-center justify-between border-l-2 border-secondary transition-all" onclick="inspectTimelineEvent('09:18:22 IST', 'CASE-1042', 'Automated incident dossier initialized. Assigned to Shift Team Bravo.', 'EVD-742-B')">
+<div class="flex items-center gap-2">
+<span class="text-secondary font-semibold">09:18:22</span>
+<span class="text-on-surface font-medium">CASE-1042 Instantiated</span>
+<span class="text-[11px] text-outline">Tier-1 Dispatch</span>
+</div>
+<span class="text-[11px] text-secondary font-medium uppercase">Ingested &amp; Verified</span>
+</div>
+<!-- Event 3 -->
+<div class="p-2.5 rounded bg-surface-container hover:bg-surface-container-high cursor-pointer flex items-center justify-between border-l-2 border-primary transition-all" onclick="inspectTimelineEvent('09:42:15 IST', 'INV-338', 'Analyst initiated volatile memory acquisition on Substation RTU Gateway.', 'EVD-742')">
+<div class="flex items-center gap-2">
+<span class="text-primary font-semibold">09:42:15</span>
+<span class="text-on-surface font-medium">INV-338 Escalation Flag</span>
+<span class="text-[11px] text-outline">Priority 1 Triage Recorded</span>
+</div>
+<span class="text-[11px] text-primary font-medium uppercase">EVD-742 Linked</span>
+</div>
+<!-- Event 4 (GAP) -->
+<div class="p-2.5 rounded bg-error-container/20 hover:bg-error-container/30 cursor-pointer flex items-center justify-between border-l-2 border-error transition-all" onclick="inspectTimelineEvent('10:42:15 IST', 'GAP-0071', 'CRITICAL SUPERVISORY BREACH: Required Tier-2 regulatory dispatch record was never generated.', 'NONE (ABSENT)')">
+<div class="flex items-center gap-2">
+<span class="text-error font-semibold">10:42:15</span>
+<span class="text-error font-bold">MISSING: Supervisory Escalation</span>
+<span class="text-[11px] text-error">CTRL-07 Timeout Exceeded</span>
+</div>
+<span class="text-[11px] text-error font-bold uppercase">GAP-0071 FLAG</span>
+</div>
+<!-- Event 5 -->
+<div class="p-2.5 rounded bg-surface-container hover:bg-surface-container-high cursor-pointer flex items-center justify-between border-l-2 border-secondary transition-all" onclick="inspectTimelineEvent('11:08:40 IST', 'RESP-104', 'Containment execution completed. Remote telemetry isolate engaged.', 'EVD-761')">
+<div class="flex items-center gap-2">
+<span class="text-secondary font-semibold">11:08:40</span>
+<span class="text-on-surface font-medium">RESP-104 Containment Record</span>
+<span class="text-[11px] text-outline">Direct Isolation</span>
+</div>
+<span class="text-[11px] text-secondary font-medium uppercase">EVD-761 Linked</span>
+</div>
+<!-- Event 6 -->
+<div class="p-2.5 rounded bg-surface-container hover:bg-surface-container-high cursor-pointer flex items-center justify-between border-l-2 border-outline transition-all" onclick="inspectTimelineEvent('12:03:11 IST', 'CLS-421', 'Incident closed by Lead Operations Engineer. Escalation deficiency marked as unresolved in post-mortem.', 'EVD-779')">
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-semibold">12:03:11</span>
+<span class="text-on-surface font-medium">CLS-421 Incident Post-Mortem</span>
+<span class="text-[11px] text-outline">Internal Wrap-up</span>
+</div>
+<span class="text-[11px] text-outline font-medium uppercase">Ingested</span>
+</div>
+</div>
+<!-- Dynamic Timeline Event Inspector Box -->
+<div class="mt-3 p-3 rounded bg-surface-container-lowest border border-[#30363d] hidden" id="timelineInspector">
+<div class="flex items-center justify-between mb-1">
+<span class="font-code-sm text-code-sm text-primary font-bold" id="inspectorId">ALR-8821</span>
+<span class="font-code-sm text-[11px] text-on-surface-variant" id="inspectorTime">09:12:04 IST</span>
+</div>
+<div class="text-body-sm text-on-surface mb-1" id="inspectorDesc">Critical SCADA Outstation Disconnect Alert triggered.</div>
+<div class="font-code-sm text-[11px] text-outline">Evidence Reference: <span class="text-secondary font-mono" id="inspectorRef">EVD-742-A</span></div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN (3/12 ~ 25%): Sticky Human-in-the-Loop Decision Panel -->
+<div class="lg:col-span-3 flex flex-col gap-4 sticky top-16">
+<!-- HUMAN DECISION ACTION BOX -->
+<div class="bg-surface-container-low rounded-lg p-4 border-2 border-primary/40 shadow-xl">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-[#30363d]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[20px]">gavel</span>
+<span class="font-headline-sm text-body-md font-bold text-on-surface">Examiner Decision</span>
+</div>
+<span class="font-label-caps text-label-caps px-1.5 py-0.5 rounded bg-primary-container text-on-primary-container font-semibold">SUPERVISOR</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+          Empirical machine signal synthesis complete. Formal supervisory adjudication rests strictly with the examiner:
+        </p>
+<!-- Current Working Status -->
+<div class="p-2.5 rounded bg-surface-container-lowest border border-[#30363d] mb-4">
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant">Active Determination:</span>
+<span class="font-code-sm text-code-sm font-bold text-tertiary" id="decisionStateText">PENDING REVIEW</span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-outline mt-1 font-code-sm">
+<span>Assigned: NC-8802</span>
+<span>Role: Lead Examiner</span>
+</div>
+</div>
+<!-- 5 Interactive Decision Buttons -->
+<div class="flex flex-col gap-2">
+<!-- 1. Validate Finding -->
+<button class="w-full flex items-center justify-between px-3 py-2 rounded bg-secondary hover:bg-secondary-fixed-dim text-on-secondary font-semibold text-body-sm transition-all shadow-sm" onclick="triggerDecisionModal('VALIDATE', 'Confirm Finding as Statutory Non-Compliance', 'bg-secondary text-on-secondary')">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>Validate Finding</span>
+</div>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+<!-- 2. Qualify Finding -->
+<button class="w-full flex items-center justify-between px-3 py-2 rounded border border-tertiary text-tertiary bg-tertiary-container/10 hover:bg-tertiary-container/20 font-semibold text-body-sm transition-all" onclick="triggerDecisionModal('QUALIFY', 'Qualify Finding with Regulatory Caveats', 'border border-tertiary text-tertiary bg-tertiary-container/10 hover:bg-tertiary-container/30')">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">rule</span>
+<span>Qualify Finding</span>
+</div>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+<!-- 3. Reject Candidate -->
+<button class="w-full flex items-center justify-between px-3 py-2 rounded border border-error text-error bg-error-container/10 hover:bg-error-container/20 font-semibold text-body-sm transition-all" onclick="triggerDecisionModal('REJECT', 'Reject Finding Candidate (False Positive / Mitigated)', 'border border-error text-error bg-error-container/10 hover:bg-error-container/20')">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+<span>Reject Candidate</span>
+</div>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+<!-- 4. Override Assessment -->
+<button class="w-full flex items-center justify-between px-3 py-2 rounded border border-outline-variant text-on-surface bg-surface-container hover:bg-surface-container-high font-semibold text-body-sm transition-all" onclick="triggerDecisionModal('OVERRIDE', 'Override Supervisory Machine Model Weights', 'border border-[#a371f7] text-[#afc6ff] bg-surface-container hover:bg-surface-container-high')">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">published_with_changes</span>
+<span>Override Weights</span>
+</div>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+<!-- 5. Request Supplementary Evidence -->
+<button class="w-full flex items-center justify-between px-3 py-2 rounded border border-primary text-primary bg-primary-container/10 hover:bg-primary-container/20 font-semibold text-body-sm transition-all" onclick="triggerDecisionModal('REQUEST_EVD', 'Issue Statutory Order for Supplemental Evidence', 'border border-primary text-primary bg-primary-container/10 hover:bg-primary-container/20')">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">forward_to_inbox</span>
+<span>Request Evidence</span>
+</div>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+<!-- Examiner Notes Sub-section -->
+<div class="mt-4 pt-3 border-t border-[#30363d]">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-headline-sm text-body-sm font-semibold text-on-surface">Statutory Ledger Note</span>
+<span class="font-code-sm text-[10px] text-outline">CRYPTOGRAPHICALLY LOGGED</span>
+</div>
+<textarea class="w-full p-2 rounded bg-surface-container-lowest border border-[#30363d] text-body-sm text-on-surface placeholder:text-outline focus:border-primary focus:outline-none resize-none font-body-sm" id="examinerNoteInput" placeholder="Enter supervisory observations, mitigating circumstances, or statutory justifications..." rows="3"></textarea>
+<div class="flex items-center justify-between mt-2">
+<span class="text-[11px] text-outline font-code-sm">Examiner: NC-8802</span>
+<button class="px-3 py-1 rounded bg-primary-container hover:bg-inverse-primary text-on-primary-container font-medium text-code-sm transition-colors flex items-center gap-1" onclick="saveExaminerNote()">
+<span class="material-symbols-outlined text-[14px]">save</span>
+<span>Commit Note</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Sampling & Remediation State Card -->
+<div class="bg-surface-container-low rounded-lg p-3.5 border border-[#30363d]">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-[#30363d]">
+<span class="font-headline-sm text-body-sm font-semibold text-on-surface">Supervisory Sampling</span>
+<span class="font-code-sm text-[10px] text-secondary bg-secondary-container/20 px-1 rounded">ACTIVE CASE</span>
+</div>
+<div class="space-y-2 text-body-sm">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">Recommended Sample:</span>
+<span class="font-code-sm text-code-sm text-primary font-medium">CASE-1042</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant">Sampling Strategy:</span>
+<span class="text-on-surface font-code-sm text-code-sm">Risk-Based Priority</span>
+</div>
+<div class="pt-2 border-t border-[#30363d]/40">
+<div class="flex justify-between items-center mb-1">
+<span class="text-on-surface-variant">Open Remediation:</span>
+<span class="font-code-sm text-[11px] text-error font-bold">REM-0038</span>
+</div>
+<div class="text-[11px] text-on-surface-variant">
+              Workflow recertification mandated under CTRL-07. Overdue by 14 calendar days.
+            </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- LOWER COMPREHENSIVE SECTIONS (Evidence Ledger, Cryptographic Provenance, Audit History) -->
+<div class="space-y-4">
+<!-- SUPPORTING EVIDENCE LEDGER -->
+<div class="bg-surface-container-low rounded-lg p-4 border border-[#30363d]">
+<div class="flex flex-wrap items-center justify-between pb-2 mb-3 border-b border-[#30363d] gap-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">folder_special</span>
+<span class="font-headline-sm text-body-md font-semibold text-on-surface">Supporting Evidence Ledger (Air-Gapped Ingestion Store)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-code-sm text-code-sm text-outline">INGESTION BATCH: BATCH-2026-09-IND</span>
+<button class="px-2.5 py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface text-code-sm border border-[#30363d]">
+            Verify All Checksums
+          </button>
+</div>
+</div>
+<!-- Evidence Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="border-b border-[#30363d] text-on-surface-variant font-label-caps text-label-caps uppercase">
+<th class="py-2 px-3">Evidence ID</th>
+<th class="py-2 px-3">Artifact Description</th>
+<th class="py-2 px-3">Control Link</th>
+<th class="py-2 px-3">Presence Status</th>
+<th class="py-2 px-3">Cryptographic Digest (SHA-256)</th>
+<th class="py-2 px-3 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#30363d]/40 font-code-sm text-code-sm">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-3 font-semibold text-primary">EVD-742</td>
+<td class="py-2.5 px-3 font-body-sm text-on-surface">Investigation Worklog &amp; SIEM Triage Snapshot</td>
+<td class="py-2.5 px-3 text-on-surface-variant">CTRL-07.1</td>
+<td class="py-2.5 px-3">
+<span class="px-2 py-0.5 rounded-full bg-secondary-container/20 text-secondary text-[11px] font-bold">PRESENT / VERIFIED</span>
+</td>
+<td class="py-2.5 px-3 text-outline text-[11px]">8f3b...99a1</td>
+<td class="py-2.5 px-3 text-right">
+<button class="text-primary hover:underline font-code-sm text-[11px]">Inspect Payload</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="py-2.5 px-3 font-semibold text-primary">EVD-761</td>
+<td class="py-2.5 px-3 font-body-sm text-on-surface">Containment Execution Log &amp; Firewall ACL Push</td>
+<td class="py-2.5 px-3 text-on-surface-variant">CTRL-07.4</td>
+<td class="py-2.5 px-3">
+<span class="px-2 py-0.5 rounded-full bg-secondary-container/20 text-secondary text-[11px] font-bold">PRESENT / VERIFIED</span>
+</td>
+<td class="py-2.5 px-3 text-outline text-[11px]">4e1a...cc42</td>
+<td class="py-2.5 px-3 text-right">
+<button class="text-primary hover:underline font-code-sm text-[11px]">Inspect Payload</button>
+</td>
+</tr>
+<!-- Row 3: Missing -->
+<tr class="hover:bg-surface-container transition-colors bg-error-container/5">
+<td class="py-2.5 px-3 font-semibold text-error">ESC-221</td>
+<td class="py-2.5 px-3 font-body-sm text-error font-medium">Tier-2 Escalation Telemetry &amp; Regulatory Transmission Record</td>
+<td class="py-2.5 px-3 text-error">CTRL-07.2</td>
+<td class="py-2.5 px-3">
+<span class="px-2 py-0.5 rounded-full bg-error-container text-error text-[11px] font-bold">NOT_SUBMITTED (VOID)</span>
+</td>
+<td class="py-2.5 px-3 text-error text-[11px]">------------------------</td>
+<td class="py-2.5 px-3 text-right">
+<button class="text-error font-bold hover:underline font-code-sm text-[11px]" onclick="triggerDecisionModal('REQUEST_EVD', 'Issue Statutory Demand for ESC-221', 'border border-primary text-primary')">Issue Demand</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- CRYPTOGRAPHIC PROVENANCE & CHAIN-OF-CUSTODY -->
+<div class="bg-surface-container-low rounded-lg p-4 border border-[#30363d]">
+<div class="flex items-center justify-between pb-2 mb-3 border-b border-[#30363d]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-secondary text-[18px]">enhanced_encryption</span>
+<span class="font-headline-sm text-body-md font-semibold text-on-surface">Cryptographic Provenance &amp; Verification Hashes</span>
+</div>
+<span class="font-code-sm text-[11px] text-secondary bg-secondary-container/20 px-2 py-0.5 rounded">FIPS-140-2 LEVEL 3 COMPLIANT</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-code-sm text-code-sm">
+<div class="p-2.5 rounded bg-surface-container border border-[#30363d]">
+<div class="text-[11px] text-on-surface-variant uppercase mb-1">Supervisory Finding Hash</div>
+<div class="text-on-surface font-mono text-[11px] break-all select-all">
+            9f8a3c7198df5b3a4a4087bce920436d6a2f7c0042eb88b2c5890e0c1f4b321a
+          </div>
+<div class="mt-2 text-right">
+<button class="text-primary hover:underline text-[11px]" onclick="copyAuditHash('9f8a3c7198df5b3a4a4087bce920436d6a2f7c0042eb88b2c5890e0c1f4b321a')">Copy Hash</button>
+</div>
+</div>
+<div class="p-2.5 rounded bg-surface-container border border-[#30363d]">
+<div class="text-[11px] text-on-surface-variant uppercase mb-1">Ingestion Submission ID</div>
+<div class="text-on-surface font-mono text-[12px]">
+            SUB-2026-0148 (Air-Gapped TLS 1.3)
+          </div>
+<div class="text-[11px] text-outline mt-2">
+            Ingested: 26-Sep-2026 14:02:11 IST
+          </div>
+</div>
+<div class="p-2.5 rounded bg-surface-container border border-[#30363d]">
+<div class="text-[11px] text-on-surface-variant uppercase mb-1">System Version Manifest</div>
+<div class="text-[11px] text-on-surface space-y-0.5">
+<div>Framework: <span class="text-primary">NCIIPC-CSF-v3.2</span></div>
+<div>Rule Base: <span class="text-secondary">R-2.4-STABLE</span></div>
+<div>Analytics Engine: <span class="text-on-surface font-bold">SAT-AN-1.8.4</span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- AUDIT & DECISION HISTORY LEDGER -->
+<div class="bg-surface-container-low rounded-lg p-4 border border-[#30363d]">
+<div class="flex items-center justify-between pb-2 mb-3 border-b border-[#30363d]">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-outline text-[18px]">history_edu</span>
+<span class="font-headline-sm text-body-md font-semibold text-on-surface">Audit &amp; Statutory Adjudication Ledger</span>
+</div>
+<span class="font-code-sm text-[11px] text-on-surface-variant">IMMUTABLE LOG</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="border-b border-[#30363d] text-on-surface-variant font-label-caps text-label-caps uppercase">
+<th class="py-2 px-3">Timestamp (IST)</th>
+<th class="py-2 px-3">Actor / Agent</th>
+<th class="py-2 px-3">Action Recorded</th>
+<th class="py-2 px-3">Details / Rationale</th>
+<th class="py-2 px-3 text-right">Audit Ref</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#30363d]/40 font-code-sm text-code-sm" id="auditHistoryTableBody">
+<tr class="hover:bg-surface-container">
+<td class="py-2 px-3 text-outline">26-09-2026 14:18:02</td>
+<td class="py-2 px-3 text-secondary font-medium">SYS:SAT-FUSION-ENG</td>
+<td class="py-2 px-3 text-on-surface">Finding Synthesized</td>
+<td class="py-2 px-3 font-body-sm text-on-surface-variant">Elevated from GAP-0071 + NS-0041 multi-signal correlation.</td>
+<td class="py-2 px-3 text-right text-outline text-[11px]">AUD-99120</td>
+</tr>
+<tr class="hover:bg-surface-container">
+<td class="py-2 px-3 text-outline">26-09-2026 14:19:10</td>
+<td class="py-2 px-3 text-primary font-medium">SYS:AUTO-DISPATCH</td>
+<td class="py-2 px-3 text-on-surface">Assigned to Supervisory Queue</td>
+<td class="py-2 px-3 font-body-sm text-on-surface-variant">Dispatched to Lead Examiner NC-8802 (NCIIPC Core).</td>
+<td class="py-2 px-3 text-right text-outline text-[11px]">AUD-99124</td>
+</tr>
+<tr class="hover:bg-surface-container">
+<td class="py-2 px-3 text-outline">26-09-2026 14:22:45</td>
+<td class="py-2 px-3 text-on-surface font-semibold">NC-8802 (Examiner)</td>
+<td class="py-2 px-3 text-tertiary">Workspace Opened</td>
+<td class="py-2 px-3 font-body-sm text-on-surface-variant">Cryptographic snapshot verified and forensic session initialized.</td>
+<td class="py-2 px-3 text-right text-outline text-[11px]">AUD-99138</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- PERSISTENT STICKY BOTTOM EXAMINER BAR -->
+<div class="fixed bottom-0 left-[250px] right-0 h-14 bg-surface-container-high/95 backdrop-blur-md border-t border-[#30363d] px-6 flex items-center justify-between z-30">
+<div class="flex items-center gap-3 font-code-sm text-code-sm">
+<span class="text-on-surface-variant">Target: <strong class="text-on-surface">CSE-014 / CTRL-07</strong></span>
+<span class="text-outline">|</span>
+<span class="text-on-surface-variant">Finding: <strong class="text-primary">FND-0142</strong></span>
+<span class="text-outline">|</span>
+<span class="text-on-surface-variant">Status: <span class="text-tertiary font-bold" id="bottomStatusIndicator">UNDER REVIEW</span></span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded bg-surface-container text-on-surface-variant hover:text-on-surface border border-[#30363d] text-code-sm" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        ↑ Top
+      </button>
+<button class="px-3 py-1.5 rounded bg-surface-container text-primary hover:bg-surface-container-high border border-primary/40 text-code-sm" onclick="triggerDecisionModal('REQUEST_EVD', 'Statutory Evidence Request', 'border border-primary text-primary')">
+        Request Evidence
+      </button>
+<button class="px-4 py-1.5 rounded bg-secondary hover:bg-secondary-fixed-dim text-on-secondary font-bold text-code-sm" onclick="triggerDecisionModal('VALIDATE', 'Statutory Non-Compliance Determination', 'bg-secondary text-on-secondary')">
+        Validate Finding
+      </button>
+</div>
+</div>
+<!-- MODAL DIALOG: EXAMINER STATUTORY DETERMINATION -->
+<div class="fixed inset-0 bg-surface-container-lowest/80 backdrop-blur-sm z-50 flex items-center justify-center hidden" id="decisionModal">
+<div class="bg-surface-container-low border border-[#30363d] rounded-lg max-w-lg w-full mx-4 p-5 shadow-2xl">
+<div class="flex items-center justify-between pb-3 mb-3 border-b border-[#30363d]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[22px]">policy</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold" id="modalActionTitle">Supervisory Determination</span>
+</div>
+<button class="text-outline hover:text-on-surface" onclick="closeDecisionModal()">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="space-y-3 font-body-sm text-body-sm">
+<p class="text-on-surface-variant" id="modalActionSubtitle">
+          Please provide statutory justification and official regulatory references for this determination:
+        </p>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Adjudication Code / Legal Reference</label>
+<input class="w-full p-2 rounded bg-surface-container-lowest border border-[#30363d] text-body-sm text-on-surface font-code-sm focus:border-primary focus:outline-none" id="modalAdjudicationRef" type="text" value="NCIIPC-SEC-70B-CRIT-07"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Examiner Justification &amp; Directives</label>
+<textarea class="w-full p-2 rounded bg-surface-container-lowest border border-[#30363d] text-body-sm text-on-surface focus:border-primary focus:outline-none" id="modalJustificationText" placeholder="Enter findings rationale, specific non-compliance statutory basis, and directive to entity..." rows="3"></textarea>
+</div>
+<div class="p-2.5 rounded bg-surface-container text-code-sm text-outline border border-[#30363d]">
+          Signed: <span class="text-on-surface">Supervisor NC-8802 (NCIIPC Statutory Authority)</span><br/>
+          Notice: Submission triggers automated tamper-evident ledger entry and notifies entity liaison.
+        </div>
+</div>
+<div class="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-[#30363d]">
+<button class="px-3 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant text-code-sm" onclick="closeDecisionModal()">
+          Cancel
+        </button>
+<button class="px-4 py-1.5 rounded bg-secondary text-on-secondary font-bold text-code-sm" id="modalConfirmBtn" onclick="commitDecisionModal()">
+          Confirm Adjudication
+        </button>
+</div>
+</div>
+</div>
+<!-- NOTIFICATION TOAST -->
+<div class="fixed bottom-16 right-6 bg-surface-container-high border border-secondary text-on-surface px-4 py-2.5 rounded shadow-xl font-code-sm text-code-sm flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 z-50" id="toastNotification">
+<span class="material-symbols-outlined text-secondary text-[18px]">task_alt</span>
+<span id="toastMessage">Operation logged successfully to statutory ledger.</span>
+</div>
+</div>
+<script>
+  let currentActionType = '';
+
+  function inspectTimelineEvent(time, id, desc, ref) {
+    const inspector = document.getElementById('timelineInspector');
+    document.getElementById('inspectorId').innerText = id;
+    document.getElementById('inspectorTime').innerText = time;
+    document.getElementById('inspectorDesc').innerText = desc;
+    document.getElementById('inspectorRef').innerText = ref;
+    inspector.classList.remove('hidden');
+  }
+
+  function triggerDecisionModal(type, title, btnClass) {
+    currentActionType = type;
+    document.getElementById('modalActionTitle').innerText = title;
+    const confirmBtn = document.getElementById('modalConfirmBtn');
+    
+    if (type === 'VALIDATE') {
+      confirmBtn.className = 'px-4 py-1.5 rounded bg-secondary text-on-secondary font-bold text-code-sm';
+      confirmBtn.innerText = 'Validate Non-Compliance';
+    } else if (type === 'QUALIFY') {
+      confirmBtn.className = 'px-4 py-1.5 rounded bg-tertiary-container text-on-tertiary-container font-bold text-code-sm';
+      confirmBtn.innerText = 'Qualify Finding';
+    } else if (type === 'REJECT') {
+      confirmBtn.className = 'px-4 py-1.5 rounded bg-error-container text-error font-bold text-code-sm';
+      confirmBtn.innerText = 'Reject Finding Candidate';
+    } else if (type === 'OVERRIDE') {
+      confirmBtn.className = 'px-4 py-1.5 rounded bg-surface-variant text-on-surface font-bold text-code-sm';
+      confirmBtn.innerText = 'Commit Override';
+    } else if (type === 'REQUEST_EVD') {
+      confirmBtn.className = 'px-4 py-1.5 rounded bg-primary-container text-on-primary-container font-bold text-code-sm';
+      confirmBtn.innerText = 'Transmit Formal Evidence Demand';
+    }
+
+    document.getElementById('decisionModal').classList.remove('hidden');
+  }
+
+  function closeDecisionModal() {
+    document.getElementById('decisionModal').classList.add('hidden');
+  }
+
+  function commitDecisionModal() {
+    const justification = document.getElementById('modalJustificationText').value || 'Standard supervisory protocol determination recorded without extra annotations.';
+    const ref = document.getElementById('modalAdjudicationRef').value;
+    
+    // Update live status badges
+    const statusBadge = document.getElementById('currentStatusBadge');
+    const decisionState = document.getElementById('decisionStateText');
+    const bottomStatus = document.getElementById('bottomStatusIndicator');
+
+    let statusText = 'ADJUDICATED';
+    let badgeClass = 'px-2 py-0.5 rounded-full text-[11px] font-bold font-label-caps tracking-wide flex items-center gap-1 ';
+
+    if (currentActionType === 'VALIDATE') {
+      statusText = 'VALIDATED (NON-COMPLIANCE)';
+      statusBadge.className = badgeClass + 'bg-secondary-container/30 text-secondary border border-secondary/40';
+      decisionState.className = 'font-code-sm text-code-sm font-bold text-secondary';
+      bottomStatus.className = 'text-secondary font-bold';
+    } else if (currentActionType === 'QUALIFY') {
+      statusText = 'QUALIFIED WITH CAVEAT';
+      statusBadge.className = badgeClass + 'bg-tertiary-container/30 text-tertiary border border-tertiary/40';
+      decisionState.className = 'font-code-sm text-code-sm font-bold text-tertiary';
+      bottomStatus.className = 'text-tertiary font-bold';
+    } else if (currentActionType === 'REJECT') {
+      statusText = 'REJECTED (FALSE POSITIVE)';
+      statusBadge.className = badgeClass + 'bg-error-container/30 text-error border border-error/40';
+      decisionState.className = 'font-code-sm text-code-sm font-bold text-error';
+      bottomStatus.className = 'text-error font-bold';
+    } else if (currentActionType === 'OVERRIDE') {
+      statusText = 'WEIGHT OVERRIDDEN';
+      statusBadge.className = badgeClass + 'bg-surface-variant text-on-surface border border-outline';
+      decisionState.className = 'font-code-sm text-code-sm font-bold text-on-surface';
+      bottomStatus.className = 'text-on-surface font-bold';
+    } else if (currentActionType === 'REQUEST_EVD') {
+      statusText = 'EVIDENCE DEMAND PENDING';
+      statusBadge.className = badgeClass + 'bg-primary-container/30 text-primary border border-primary/40';
+      decisionState.className = 'font-code-sm text-code-sm font-bold text-primary';
+      bottomStatus.className = 'text-primary font-bold';
+    }
+
+    statusBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-current"></span> ${statusText}`;
+    decisionState.innerText = statusText;
+    bottomStatus.innerText = statusText;
+
+    // Append to live ledger table
+    const tableBody = document.getElementById('auditHistoryTableBody');
+    const now = new Date();
+    const timeStr = `${String(now.getDate()).padStart(2,'0')}-09-2026 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+    const randomAud = 'AUD-' + Math.floor(10000 + Math.random() * 90000);
+
+    const newRow = document.createElement('tr');
+    newRow.className = 'hover:bg-surface-container bg-surface-container-high/40 transition-colors';
+    newRow.innerHTML = `
+      <td class="py-2 px-3 text-secondary font-medium">${timeStr}</td>
+      <td class="py-2 px-3 text-on-surface font-semibold">NC-8802 (Examiner)</td>
+      <td class="py-2 px-3 font-bold text-primary">${currentActionType}: ${statusText}</td>
+      <td class="py-2 px-3 font-body-sm text-on-surface">${justification} [Ref: ${ref}]</td>
+      <td class="py-2 px-3 text-right text-secondary text-[11px] font-mono">${randomAud}</td>
+    `;
+    tableBody.prepend(newRow);
+
+    closeDecisionModal();
+    showToast(`Adjudication [${currentActionType}] cryptographically recorded under ${randomAud}`);
+  }
+
+  function saveExaminerNote() {
+    const input = document.getElementById('examinerNoteInput');
+    const text = input.value.trim();
+    if (!text) {
+      showToast('Please enter an observation note before committing.');
+      return;
+    }
+
+    const tableBody = document.getElementById('auditHistoryTableBody');
+    const now = new Date();
+    const timeStr = `${String(now.getDate()).padStart(2,'0')}-09-2026 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+    const randomAud = 'AUD-' + Math.floor(10000 + Math.random() * 90000);
+
+    const newRow = document.createElement('tr');
+    newRow.className = 'hover:bg-surface-container bg-surface-container-high/40 transition-colors';
+    newRow.innerHTML = `
+      <td class="py-2 px-3 text-outline">${timeStr}</td>
+      <td class="py-2 px-3 text-on-surface font-semibold">NC-8802 (Examiner)</td>
+      <td class="py-2 px-3 text-on-surface">Supervisory Note Added</td>
+      <td class="py-2 px-3 font-body-sm text-on-surface">${text}</td>
+      <td class="py-2 px-3 text-right text-outline text-[11px] font-mono">${randomAud}</td>
+    `;
+    tableBody.prepend(newRow);
+    input.value = '';
+    showToast(`Examiner note committed under ${randomAud}`);
+  }
+
+  function copyAuditHash(hash) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(hash).then(() => {
+        showToast('SHA-256 Digest copied to clipboard');
+      }).catch(() => {
+        showToast('Hash copied: ' + hash.substring(0, 16) + '...');
+      });
+    } else {
+      showToast('Hash copied: ' + hash.substring(0, 16) + '...');
+    }
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toastNotification');
+    document.getElementById('toastMessage').innerText = message;
+    toast.classList.remove('translate-y-20', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    setTimeout(() => {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-20', 'opacity-0');
+    }, 3800);
+  }
+</script></main></div></body></html>

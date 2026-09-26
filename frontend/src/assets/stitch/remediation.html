@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"on-surface-variant":"#c2c6d6","surface-container-lowest":"#0a0e14","background":"#10141a","surface-bright":"#353940","primary-fixed":"#d9e2ff","on-secondary-fixed":"#002106","inverse-on-surface":"#2d3137","on-primary-fixed-variant":"#004299","surface-container-highest":"#31353c","on-tertiary":"#561f00","on-secondary-fixed-variant":"#005319","outline-variant":"#424754","on-primary-fixed":"#001944","surface-tint":"#afc6ff","error":"#ffb4ab","on-secondary":"#00390e","inverse-surface":"#dfe2eb","surface-variant":"#31353c","on-surface":"#dfe2eb","on-error-container":"#ffdad6","primary-container":"#1f6feb","surface-dim":"#10141a","on-primary":"#002d6d","tertiary-container":"#c55100","primary-fixed-dim":"#afc6ff","on-tertiary-fixed":"#351000","tertiary-fixed":"#ffdbcc","secondary":"#7bdb80","surface-container-low":"#181c22","on-secondary-container":"#91f294","error-container":"#93000a","tertiary-fixed-dim":"#ffb693","secondary-container":"#007124","tertiary":"#ffb693","on-error":"#690005","on-background":"#dfe2eb","surface":"#10141a","on-primary-container":"#fffcff","outline":"#8c90a0","on-tertiary-container":"#fffdff","secondary-fixed":"#97f999","on-tertiary-fixed-variant":"#7a3000","inverse-primary":"#0059c8","secondary-fixed-dim":"#7bdb80","surface-container":"#1c2026","primary":"#afc6ff","surface-container-high":"#262a31"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"md":"16px","xl":"32px","margin":"24px","lg":"24px","base":"4px","sm":"8px","xs":"4px","gutter":"16px"},"fontFamily":{"headline-lg":["Inter"],"body-lg":["Inter"],"label-caps":["Inter"],"code-md":["JetBrains Mono"],"headline-md":["Inter"],"headline-sm":["Inter"],"body-md":["Inter"],"body-sm":["Inter"],"code-sm":["JetBrains Mono"]},"fontSize":{"headline-lg":["32px",{"lineHeight":"1.25","letterSpacing":"-0.02em","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"1.5","fontWeight":"400"}],"label-caps":["11px",{"lineHeight":"1.2","letterSpacing":"0.05em","fontWeight":"600"}],"code-md":["14px",{"lineHeight":"1.6","fontWeight":"400"}],"headline-md":["24px",{"lineHeight":"1.25","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"1.5","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"1.5","fontWeight":"400"}],"body-sm":["12px",{"lineHeight":"1.5","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"1.6","fontWeight":"400"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest border-r border-outline-variant/40 z-50 flex flex-col"><div class="h-16 px-lg flex items-center justify-between border-b border-outline-variant/40 bg-surface-container-low"><div class="flex items-center gap-sm"><div class="w-8 h-8 rounded bg-surface-container-high border border-outline-variant flex items-center justify-center"><span class="material-symbols-outlined text-primary text-[20px]">security</span></div><div class="flex flex-col"><span class="font-headline-sm text-body-sm font-semibold tracking-tight text-on-surface leading-none">SAT-SA</span><span class="font-code-sm text-body-sm text-outline tracking-wider scale-90 -ml-1">NCIIPC v3.2</span></div></div><div class="px-xs py-0.5 rounded bg-surface-container-high border border-outline-variant/60 font-code-sm text-on-surface-variant scale-90">FIPS-140-2 L3</div></div><div class="flex-1 overflow-y-auto px-sm py-md space-y-md"><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Overview</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="overview" href="#">Overview</a></nav></div><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Supervision</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="cse-assessments" href="#">CSE Assessments</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="priority-queue" href="#">Priority Queue</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="recommended-samples" href="#">Recommended Samples</a></nav></div><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Analytics</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="execution-gaps" href="#">Execution Gaps</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="negative-space" href="#">Negative Space</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="process-analysis" href="#">Process Analysis</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="evidence-quality" href="#">Evidence Quality</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="behavioural-analysis" href="#">Behavioural Analysis</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="coverage" href="#">Coverage</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="consistency" href="#">Consistency</a></nav></div><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Assessment</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="findings" href="#">Findings</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="evidence-explorer" href="#">Evidence Explorer</a><a aria-current="page" class="flex items-center px-sm py-1.5 transition-colors bg-primary-container text-on-primary-container font-medium rounded" data-path="remediation" href="#">Remediation</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="verification" href="#">Verification</a></nav></div><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Intelligence</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="historical-trends" href="#">Historical Trends</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="peer-comparison" href="#">Peer Comparison</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="signal-discovery" href="#">Signal Discovery</a></nav></div><div class="space-y-xs"><div class="px-sm py-xs font-label-caps text-label-caps uppercase tracking-wider text-outline">Governance</div><nav class="space-y-0.5" data-active-classes="bg-primary-container text-on-primary-container font-medium rounded"><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="audit-trail" href="#">Audit</a><a class="flex items-center px-sm py-1.5 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm" data-path="administration" href="#">Administration</a></nav></div></div><div class="p-sm border-t border-outline-variant/40 bg-surface-container-lowest"><div class="p-xs rounded bg-surface-container-low border border-outline-variant/40 flex items-center justify-between font-code-sm text-body-sm"><span class="text-outline">ENCLAVE NODE</span><span class="text-secondary flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>ACTIVE</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-low/95 backdrop-blur-md border-b border-outline-variant/40 z-40 flex items-center justify-between px-lg"><div class="flex items-center gap-md"><div class="flex flex-col"><div class="flex items-center gap-xs font-label-caps text-label-caps text-outline tracking-wider uppercase"><span>Govt of India</span><span>/</span><span>NCIIPC</span></div><div class="font-headline-sm text-body-md font-semibold text-on-surface">SAT-SA Supervisory Analytics Tool</div></div><span class="h-6 w-px bg-outline-variant/50"></span><div class="flex items-center gap-sm"><span class="inline-flex items-center gap-1.5 px-sm py-0.5 rounded bg-surface-container-high border border-outline-variant/50 font-code-sm text-body-sm text-on-surface-variant"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>Audit: SYNCED</span><span class="inline-flex items-center gap-1 px-sm py-0.5 rounded bg-surface-container-high border border-outline-variant/50 font-code-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-[14px] text-primary">lock</span>FIPS-140-2 Level 3 Enclave</span><span class="inline-flex items-center gap-1 px-sm py-0.5 rounded bg-surface-container-highest/60 border border-outline-variant font-code-sm text-body-sm text-tertiary"><span class="material-symbols-outlined text-[14px]">cloud_off</span>Air-Gapped Enclave</span></div></div><div class="flex items-center gap-md"><button aria-label="Notifications" class="p-1.5 rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors relative"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-error rounded-full"></span></button><div class="h-6 w-px bg-outline-variant/50"></div><div class="flex items-center gap-sm"><div class="text-right"><div class="font-body-sm font-semibold text-on-surface leading-tight">Supervisor NCIIPC</div><div class="font-code-sm text-body-sm text-outline leading-none">SUPERVISOR-ID: NC-8841</div></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="relative pt-16 bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive View State Controller & Global Helpers -->
+<script>
+    function toggleDrawer(open) {
+      const drawer = document.getElementById('remediation-drawer');
+      const tableCol = document.getElementById('table-column');
+      if (open) {
+        drawer.classList.remove('hidden');
+        tableCol.classList.remove('col-span-12');
+        tableCol.classList.add('col-span-7');
+      } else {
+        drawer.classList.add('hidden');
+        tableCol.classList.remove('col-span-7');
+        tableCol.classList.add('col-span-12');
+      }
+    }
+
+    function openModal(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) el.classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+      const el = document.getElementById(modalId);
+      if (el) el.classList.add('hidden');
+    }
+
+    function showVerificationNotice(actionName) {
+      const toast = document.getElementById('action-toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.innerText = `Statutory Action Logged: ${actionName} [Enclave Ticket NC-SEC-9912]`;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 4200);
+    }
+  </script>
+<!-- Notification Toast -->
+<div class="fixed bottom-6 right-6 z-50 transition-all duration-300 transform translate-y-24 opacity-0 flex items-center gap-sm px-md py-sm rounded-lg bg-surface-container-highest shadow-xl border-l-4 border-primary" id="action-toast">
+<span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
+<span class="font-code-sm text-on-surface text-body-sm" id="toast-message">Action Dispatched</span>
+</div>
+<div class="p-lg space-y-md">
+<!-- SECTION 1: BREADCRUMB & HEADER -->
+<div class="flex flex-col gap-sm">
+<div class="flex items-center gap-xs font-label-caps text-label-caps text-outline uppercase tracking-wider">
+<span>SAT-SA</span>
+<span>/</span>
+<span>Assessment</span>
+<span>/</span>
+<span class="text-primary">Remediation</span>
+</div>
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-md">
+<div class="space-y-xs">
+<div class="flex items-center gap-sm">
+<h1 class="font-headline-md text-headline-md font-semibold text-on-surface tracking-tight">Supervisory Remediation &amp; Verification</h1>
+<span class="px-sm py-0.5 rounded bg-primary/10 text-primary font-code-sm text-body-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">gavel</span> STATUTORY REGIME
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-4xl">
+            Track corrective action mandates, submitted evidence dossiers, and statutory verification protocols across supervised entities.
+          </p>
+</div>
+<!-- Controls Cluster -->
+<div class="flex flex-wrap items-center gap-xs">
+<div class="relative inline-block text-left">
+<button class="px-sm py-1.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-code-sm text-body-sm flex items-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[16px] text-outline">calendar_month</span>
+<span>Period: Q3 2026</span>
+<span class="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+</button>
+</div>
+<div class="relative inline-block text-left">
+<button class="px-sm py-1.5 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-code-sm text-body-sm flex items-center gap-xs transition-colors">
+<span class="material-symbols-outlined text-[16px] text-primary">domain</span>
+<span>Scope: CSE-014 (NorthGrid)</span>
+<span class="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+</button>
+</div>
+<button class="px-sm py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm flex items-center gap-xs transition-colors" onclick="showVerificationNotice('Cryptographic Ledger Export Initiated')">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+<span>Export Ledger</span>
+</button>
+<button class="p-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" onclick="showVerificationNotice('Telemetry Stream Synchronized')" title="Refresh Telemetry">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+</button>
+<button class="px-md py-1.5 rounded bg-primary-container hover:brightness-110 text-on-primary-container font-body-sm text-body-sm font-medium flex items-center gap-xs shadow-sm transition-all" onclick="openModal('create-mandate-modal')">
+<span class="material-symbols-outlined text-[18px]">add_task</span>
+<span>+ Create Remediation Mandate</span>
+</button>
+</div>
+</div>
+<!-- Statutory Safeguard Banner -->
+<div class="p-sm rounded bg-surface-container-lowest flex items-start sm:items-center justify-between gap-sm">
+<div class="flex items-center gap-sm">
+<div class="p-1 rounded bg-error-container text-error flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">policy</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface flex items-center gap-1.5 flex-wrap">
+<span class="font-semibold text-tertiary">NCIIPC STATUTORY PROTOCOL:</span>
+<span>Remediation closure strictly requires verified evidentiary proof and accredited examiner sign-off. Status transition to <span class="font-code-sm text-primary">CLOSED</span> is prohibited without completed supervisory verification.</span>
+</div>
+</div>
+<span class="font-code-sm text-label-caps text-outline whitespace-nowrap hidden lg:inline-flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+          SEC-RULE 42-B-9
+        </span>
+</div>
+</div>
+<!-- SECTION 2: SUMMARY KPI ROW (8 KPI Cards + Sub-bar) -->
+<div class="space-y-xs">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-xs">
+<!-- KPI 1 -->
+<div class="p-sm rounded bg-surface-container-low flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Open</span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+</div>
+<div class="mt-1">
+<div class="font-headline-md text-headline-md font-semibold text-on-surface leading-tight">10</div>
+<div class="font-code-sm text-label-caps text-error truncate">Critical: 4 Mandates</div>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="p-sm rounded bg-surface-container-low flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">In Progress</span>
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span>
+</div>
+<div class="mt-1">
+<div class="font-headline-md text-headline-md font-semibold text-on-surface leading-tight">4</div>
+<div class="font-code-sm text-label-caps text-on-surface-variant truncate">SOC Active Rem.</div>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="p-sm rounded bg-surface-container-low flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Submitted</span>
+<span class="w-2 h-2 rounded-full bg-surface-tint"></span>
+</div>
+<div class="mt-1">
+<div class="font-headline-md text-headline-md font-semibold text-on-surface leading-tight">3</div>
+<div class="font-code-sm text-label-caps text-on-surface-variant truncate">CSE Ingested</div>
+</div>
+</div>
+<!-- KPI 4 -->
+<div class="p-sm rounded bg-surface-container-low flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Under Review</span>
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+</div>
+<div class="mt-1">
+<div class="font-headline-md text-headline-md font-semibold text-on-surface leading-tight">2</div>
+<div class="font-code-sm text-label-caps text-tertiary truncate">Active Examiner</div>
+</div>
+</div>
+<!-- KPI 5 -->
+<div class="p-sm rounded bg-surface-container-low flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Closed</span>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+<div class="mt-1">
+<div class="font-headline-md text-headline-md font-semibold text-secondary leading-tight">7</div>
+<div class="font-code-sm text-label-caps text-on-secondary-container truncate">Verified &amp; Sealed</div>
+</div>
+</div>
+<!-- KPI 6 -->
+<div class="p-sm rounded bg-surface-container-low flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Reopened</span>
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+</div>
+<div class="mt-1">
+<div class="font-headline-md text-headline-md font-semibold text-tertiary-fixed leading-tight">2</div>
+<div class="font-code-sm text-label-caps text-error truncate">Deficient Proof</div>
+</div>
+</div>
+<!-- KPI 7 -->
+<div class="p-sm rounded bg-surface-container-low flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Overdue</span>
+<span class="w-2 h-2 rounded-full bg-error"></span>
+</div>
+<div class="mt-1">
+<div class="font-headline-md text-headline-md font-semibold text-error leading-tight">3</div>
+<div class="font-code-sm text-label-caps text-error truncate">SLA Breached</div>
+</div>
+</div>
+<!-- KPI 8 -->
+<div class="p-sm rounded bg-surface-container-low flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Awaiting EVD</span>
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+</div>
+<div class="mt-1">
+<div class="font-headline-md text-headline-md font-semibold text-on-surface leading-tight">4</div>
+<div class="font-code-sm text-label-caps text-outline truncate">Pending Ingestion</div>
+</div>
+</div>
+</div>
+<!-- Telemetry Status Ribbon -->
+<div class="px-md py-xs rounded bg-surface-container-lowest flex flex-wrap items-center justify-between font-code-sm text-label-caps text-on-surface-variant gap-xs">
+<div class="flex items-center gap-md flex-wrap">
+<span class="flex items-center gap-1.5">
+<span class="text-outline">Supervisory Verification Rate:</span>
+<strong class="text-secondary font-semibold">70.0%</strong>
+</span>
+<span class="text-outline-variant">|</span>
+<span class="flex items-center gap-1.5">
+<span class="text-outline">Evidence Fulfillment Ratio:</span>
+<strong class="text-primary font-semibold">67.4% (31/46 Artefacts)</strong>
+</span>
+<span class="text-outline-variant">|</span>
+<span class="flex items-center gap-1.5">
+<span class="text-outline">Air-Gap Enclave Status:</span>
+<strong class="text-secondary flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+              SYNCED (TLS 1.3 / FIPS-140-2 L3)
+            </strong>
+</span>
+</div>
+<span class="text-outline">Node Checksum: 0x9AF8...204C</span>
+</div>
+</div>
+<!-- SECTION 3: REMEDIATION LIFECYCLE PROGRESSION BAR -->
+<div class="p-md rounded-lg bg-surface-container-low space-y-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<span class="font-label-caps text-label-caps uppercase text-outline">Statutory Lifecycle Governance Model</span>
+<span class="material-symbols-outlined text-[14px] text-outline" title="Formal regulatory workflow enforced by automated enclave gates">info</span>
+</div>
+<span class="font-code-sm text-label-caps text-on-surface-variant">Gate Enforcement: STRICT (Non-linear bypass locked)</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-xs relative">
+<!-- Stage 1 -->
+<div class="p-sm rounded bg-surface-container flex flex-col gap-1 border-t-2 border-primary">
+<div class="flex items-center justify-between font-code-sm text-label-caps text-primary">
+<span>01. MANDATE OPEN</span>
+<span class="material-symbols-outlined text-[16px]">notifications_active</span>
+</div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Finding Synthesized</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Mandate emitted from verified gap or negative space signal.</span>
+</div>
+<!-- Stage 2 -->
+<div class="p-sm rounded bg-surface-container flex flex-col gap-1 border-t-2 border-outline">
+<div class="flex items-center justify-between font-code-sm text-label-caps text-on-surface-variant">
+<span>02. IN PROGRESS</span>
+<span class="material-symbols-outlined text-[16px]">pending_actions</span>
+</div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">SOC Remediation Active</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Entity drafting protocols and gathering cryptographic evidence.</span>
+</div>
+<!-- Stage 3 -->
+<div class="p-sm rounded bg-surface-container flex flex-col gap-1 border-t-2 border-outline">
+<div class="flex items-center justify-between font-code-sm text-label-caps text-on-surface-variant">
+<span>03. SUBMITTED</span>
+<span class="material-symbols-outlined text-[16px]">upload_file</span>
+</div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Evidence Ingested</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Telemetry staged into the air-gapped supervisory enclave.</span>
+</div>
+<!-- Stage 4 -->
+<div class="p-sm rounded bg-surface-container flex flex-col gap-1 border-t-2 border-tertiary">
+<div class="flex items-center justify-between font-code-sm text-label-caps text-tertiary">
+<span>04. VERIFICATION</span>
+<span class="material-symbols-outlined text-[16px]">fact_check</span>
+</div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Examiner Evaluation</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Process trace comparison &amp; cryptological validation.</span>
+</div>
+<!-- Stage 5 -->
+<div class="p-sm rounded bg-surface-container flex flex-col gap-1 border-t-2 border-secondary">
+<div class="flex items-center justify-between font-code-sm text-label-caps text-secondary">
+<span>05. CLOSED</span>
+<span class="material-symbols-outlined text-[16px]">lock</span>
+</div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Verified &amp; Sealed</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Formal sign-off logged with immutable audit hash.</span>
+</div>
+</div>
+<!-- Branching Callout for Reopened Loop -->
+<div class="p-xs rounded bg-surface-container-lowest flex items-center justify-between gap-sm text-label-caps font-code-sm text-on-surface-variant">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-tertiary">alt_route</span>
+<span class="text-tertiary font-semibold uppercase">Regression Loop:</span>
+<span>CLOSED → [REOPENED (Verification Deficient or Telemetry Disproved)] → IN PROGRESS. Remediation is revocable on recurring gaps.</span>
+</div>
+<span class="text-outline">Autonomous Rule: 4.8.2-REV</span>
+</div>
+</div>
+<!-- SECTION 4: COMPREHENSIVE FILTER & SEARCH BAR -->
+<div class="p-sm rounded-lg bg-surface-container-low space-y-sm">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-xs items-center">
+<!-- Search -->
+<div class="md:col-span-4 relative">
+<span class="material-symbols-outlined absolute left-2.5 top-2 text-[18px] text-outline">search</span>
+<input class="w-full pl-8 pr-3 py-1.5 rounded bg-surface-container-lowest text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Search remediation ID, finding, CSE, control, keyword..." type="text"/>
+</div>
+<!-- Filters -->
+<div class="md:col-span-2">
+<select class="w-full px-2 py-1.5 rounded bg-surface-container-lowest text-on-surface font-code-sm text-body-sm focus:outline-none">
+<option>CSE: CSE-014 (NorthGrid)</option>
+<option>CSE: CSE-021 (TelcoGrid)</option>
+<option>CSE: CSE-008 (BankReserve)</option>
+<option>All Supervised CSEs</option>
+</select>
+</div>
+<div class="md:col-span-1">
+<select class="w-full px-2 py-1.5 rounded bg-surface-container-lowest text-on-surface font-code-sm text-body-sm focus:outline-none">
+<option>Priority: All</option>
+<option>CRITICAL</option>
+<option>HIGH</option>
+<option>MEDIUM</option>
+</select>
+</div>
+<div class="md:col-span-2">
+<select class="w-full px-2 py-1.5 rounded bg-surface-container-lowest text-on-surface font-code-sm text-body-sm focus:outline-none">
+<option>Status: All Statuses</option>
+<option>OPEN</option>
+<option>IN PROGRESS</option>
+<option>SUBMITTED</option>
+<option>UNDER VERIFICATION</option>
+<option>CLOSED</option>
+<option>REOPENED</option>
+</select>
+</div>
+<div class="md:col-span-1">
+<select class="w-full px-2 py-1.5 rounded bg-surface-container-lowest text-on-surface font-code-sm text-body-sm focus:outline-none">
+<option>Verification</option>
+<option>VERIFIED</option>
+<option>PENDING</option>
+<option>FAILED</option>
+</select>
+</div>
+<div class="md:col-span-2 flex items-center gap-xs">
+<button class="w-full py-1.5 rounded bg-primary text-on-primary font-body-sm text-body-sm font-medium hover:brightness-110 transition-all">
+            Apply Filters
+          </button>
+<button class="px-2 py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-outline hover:text-on-surface font-body-sm text-body-sm transition-colors" title="Reset Filters">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+</button>
+</div>
+</div>
+<!-- Quick View Pills -->
+<div class="flex items-center gap-xs overflow-x-auto pt-xs">
+<span class="font-label-caps text-label-caps uppercase text-outline pr-xs whitespace-nowrap">Views:</span>
+<button class="px-sm py-0.5 rounded-full bg-surface-container hover:bg-surface-container-high font-code-sm text-label-caps text-on-surface whitespace-nowrap">
+          All (32)
+        </button>
+<button class="px-sm py-0.5 rounded-full bg-primary-container text-on-primary-container font-code-sm text-label-caps whitespace-nowrap font-medium">
+          Open &amp; Active (14)
+        </button>
+<button class="px-sm py-0.5 rounded-full bg-surface-container hover:bg-surface-container-high font-code-sm text-label-caps text-tertiary whitespace-nowrap flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+          Under Verification (2)
+        </button>
+<button class="px-sm py-0.5 rounded-full bg-surface-container hover:bg-surface-container-high font-code-sm text-label-caps text-error whitespace-nowrap flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+          Overdue SLA (3)
+        </button>
+<button class="px-sm py-0.5 rounded-full bg-surface-container hover:bg-surface-container-high font-code-sm text-label-caps text-on-surface-variant whitespace-nowrap">
+          Reopened (2)
+        </button>
+<span class="text-outline text-label-caps px-sm">|</span>
+<span class="font-code-sm text-label-caps text-outline">Filter active: CTRL-07 Baseline Scope</span>
+</div>
+</div>
+<!-- SECTION 5 & 6: MAIN WORKSPACE (TABLE + SPLIT DETAIL DRAWER) -->
+<div class="grid grid-cols-12 gap-md items-start">
+<!-- MAIN REMEDIATION TABLE -->
+<div class="col-span-12 xl:col-span-7 space-y-xs transition-all duration-200" id="table-column">
+<div class="rounded-lg bg-surface-container-low overflow-hidden">
+<div class="px-md py-sm bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<span class="font-headline-sm text-body-md font-semibold text-on-surface">Active Remediation Mandates</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-code-sm text-label-caps text-on-surface-variant">6 Displayed</span>
+</div>
+<div class="flex items-center gap-xs">
+<button class="p-1 rounded hover:bg-surface-container-high text-on-surface-variant text-body-sm flex items-center gap-1" onclick="toggleDrawer(true)" title="Show Detail Panel">
+<span class="material-symbols-outlined text-[16px]">dock_to_left</span>
+<span class="font-code-sm text-label-caps hidden sm:inline">Inspect Dossier</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm text-on-surface">
+<thead class="bg-surface-container-lowest font-code-sm text-label-caps text-outline uppercase tracking-wider">
+<tr>
+<th class="py-2.5 px-sm w-6">
+<input class="rounded bg-surface-container text-primary" type="checkbox"/>
+</th>
+<th class="py-2.5 px-sm">REM ID</th>
+<th class="py-2.5 px-sm">Finding &amp; CSE</th>
+<th class="py-2.5 px-sm">Control</th>
+<th class="py-2.5 px-sm min-w-[220px]">Corrective Mandate</th>
+<th class="py-2.5 px-sm">Priority</th>
+<th class="py-2.5 px-sm">Statutory Due</th>
+<th class="py-2.5 px-sm">Evidence</th>
+<th class="py-2.5 px-sm">Status</th>
+<th class="py-2.5 px-sm text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20 font-body-sm">
+<!-- ROW 1: Active Focus (REM-0038) -->
+<tr class="bg-surface-container/60 hover:bg-surface-container transition-colors cursor-pointer" onclick="toggleDrawer(true)">
+<td class="py-2 px-sm">
+<input checked="" class="rounded bg-surface-container text-primary" type="checkbox"/>
+</td>
+<td class="py-2 px-sm font-code-sm font-semibold text-primary">
+                    REM-0038
+                  </td>
+<td class="py-2 px-sm">
+<div class="font-code-sm text-body-sm font-medium text-on-surface">FND-0142</div>
+<div class="font-body-sm text-label-caps text-outline">CSE-014 Energy</div>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps text-on-surface-variant">
+                    CTRL-07 v3.2
+                  </td>
+<td class="py-2 px-sm">
+<div class="line-clamp-2 text-on-surface text-body-sm font-normal">
+                      Review CTRL-07 escalation workflow &amp; submit cryptographic telemetry for INV-338 tier-2 dispatch.
+                    </div>
+<div class="font-code-sm text-label-caps text-outline">Owner: CSE-014 Evidence Team</div>
+</td>
+<td class="py-2 px-sm">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-error-container text-error font-code-sm text-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> CRITICAL
+                    </span>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps whitespace-nowrap">
+<span class="text-on-surface">04 Oct 2026</span>
+<div class="text-primary font-medium">8 Days Left</div>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-tertiary font-code-sm text-label-caps whitespace-nowrap">
+                      AWAITING (2/3)
+                    </span>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-primary/20 text-primary font-code-sm text-label-caps font-medium">
+                      OPEN
+                    </span>
+</td>
+<td class="py-2 px-sm text-right">
+<button class="px-2 py-1 rounded bg-primary-container text-on-primary-container font-code-sm text-label-caps hover:brightness-110">
+                      View Dossier
+                    </button>
+</td>
+</tr>
+<!-- ROW 2: REM-0035 -->
+<tr class="hover:bg-surface-container transition-colors cursor-pointer" onclick="toggleDrawer(true)">
+<td class="py-2 px-sm">
+<input class="rounded bg-surface-container text-primary" type="checkbox"/>
+</td>
+<td class="py-2 px-sm font-code-sm font-semibold text-primary">
+                    REM-0035
+                  </td>
+<td class="py-2 px-sm">
+<div class="font-code-sm text-body-sm font-medium text-on-surface">FND-0131</div>
+<div class="font-body-sm text-label-caps text-outline">CSE-014 Energy</div>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps text-on-surface-variant">
+                    CTRL-11
+                  </td>
+<td class="py-2 px-sm">
+<div class="line-clamp-2 text-on-surface text-body-sm">
+                      Reconcile SOC perimeter firewall sync logs with NCIIPC baseline SIEM feeds.
+                    </div>
+<div class="font-code-sm text-label-caps text-outline">Owner: SOC Operations</div>
+</td>
+<td class="py-2 px-sm">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-container-high text-tertiary font-code-sm text-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> HIGH
+                    </span>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps whitespace-nowrap">
+<span class="text-on-surface">30 Sep 2026</span>
+<div class="text-error font-medium">Urgent (4d)</div>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-primary font-code-sm text-label-caps whitespace-nowrap">
+                      SUBMITTED (2/3)
+                    </span>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-tertiary/20 text-tertiary font-code-sm text-label-caps font-medium">
+                      UNDER VERIF
+                    </span>
+</td>
+<td class="py-2 px-sm text-right">
+<button class="px-2 py-1 rounded bg-surface-container-high text-on-surface font-code-sm text-label-caps hover:bg-surface-bright">
+                      Inspect
+                    </button>
+</td>
+</tr>
+<!-- ROW 3: REM-0029 -->
+<tr class="hover:bg-surface-container transition-colors cursor-pointer" onclick="toggleDrawer(true)">
+<td class="py-2 px-sm">
+<input class="rounded bg-surface-container text-primary" type="checkbox"/>
+</td>
+<td class="py-2 px-sm font-code-sm font-semibold text-primary">
+                    REM-0029
+                  </td>
+<td class="py-2 px-sm">
+<div class="font-code-sm text-body-sm font-medium text-on-surface">FND-0118</div>
+<div class="font-body-sm text-label-caps text-outline">CSE-021 Telecom</div>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps text-on-surface-variant">
+                    CTRL-04
+                  </td>
+<td class="py-2 px-sm">
+<div class="line-clamp-2 text-on-surface text-body-sm">
+                      Multi-factor authentication bypass verification on core gateway nodes.
+                    </div>
+<div class="font-code-sm text-label-caps text-outline">Owner: SOC Supervisor</div>
+</td>
+<td class="py-2 px-sm">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-error-container text-error font-code-sm text-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> CRITICAL
+                    </span>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps whitespace-nowrap">
+<span class="text-on-surface">18 Sep 2026</span>
+<div class="text-secondary">Verified</div>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-secondary/20 text-secondary font-code-sm text-label-caps whitespace-nowrap">
+                      VERIFIED (FIPS)
+                    </span>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-secondary/20 text-secondary font-code-sm text-label-caps font-medium">
+                      CLOSED
+                    </span>
+</td>
+<td class="py-2 px-sm text-right">
+<button class="px-2 py-1 rounded bg-surface-container-high text-on-surface font-code-sm text-label-caps hover:bg-surface-bright">
+                      Inspect
+                    </button>
+</td>
+</tr>
+<!-- ROW 4: REM-0026 -->
+<tr class="hover:bg-surface-container transition-colors cursor-pointer" onclick="toggleDrawer(true)">
+<td class="py-2 px-sm">
+<input class="rounded bg-surface-container text-primary" type="checkbox"/>
+</td>
+<td class="py-2 px-sm font-code-sm font-semibold text-primary">
+                    REM-0026
+                  </td>
+<td class="py-2 px-sm">
+<div class="font-code-sm text-body-sm font-medium text-on-surface">FND-0109</div>
+<div class="font-body-sm text-label-caps text-outline">CSE-008 Banking</div>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps text-on-surface-variant">
+                    CTRL-09
+                  </td>
+<td class="py-2 px-sm">
+<div class="line-clamp-2 text-on-surface text-body-sm">
+                      Cryptographic key rotation cadence failure on HSM batch pipeline.
+                    </div>
+<div class="font-code-sm text-label-caps text-outline">Owner: Compliance Team</div>
+</td>
+<td class="py-2 px-sm">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-code-sm text-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span> MEDIUM
+                    </span>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps whitespace-nowrap">
+<span class="text-error font-semibold">10 Sep 2026</span>
+<div class="text-error">OVERDUE (+16d)</div>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-error-container text-error font-code-sm text-label-caps whitespace-nowrap">
+                      DEFICIENT (1/3)
+                    </span>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-error-container text-error font-code-sm text-label-caps font-medium">
+                      REOPENED
+                    </span>
+</td>
+<td class="py-2 px-sm text-right">
+<button class="px-2 py-1 rounded bg-surface-container-high text-on-surface font-code-sm text-label-caps hover:bg-surface-bright">
+                      Inspect
+                    </button>
+</td>
+</tr>
+<!-- ROW 5: REM-0021 -->
+<tr class="hover:bg-surface-container transition-colors cursor-pointer" onclick="toggleDrawer(true)">
+<td class="py-2 px-sm">
+<input class="rounded bg-surface-container text-primary" type="checkbox"/>
+</td>
+<td class="py-2 px-sm font-code-sm font-semibold text-primary">
+                    REM-0021
+                  </td>
+<td class="py-2 px-sm">
+<div class="font-code-sm text-body-sm font-medium text-on-surface">FND-0098</div>
+<div class="font-body-sm text-label-caps text-outline">CSE-014 Energy</div>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps text-on-surface-variant">
+                    CTRL-12
+                  </td>
+<td class="py-2 px-sm">
+<div class="line-clamp-2 text-on-surface text-body-sm">
+                      SCADA tele-measurement boundary verification telemetry ingestion failure.
+                    </div>
+<div class="font-code-sm text-label-caps text-outline">Owner: CSE-014 Evidence Team</div>
+</td>
+<td class="py-2 px-sm">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-surface-container-high text-tertiary font-code-sm text-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> HIGH
+                    </span>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps whitespace-nowrap">
+<span class="text-on-surface">22 Sep 2026</span>
+<div class="text-secondary">Closed</div>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-secondary/20 text-secondary font-code-sm text-label-caps whitespace-nowrap">
+                      VERIFIED (FIPS)
+                    </span>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-secondary/20 text-secondary font-code-sm text-label-caps font-medium">
+                      CLOSED
+                    </span>
+</td>
+<td class="py-2 px-sm text-right">
+<button class="px-2 py-1 rounded bg-surface-container-high text-on-surface font-code-sm text-label-caps hover:bg-surface-bright">
+                      Inspect
+                    </button>
+</td>
+</tr>
+<!-- ROW 6: REM-0018 -->
+<tr class="hover:bg-surface-container transition-colors cursor-pointer" onclick="toggleDrawer(true)">
+<td class="py-2 px-sm">
+<input class="rounded bg-surface-container text-primary" type="checkbox"/>
+</td>
+<td class="py-2 px-sm font-code-sm font-semibold text-primary">
+                    REM-0018
+                  </td>
+<td class="py-2 px-sm">
+<div class="font-code-sm text-body-sm font-medium text-on-surface">FND-0089</div>
+<div class="font-body-sm text-label-caps text-outline">CSE-014 Energy</div>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps text-on-surface-variant">
+                    CTRL-07 v3.2
+                  </td>
+<td class="py-2 px-sm">
+<div class="line-clamp-2 text-on-surface text-body-sm">
+                      Investigation queue backlog exceeding statutory 4-hour assessment standard.
+                    </div>
+<div class="font-code-sm text-label-caps text-outline">Owner: SOC Operations</div>
+</td>
+<td class="py-2 px-sm">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-error-container text-error font-code-sm text-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> CRITICAL
+                    </span>
+</td>
+<td class="py-2 px-sm font-code-sm text-label-caps whitespace-nowrap">
+<span class="text-error font-semibold">12 Sep 2026</span>
+<div class="text-error">OVERDUE (+14d)</div>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-tertiary font-code-sm text-label-caps whitespace-nowrap">
+                      AWAITING (0/2)
+                    </span>
+</td>
+<td class="py-2 px-sm">
+<span class="px-1.5 py-0.5 rounded bg-error-container text-error font-code-sm text-label-caps font-medium">
+                      OPEN
+                    </span>
+</td>
+<td class="py-2 px-sm text-right">
+<button class="px-2 py-1 rounded bg-surface-container-high text-on-surface font-code-sm text-label-caps hover:bg-surface-bright">
+                      Inspect
+                    </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer Pagination -->
+<div class="p-sm bg-surface-container-lowest flex items-center justify-between font-code-sm text-label-caps text-outline">
+<span>Showing 1 - 6 of 32 Remediation Mandates</span>
+<div class="flex items-center gap-xs">
+<button class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high disabled:opacity-50" disabled="">&lt; Prev</button>
+<span class="px-2 py-1 rounded bg-primary text-on-primary">1</span>
+<button class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high">2</button>
+<button class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high">3</button>
+<button class="px-2 py-1 rounded bg-surface-container hover:bg-surface-container-high">Next &gt;</button>
+</div>
+</div>
+</div>
+<!-- Analytical Inset Chart: Remediation Velocity by Sector -->
+<div class="p-md rounded-lg bg-surface-container-low space-y-sm">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-body-sm font-semibold text-on-surface">Supervisory Resolution Velocity (Trailing 90 Days)</span>
+<span class="font-code-sm text-label-caps text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +14.2% Closure Speed
+            </span>
+</div>
+<!-- Inline Sparkline / Velocity Bars SVG -->
+<div class="h-20 w-full flex items-end gap-1 pt-2">
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full bg-primary/20 rounded-t h-10 hover:bg-primary transition-colors" title="W1: 4 Mandates"></div>
+<span class="font-code-sm text-[10px] text-outline">W1</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full bg-primary/30 rounded-t h-12 hover:bg-primary transition-colors" title="W2: 6 Mandates"></div>
+<span class="font-code-sm text-[10px] text-outline">W2</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full bg-primary/40 rounded-t h-8 hover:bg-primary transition-colors" title="W3: 3 Mandates"></div>
+<span class="font-code-sm text-[10px] text-outline">W3</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full bg-primary/40 rounded-t h-14 hover:bg-primary transition-colors" title="W4: 7 Mandates"></div>
+<span class="font-code-sm text-[10px] text-outline">W4</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full bg-primary/60 rounded-t h-16 hover:bg-primary transition-colors" title="W5: 9 Mandates"></div>
+<span class="font-code-sm text-[10px] text-outline">W5</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full bg-secondary rounded-t h-20 hover:brightness-110 transition-colors" title="W6: 12 Mandates Verified"></div>
+<span class="font-code-sm text-[10px] text-secondary font-bold">W6</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full bg-primary/70 rounded-t h-14 hover:bg-primary transition-colors" title="W7: 8 Mandates"></div>
+<span class="font-code-sm text-[10px] text-outline">W7</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1">
+<div class="w-full bg-tertiary rounded-t h-16 hover:brightness-110 transition-colors" title="Current Week: Active"></div>
+<span class="font-code-sm text-[10px] text-tertiary">W8</span>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 6: SPLIT WORKSPACE / DETAIL DRAWER (Active Focus on REM-0038) -->
+<div class="col-span-12 xl:col-span-5 space-y-md" id="remediation-drawer">
+<div class="p-md rounded-lg bg-surface-container-low space-y-md">
+<!-- Header Bar of Detail Drawer -->
+<div class="space-y-xs pb-sm bg-surface-container-low">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs flex-wrap">
+<span class="font-headline-sm text-headline-sm font-semibold text-primary">REM-0038</span>
+<span class="px-1.5 py-0.5 rounded-full bg-error-container text-error font-code-sm text-label-caps font-semibold">
+                  CRITICAL PRIORITY
+                </span>
+<span class="px-1.5 py-0.5 rounded bg-primary/20 text-primary font-code-sm text-label-caps">
+                  OPEN
+                </span>
+</div>
+<button class="p-1 rounded hover:bg-surface-container text-outline hover:text-on-surface" onclick="toggleDrawer(false)" title="Close Panel">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="font-code-sm text-label-caps text-on-surface-variant flex flex-wrap items-center gap-x-2 gap-y-1">
+<span>CSE-014 (NorthGrid Energy)</span>
+<span>•</span>
+<span>Control: CTRL-07 v3.2</span>
+<span>•</span>
+<span class="text-tertiary font-semibold">Statutory Due: 04 Oct 2026 (8 days remaining)</span>
+</div>
+</div>
+<!-- Finding Context Card -->
+<div class="p-sm rounded bg-surface-container space-y-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">link</span> Synthesized Finding Context
+              </span>
+<a class="font-code-sm text-label-caps text-primary hover:underline flex items-center gap-0.5" href="#">
+                Open FND-0142 <span class="material-symbols-outlined text-[12px]">launch</span>
+</a>
+</div>
+<div class="font-body-sm text-body-sm font-medium text-on-surface">
+              FND-0142: Undocumented Escalation Omission During Grid Outage Incident INV-338
+            </div>
+<div class="flex flex-wrap items-center gap-xs pt-xs">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-primary font-code-sm text-label-caps">
+                Primary: GAP-0071 (Execution Gap)
+              </span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-tertiary font-code-sm text-label-caps">
+                Supporting: NS-0041 (Negative Space)
+              </span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-high text-outline font-code-sm text-label-caps">
+                Recurrence: Q2 2025, Q4 2025
+              </span>
+</div>
+<p class="font-body-sm text-label-caps text-on-surface-variant pt-1 leading-relaxed">
+              Mandatory SOC Tier-2 dispatched alert escalation was completely missing from SCADA ingress logs during critical fault INV-338. Expected escalation protocol per CTRL-07 was unexecuted.
+            </p>
+</div>
+<!-- Remediation Action Mandate -->
+<div class="p-sm rounded bg-surface-container space-y-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-outline">Remediation Action Mandate [ACT-0038]</span>
+<span class="font-code-sm text-label-caps text-secondary font-medium">STATUTORY ARTICLE 19</span>
+</div>
+<div class="p-xs rounded bg-surface-container-lowest font-body-sm text-body-sm text-on-surface leading-relaxed">
+              "Review the CTRL-07 mandatory escalation protocol and submit cryptographic telemetry for tier-2 dispatch during incident INV-338."
+            </div>
+<div class="flex items-center justify-between pt-xs text-label-caps font-code-sm">
+<span class="text-outline">Assigned: CSE-014 Evidence Team</span>
+<span class="text-tertiary flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Awaiting Response
+              </span>
+</div>
+<div class="flex items-center gap-xs pt-xs">
+<button class="flex-1 py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-body-sm text-body-sm font-medium transition-colors flex items-center justify-center gap-1" onclick="openModal('record-response-modal')">
+<span class="material-symbols-outlined text-[16px]">draw</span> Record CSE Response
+              </button>
+</div>
+</div>
+<!-- Remediation Evidence Ledger -->
+<div class="space-y-xs">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-body-sm font-semibold text-on-surface">Remediation Evidence Ledger</span>
+<span class="font-code-sm text-label-caps text-outline">2/3 Verified Artefacts</span>
+</div>
+<div class="space-y-xs">
+<!-- Artefact 1 -->
+<div class="p-sm rounded bg-surface-container flex items-center justify-between gap-sm">
+<div class="space-y-0.5">
+<div class="flex items-center gap-xs font-code-sm text-body-sm font-medium text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>
+<span>EVD-742</span>
+<span class="text-on-surface-variant font-normal">(Investigation Worklog)</span>
+</div>
+<div class="font-code-sm text-label-caps text-outline truncate max-w-xs">
+                    SHA-256: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
+                  </div>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-secondary/20 text-secondary font-code-sm text-label-caps whitespace-nowrap">
+                  PRESENT &amp; VERIFIED
+                </span>
+</div>
+<!-- Artefact 2 -->
+<div class="p-sm rounded bg-surface-container flex items-center justify-between gap-sm">
+<div class="space-y-0.5">
+<div class="flex items-center gap-xs font-code-sm text-body-sm font-medium text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>
+<span>EVD-761</span>
+<span class="text-on-surface-variant font-normal">(Containment Firewall Push)</span>
+</div>
+<div class="font-code-sm text-label-caps text-outline truncate max-w-xs">
+                    SHA-256: c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2
+                  </div>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-secondary/20 text-secondary font-code-sm text-label-caps whitespace-nowrap">
+                  PRESENT &amp; VERIFIED
+                </span>
+</div>
+<!-- Artefact 3: Missing -->
+<div class="p-sm rounded bg-surface-container-high/60 space-y-xs">
+<div class="flex items-center justify-between gap-sm">
+<div class="space-y-0.5">
+<div class="flex items-center gap-xs font-code-sm text-body-sm font-semibold text-error">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+<span>ESC-221</span>
+<span class="text-on-surface-variant font-normal">(Tier-3 Escalation Dispatch Telemetry)</span>
+</div>
+<div class="font-code-sm text-label-caps text-error">
+                      STATUS: NOT_SUBMITTED (Pending Submission)
+                    </div>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-error-container text-error font-code-sm text-label-caps whitespace-nowrap">
+                    MISSING MANDATORY
+                  </span>
+</div>
+<!-- Callout requirement -->
+<div class="p-xs rounded bg-surface-container-lowest font-body-sm text-label-caps text-on-surface-variant">
+<span class="text-error font-semibold">Regulatory Notice:</span> "Expected evidence has not yet been submitted. Does not independently prove non-execution, but precludes statutory closure until cryptographically sealed."
+                </div>
+<button class="w-full py-1 rounded bg-error-container hover:brightness-110 text-error font-body-sm text-body-sm font-medium transition-all flex items-center justify-center gap-1" onclick="showVerificationNotice('Statutory Evidence Demand Formally Served for ESC-221')">
+<span class="material-symbols-outlined text-[16px]">priority_high</span> + Issue Statutory Evidence Demand for ESC-221
+                </button>
+</div>
+</div>
+</div>
+<!-- Remediation Timeline Milestone Tracker -->
+<div class="space-y-xs">
+<span class="font-headline-sm text-body-sm font-semibold text-on-surface">Milestone Progression Ledger</span>
+<div class="relative pl-4 space-y-3 before:absolute before:left-1.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-outline-variant/50">
+<!-- Item 1 -->
+<div class="relative flex items-start gap-2">
+<div class="absolute -left-4 mt-1 w-2.5 h-2.5 rounded-full bg-secondary"></div>
+<div class="flex-1">
+<div class="flex items-center justify-between font-code-sm text-label-caps">
+<span class="text-on-surface font-semibold">Finding FND-0142 Synthesized</span>
+<span class="text-outline">26 Sep 2026 14:18 IST</span>
+</div>
+<p class="font-body-sm text-label-caps text-on-surface-variant">Automated gap synthesis identified CTRL-07 breach.</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="relative flex items-start gap-2">
+<div class="absolute -left-4 mt-1 w-2.5 h-2.5 rounded-full bg-secondary"></div>
+<div class="flex-1">
+<div class="flex items-center justify-between font-code-sm text-label-caps">
+<span class="text-on-surface font-semibold">Remediation Mandate REM-0038 Instantiated</span>
+<span class="text-outline">26 Sep 2026 14:20 IST</span>
+</div>
+<p class="font-body-sm text-label-caps text-on-surface-variant">Lead Examiner NC-8802 validated mandate conditions.</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="relative flex items-start gap-2">
+<div class="absolute -left-4 mt-1 w-2.5 h-2.5 rounded-full bg-secondary"></div>
+<div class="flex-1">
+<div class="flex items-center justify-between font-code-sm text-label-caps">
+<span class="text-on-surface font-semibold">Assigned to CSE-014 Evidence Team</span>
+<span class="text-outline">26 Sep 2026 14:22 IST</span>
+</div>
+<p class="font-body-sm text-label-caps text-on-surface-variant">State set to OPEN with 8-day SLA horizon.</p>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="relative flex items-start gap-2">
+<div class="absolute -left-4 mt-1 w-2.5 h-2.5 rounded-full bg-primary"></div>
+<div class="flex-1">
+<div class="flex items-center justify-between font-code-sm text-label-caps">
+<span class="text-primary font-semibold">Formal Evidence Request for ESC-221 Dispatched</span>
+<span class="text-outline">27 Sep 2026 09:15 IST</span>
+</div>
+<p class="font-body-sm text-label-caps text-on-surface-variant">Demanded raw cryptographic dispatch payload.</p>
+</div>
+</div>
+<!-- Item 5: Pending -->
+<div class="relative flex items-start gap-2 opacity-50">
+<div class="absolute -left-4 mt-1 w-2.5 h-2.5 rounded-full bg-surface-variant border border-outline"></div>
+<div class="flex-1">
+<div class="flex items-center justify-between font-code-sm text-label-caps">
+<span class="text-outline font-semibold">Statutory Response Deadline</span>
+<span class="text-outline">04 Oct 2026 23:59 IST</span>
+</div>
+<p class="font-body-sm text-label-caps text-outline">Mandatory CSE compliance boundary.</p>
+</div>
+</div>
+<!-- Item 6: Pending -->
+<div class="relative flex items-start gap-2 opacity-40">
+<div class="absolute -left-4 mt-1 w-2.5 h-2.5 rounded-full bg-surface-variant border border-outline"></div>
+<div class="flex-1">
+<span class="font-code-sm text-label-caps text-outline">Supervisory Verification &amp; Final Enclave Seal</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Supervisory Verification Panel (Interactive Human Decision Suite) -->
+<div class="p-sm rounded bg-surface-container space-y-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px] text-tertiary">how_to_reg</span>
+<span class="font-headline-sm text-body-sm font-semibold text-on-surface">Supervisory Verification Suite</span>
+</div>
+<span class="font-code-sm text-label-caps text-on-surface-variant">Lead NC-8802</span>
+</div>
+<!-- Verification Checklist -->
+<div class="space-y-1.5 p-xs rounded bg-surface-container-lowest font-body-sm text-body-sm text-on-surface">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded bg-surface-container text-secondary" disabled="" type="checkbox"/>
+<span class="line-through text-outline">Mandate Scope Communicated &amp; Acknowledged</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded bg-surface-container text-primary" disabled="" type="checkbox"/>
+<span class="text-error font-medium">Mandatory Telemetry ESC-221 Submitted</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded bg-surface-container text-primary" disabled="" type="checkbox"/>
+<span class="text-on-surface-variant">Workflow Conformance Validated via Process Trace</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded bg-surface-container text-primary" disabled="" type="checkbox"/>
+<span class="text-on-surface-variant">Cryptographic Hash Sealed (FIPS-140-2 Level 3)</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded bg-surface-container text-primary" disabled="" type="checkbox"/>
+<span class="text-on-surface-variant">Accredited Examiner Verification Sign-off</span>
+</label>
+</div>
+<!-- Verification Note -->
+<div class="space-y-xs">
+<label class="font-label-caps text-label-caps uppercase text-outline">Examiner Supervisory Deliberation Note</label>
+<textarea class="w-full p-2 rounded bg-surface-container-lowest text-on-surface font-body-sm text-body-sm placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Input supervisory finding or rationale for remediation verification decision..." rows="2">Awaiting tier-3 dispatch telemetry ESC-221 from CSE-014. Closure gate locked until cryptographic log submission confirmed.</textarea>
+</div>
+<!-- Decision Suite Buttons -->
+<div class="grid grid-cols-2 gap-xs">
+<button class="py-1.5 px-sm rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm text-body-sm font-medium flex items-center justify-center gap-1 transition-colors" onclick="showVerificationNotice('Formal Verification Pipeline Initiated')">
+<span class="material-symbols-outlined text-[16px] text-primary">play_arrow</span> Start Verification
+              </button>
+<button class="py-1.5 px-sm rounded bg-surface-container-high opacity-50 cursor-not-allowed text-outline font-body-sm text-body-sm font-medium flex items-center justify-center gap-1" onclick="alert('Supervisory Safeguard: Mandatory evidence ESC-221 is absent. Closure is statutorily prohibited.');" title="Locked: ESC-221 Missing">
+<span class="material-symbols-outlined text-[16px] text-secondary">lock</span> Record Verified (Close)
+              </button>
+<button class="py-1.5 px-sm rounded bg-tertiary-container/30 hover:bg-tertiary-container/50 text-tertiary font-body-sm text-body-sm font-medium flex items-center justify-center gap-1 transition-colors" onclick="showVerificationNotice('Mandate Flagged Deficient and Reopened')">
+<span class="material-symbols-outlined text-[16px]">reply</span> Mark Deficient (Reopen)
+              </button>
+<button class="py-1.5 px-sm rounded bg-primary-container hover:brightness-110 text-on-primary-container font-body-sm text-body-sm font-medium flex items-center justify-center gap-1 transition-colors" onclick="showVerificationNotice('Supplementary Telemetry Order Dispatched')">
+<span class="material-symbols-outlined text-[16px]">add_link</span> Request Telemetry
+              </button>
+</div>
+</div>
+<!-- Related Objects Graph Pills -->
+<div class="space-y-xs">
+<span class="font-label-caps text-label-caps uppercase text-outline">Related Objects Cross-Index</span>
+<div class="flex flex-wrap gap-1 font-code-sm text-label-caps">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-on-surface hover:text-primary cursor-pointer">CSE-014</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-on-surface hover:text-primary cursor-pointer">CASE-1042</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-on-surface hover:text-primary cursor-pointer">INV-338</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-on-surface hover:text-primary cursor-pointer">CTRL-07</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-primary hover:underline cursor-pointer">GAP-0071</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-tertiary hover:underline cursor-pointer">NS-0041</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-on-surface">PD-0031</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-on-surface">FND-0142</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-secondary">EVD-742</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-secondary">EVD-761</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-error">ESC-221</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-outline">Sample: CASE-1042</span>
+</div>
+</div>
+<!-- Historical Remediation Context -->
+<div class="p-sm rounded bg-surface-container-lowest space-y-1 font-body-sm text-body-sm">
+<div class="flex items-center justify-between font-label-caps text-label-caps uppercase text-outline">
+<span>Historical Recurrence Track</span>
+<span class="text-tertiary">Recurrence Risk: HIGH</span>
+</div>
+<p class="text-on-surface-variant text-label-caps leading-normal">
+              Precedent matches found: <strong class="text-on-surface">Q2 2025</strong> (Escalation Gap verified), <strong class="text-on-surface">Q4 2025</strong> (Remediated), <strong class="text-on-surface">Q1 2026</strong> (Statutory Seal Verified). Current Q3 2026 gap signifies behavioral regression in operational handover procedures.
+            </p>
+</div>
+</div>
+</div>
+</div>
+<!-- SECTION 7: STATUTORY AUDIT TRAIL -->
+<div class="rounded-lg bg-surface-container-low overflow-hidden space-y-xs p-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px] text-secondary">enhanced_encryption</span>
+<span class="font-headline-sm text-body-sm font-semibold text-on-surface">Cryptographically Sealed Supervisory Audit Trail</span>
+</div>
+<span class="font-code-sm text-label-caps text-outline">Append-Only Immutable Enclave Ledger</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-code-sm text-label-caps text-on-surface-variant">
+<thead class="bg-surface-container-lowest text-outline uppercase tracking-wider">
+<tr>
+<th class="py-1.5 px-sm">Timestamp (UTC+05:30)</th>
+<th class="py-1.5 px-sm">Actor / Signature</th>
+<th class="py-1.5 px-sm">Operation Scope</th>
+<th class="py-1.5 px-sm">Finding &amp; Entity</th>
+<th class="py-1.5 px-sm">State Transition</th>
+<th class="py-1.5 px-sm text-right">Integrity Digest</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/20">
+<tr class="hover:bg-surface-container/50">
+<td class="py-2 px-sm whitespace-nowrap text-on-surface">26 Sep 2026 14:18:02</td>
+<td class="py-2 px-sm text-primary">SYS:SAT-FUSION</td>
+<td class="py-2 px-sm text-on-surface">Mandate REM-0038 Created</td>
+<td class="py-2 px-sm">FND-0142 | CSE-014</td>
+<td class="py-2 px-sm"><span class="px-1 py-0.5 rounded bg-surface-container-highest">NEW → OPEN</span></td>
+<td class="py-2 px-sm text-right font-mono text-outline">0x4b78...901e</td>
+</tr>
+<tr class="hover:bg-surface-container/50">
+<td class="py-2 px-sm whitespace-nowrap text-on-surface">26 Sep 2026 14:22:15</td>
+<td class="py-2 px-sm text-on-surface">NC-8802 (Lead Examiner)</td>
+<td class="py-2 px-sm text-on-surface">Assigned to CSE-014 Team</td>
+<td class="py-2 px-sm">FND-0142 | CSE-014</td>
+<td class="py-2 px-sm"><span class="px-1 py-0.5 rounded bg-surface-container-highest">STATE: OPEN</span></td>
+<td class="py-2 px-sm text-right font-mono text-outline">0x81c2...12ad</td>
+</tr>
+<tr class="hover:bg-surface-container/50">
+<td class="py-2 px-sm whitespace-nowrap text-on-surface">27 Sep 2026 09:15:40</td>
+<td class="py-2 px-sm text-on-surface">NC-8802 (Lead Examiner)</td>
+<td class="py-2 px-sm text-error">Statutory Demand Issued: ESC-221</td>
+<td class="py-2 px-sm">REM-0038 | CSE-014</td>
+<td class="py-2 px-sm"><span class="px-1 py-0.5 rounded bg-surface-container-highest text-secondary">AIR-GAP QUEUED</span></td>
+<td class="py-2 px-sm text-right font-mono text-outline">0xe912...cf44</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- MODAL: Create Remediation Mandate -->
+<div class="fixed inset-0 z-50 bg-surface-container-lowest/80 backdrop-blur-sm hidden flex items-center justify-center p-md" id="create-mandate-modal">
+<div class="w-full max-w-2xl rounded-lg bg-surface-container-low shadow-2xl p-md space-y-md">
+<div class="flex items-center justify-between pb-xs bg-surface-container-low">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">add_task</span>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Create Supervisory Remediation Mandate</h3>
+</div>
+<button class="p-1 rounded hover:bg-surface-container text-outline hover:text-on-surface" onclick="closeModal('create-mandate-modal')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="space-y-sm font-body-sm text-body-sm">
+<div class="grid grid-cols-2 gap-sm">
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline">Supervised Entity (CSE)</label>
+<select class="w-full mt-1 p-2 rounded bg-surface-container text-on-surface font-code-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary">
+<option>CSE-014 (NorthGrid Energy)</option>
+<option>CSE-021 (TelcoGrid Telecom)</option>
+<option>CSE-008 (ReserveBank Interconnect)</option>
+</select>
+</div>
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline">Trigger Finding Reference</label>
+<select class="w-full mt-1 p-2 rounded bg-surface-container text-on-surface font-code-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary">
+<option>FND-0142 (CTRL-07 Escalation Omission)</option>
+<option>FND-0131 (CTRL-11 SIEM Synchronization Gap)</option>
+<option>FND-0109 (CTRL-09 HSM Key Cadence)</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline">Statutory SLA Horizon</label>
+<select class="w-full mt-1 p-2 rounded bg-surface-container text-on-surface font-code-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary">
+<option>7 Days (Critical Incident Standard)</option>
+<option>14 Days (Standard Operational)</option>
+<option>30 Days (Architectural Hardening)</option>
+</select>
+</div>
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline">Priority Classification</label>
+<select class="w-full mt-1 p-2 rounded bg-surface-container text-on-surface font-code-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary">
+<option>CRITICAL (Statutory Escalation)</option>
+<option>HIGH</option>
+<option>MEDIUM</option>
+</select>
+</div>
+</div>
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline">Mandated Corrective Action Protocol</label>
+<textarea class="w-full mt-1 p-2 rounded bg-surface-container text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Formulate explicit supervisory directives, required cryptographic evidence artefacts, and testing specifications..." rows="3"></textarea>
+</div>
+<div class="p-xs rounded bg-surface-container text-label-caps font-code-sm text-on-surface-variant flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+<span>Mandate will be cryptographically signed by Supervisor NC-8841 and pushed to the CSE Air-Gap Gateway.</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-xs pt-xs">
+<button class="px-md py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm text-body-sm" onclick="closeModal('create-mandate-modal')">
+          Cancel
+        </button>
+<button class="px-md py-1.5 rounded bg-primary-container text-on-primary-container hover:brightness-110 font-body-sm text-body-sm font-medium" onclick="closeModal('create-mandate-modal'); showVerificationNotice('Remediation Mandate Instantiated &amp; Enclave Sealed');">
+          Sign &amp; Issue Mandate
+        </button>
+</div>
+</div>
+</div>
+<!-- MODAL: Record CSE Response -->
+<div class="fixed inset-0 z-50 bg-surface-container-lowest/80 backdrop-blur-sm hidden flex items-center justify-center p-md" id="record-response-modal">
+<div class="w-full max-w-lg rounded-lg bg-surface-container-low shadow-2xl p-md space-y-md">
+<div class="flex items-center justify-between pb-xs bg-surface-container-low">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">mark_email_read</span>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Record CSE Formal Response</h3>
+</div>
+<button class="p-1 rounded hover:bg-surface-container text-outline hover:text-on-surface" onclick="closeModal('record-response-modal')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="space-y-sm font-body-sm text-body-sm">
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline">Submission Reference / Intake ID</label>
+<input class="w-full mt-1 p-2 rounded bg-surface-container text-on-surface font-code-sm text-body-sm focus:outline-none focus:ring-1 focus:ring-primary" type="text" value="CSE-RESP-014-2026-99"/>
+</div>
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline">Attached Telemetry Package (Enclave Staging)</label>
+<div class="mt-1 p-md rounded bg-surface-container-lowest text-center space-y-1">
+<span class="material-symbols-outlined text-outline text-[24px]">cloud_upload</span>
+<div class="font-body-sm text-body-sm text-on-surface">Drag &amp; drop cryptographic evidence bundle (ZIP / TAR.GZ)</div>
+<div class="font-code-sm text-label-caps text-outline">FIPS-140-2 Level 3 Hardware Enclave Verification Enabled</div>
+</div>
+</div>
+<div>
+<label class="font-label-caps text-label-caps uppercase text-outline">Entity Submission Notes</label>
+<textarea class="w-full mt-1 p-2 rounded bg-surface-container text-on-surface placeholder:text-outline font-body-sm text-body-sm focus:outline-none" placeholder="Summary notes from CSE-014 Incident Response Lead..." rows="2"></textarea>
+</div>
+</div>
+<div class="flex items-center justify-end gap-xs pt-xs">
+<button class="px-md py-1.5 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-body-sm text-body-sm" onclick="closeModal('record-response-modal')">
+          Cancel
+        </button>
+<button class="px-md py-1.5 rounded bg-primary text-on-primary hover:brightness-110 font-body-sm text-body-sm font-medium" onclick="closeModal('record-response-modal'); showVerificationNotice('CSE Submission Ingested for Verification');">
+          Confirm Ingestion
+        </button>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

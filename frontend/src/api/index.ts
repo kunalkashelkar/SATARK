@@ -6,23 +6,24 @@ import { CSEAssessment, Finding, RecommendedSample } from '@/types';
 export const dashboardApi = {
   getOverviewMetrics: async () => {
     return {
-      csesAssessed: 24,
-      activeFindings: 17,
-      highPrioritySignals: 6,
-      evidenceReadiness: 92,
-      executionGaps: 31,
+      csesAssessed: 8,
+      totalRegisteredCSEs: 10,
+      activeFindings: 40,
+      highPrioritySignals: 8,
+      evidenceReadiness: 79,
+      executionGaps: 25,
       negativeSpace: 14,
-      samplesRecommended: 28,
-      openRemediation: 9,
+      samplesRecommended: 20,
+      openRemediation: 14,
       signalDistribution: [
-        { name: 'Execution Gap', count: 31, fill: '#ef4444' },
-        { name: 'Negative Space', count: 14, fill: '#f97316' },
-        { name: 'Process Deviation', count: 22, fill: '#eab308' },
-        { name: 'Investigation', count: 18, fill: '#3b82f6' },
-        { name: 'Behavioural', count: 12, fill: '#8b5cf6' },
-        { name: 'Historical', count: 16, fill: '#ec4899' },
-        { name: 'Consistency', count: 9, fill: '#06b6d4' },
-        { name: 'Coverage', count: 11, fill: '#10b981' },
+        { name: 'Execution Gap', count: 25, fill: '#ef4444' },
+        { name: 'Negative Space', count: 14, fill: '#ffb693' },
+        { name: 'Process Deviation', count: 15, fill: '#eab308' },
+        { name: 'Investigation', count: 12, fill: '#afc6ff' },
+        { name: 'Behavioural', count: 9, fill: '#8b5cf6' },
+        { name: 'Historical', count: 11, fill: '#ec4899' },
+        { name: 'Consistency', count: 8, fill: '#7bdb80' },
+        { name: 'Coverage Gap', count: 10, fill: '#10b981' },
       ],
       expectedVsObservedMetrics: {
         expectedInvestigationCompletion: 96,
@@ -33,13 +34,13 @@ export const dashboardApi = {
         negativeSpacePct: 8,
       },
       evidenceQuality: {
-        readinessPct: 92,
+        readinessPct: 79,
         schema: 100,
-        completeness: 94,
-        relationships: 89,
-        timestampQuality: 97,
-        coverage: 86,
-        crossFileConsistency: 91,
+        completeness: 88,
+        relationships: 82,
+        timestampQuality: 94,
+        coverage: 76,
+        crossFileConsistency: 85,
       }
     };
   }
@@ -61,7 +62,7 @@ export const findingsApi = {
   getById: async (id: string): Promise<Finding | undefined> => {
     return mockFindings.find(f => f.id.toLowerCase() === id.toLowerCase());
   },
-  updateDecision: async (id: string, decision: any): Promise<Finding | undefined> => {
+  updateDecision: async (id: string, decision: { status: any; notes: string; reason: string }): Promise<Finding | undefined> => {
     const finding = mockFindings.find(f => f.id.toLowerCase() === id.toLowerCase());
     if (finding) {
       finding.status = decision.status;

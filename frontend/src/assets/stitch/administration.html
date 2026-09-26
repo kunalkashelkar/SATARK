@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"on-tertiary-fixed":"#351000","surface-container-highest":"#31353c","on-tertiary-fixed-variant":"#7a3000","surface-dim":"#10141a","secondary":"#7bdb80","on-tertiary-container":"#fffdff","primary":"#afc6ff","on-surface-variant":"#c2c6d6","surface-container-high":"#262a31","primary-fixed-dim":"#afc6ff","surface-bright":"#353940","surface-container-lowest":"#0a0e14","on-tertiary":"#561f00","tertiary-container":"#c55100","outline":"#8c90a0","on-error-container":"#ffdad6","on-primary-fixed-variant":"#004299","background":"#10141a","surface":"#10141a","on-primary":"#002d6d","surface-tint":"#afc6ff","on-surface":"#dfe2eb","primary-fixed":"#d9e2ff","on-primary-fixed":"#001944","inverse-surface":"#dfe2eb","on-primary-container":"#fffcff","on-secondary-fixed-variant":"#005319","on-secondary":"#00390e","inverse-on-surface":"#2d3137","surface-variant":"#31353c","secondary-container":"#007124","surface-container":"#1c2026","outline-variant":"#424754","surface-container-low":"#181c22","on-secondary-container":"#91f294","error":"#ffb4ab","error-container":"#93000a","tertiary":"#ffb693","tertiary-fixed-dim":"#ffb693","tertiary-fixed":"#ffdbcc","inverse-primary":"#0059c8","on-error":"#690005","on-background":"#dfe2eb","primary-container":"#1f6feb","on-secondary-fixed":"#002106","secondary-fixed":"#97f999","secondary-fixed-dim":"#7bdb80"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"md":"16px","xl":"32px","margin":"24px","xs":"4px","lg":"24px","sm":"8px","base":"4px","gutter":"16px"},"fontFamily":{"code-md":["JetBrains Mono"],"code-sm":["JetBrains Mono"],"body-sm":["Inter"],"body-md":["Inter"],"headline-md":["Inter"],"body-lg":["Inter"],"label-caps":["Inter"],"headline-sm":["Inter"],"headline-lg":["Inter"]},"fontSize":{"code-md":["14px",{"lineHeight":"1.6","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"1.6","fontWeight":"400"}],"body-sm":["12px",{"lineHeight":"1.5","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"1.5","fontWeight":"400"}],"headline-md":["24px",{"lineHeight":"1.25","letterSpacing":"-0.01em","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"1.5","fontWeight":"400"}],"label-caps":["11px",{"lineHeight":"1.2","letterSpacing":"0.05em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"1.5","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"1.25","letterSpacing":"-0.02em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-[250px] bg-surface-container-low flex flex-col z-50 overflow-y-auto"><div class="p-md pb-sm bg-surface-container"><div class="flex items-center gap-sm mb-xs"><div class="w-sm h-sm rounded-full bg-secondary"></div><span class="font-label-caps text-label-caps uppercase text-on-surface tracking-wider font-bold">Govt of India / NCIIPC</span></div><div class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">SAT-SA</div><div class="font-body-sm text-body-sm text-on-surface-variant">Supervisory Analytics Tool</div></div><nav class="flex-1 px-sm py-sm flex flex-col gap-xs" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded"><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Overview</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="overview" href="#"><span class="material-symbols-outlined text-[16px]">dashboard</span><span>Overview</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Supervision</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="cse-assessments" href="#"><span class="material-symbols-outlined text-[16px]">domain_verification</span><span>CSE Assessments</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="priority-queue" href="#"><span class="material-symbols-outlined text-[16px]">low_priority</span><span>Priority Queue</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="recommended-samples" href="#"><span class="material-symbols-outlined text-[16px]">fact_check</span><span>Recommended Samples</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Analytics</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="execution-gaps" href="#"><span class="material-symbols-outlined text-[16px]">rule_folder</span><span>Execution Gaps</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="negative-space" href="#"><span class="material-symbols-outlined text-[16px]">contrast</span><span>Negative Space</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="process-analysis" href="#"><span class="material-symbols-outlined text-[16px]">account_tree</span><span>Process Analysis</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="evidence-quality" href="#"><span class="material-symbols-outlined text-[16px]">verified</span><span>Evidence Quality</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="behavioural-analysis" href="#"><span class="material-symbols-outlined text-[16px]">psychology</span><span>Behavioural Analysis</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="coverage" href="#"><span class="material-symbols-outlined text-[16px]">radar</span><span>Coverage</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="consistency" href="#"><span class="material-symbols-outlined text-[16px]">stacked_line_chart</span><span>Consistency</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Assessment</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="findings" href="#"><span class="material-symbols-outlined text-[16px]">warning</span><span>Findings</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="evidence" href="#"><span class="material-symbols-outlined text-[16px]">inventory</span><span>Evidence</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="remediation" href="#"><span class="material-symbols-outlined text-[16px]">published_with_changes</span><span>Remediation</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="verification" href="#"><span class="material-symbols-outlined text-[16px]">security</span><span>Verification</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Intelligence</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="historical-trends" href="#"><span class="material-symbols-outlined text-[16px]">timeline</span><span>Historical Trends</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="peer-comparison" href="#"><span class="material-symbols-outlined text-[16px]">compare_arrows</span><span>Peer Comparison</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="signal-discovery" href="#"><span class="material-symbols-outlined text-[16px]">bubble_chart</span><span>Signal Discovery</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Governance</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="audit" href="#"><span class="material-symbols-outlined text-[16px]">policy</span><span>Audit</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="administration" href="#"><span class="material-symbols-outlined text-[16px]">admin_panel_settings</span><span>Administration</span></a></nav><div class="p-sm bg-surface-container-lowest font-code-sm text-code-sm text-outline flex items-center justify-between"><span>SYS-ID: NC-4029</span><span class="w-2 h-2 rounded-full bg-secondary"></span></div></aside><div class="pl-[250px]"><header class="fixed top-0 left-[250px] right-0 h-14 bg-surface-container/95 backdrop-blur-md z-40 px-margin flex items-center justify-between"><div class="flex items-center gap-md"><div class="flex items-center gap-xs font-code-sm text-code-sm text-on-surface-variant"><span class="text-primary font-semibold">SAT-SA</span><span>/</span><span>Overview</span></div><div class="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-code-sm text-code-sm text-secondary font-medium tracking-wide">INTERNAL / AIR-GAPPED (TLS 1.3 / FIPS-140-2)</span></div></div><div class="flex items-center gap-md"><div class="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high"><span class="material-symbols-outlined text-[16px] text-secondary">verified_user</span><span class="font-code-sm text-code-sm text-on-surface">Audit: SYNCED</span></div><button class="relative p-xs rounded hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary"></span></button><div class="flex items-center gap-sm pl-sm"><div class="flex flex-col text-right"><span class="font-body-sm text-body-sm font-semibold text-on-surface leading-tight">Supervisor</span><span class="font-label-caps text-label-caps text-on-surface-variant leading-tight">NCIIPC</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-14 px-margin bg-surface"><div class="flex flex-col w-full text-on-surface pb-xl">
+<!-- PAGE HEADER & INSTITUTIONAL CONTEXT -->
+<div class="flex flex-col gap-sm py-md">
+<!-- Institutional Breadcrumbs & Meta Bar -->
+<div class="flex flex-wrap items-center justify-between gap-sm text-on-surface-variant font-code-sm text-code-sm">
+<div class="flex items-center gap-xs">
+<span class="text-primary font-semibold">SAT-SA</span>
+<span>/</span>
+<span>Governance</span>
+<span>/</span>
+<span class="text-on-surface font-semibold">Administration</span>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-code-sm text-code-sm text-on-surface font-medium">Status: ALL SERVICES NOMINAL (AIR-GAPPED)</span>
+</div>
+<div class="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high font-body-sm text-body-sm">
+<span class="text-on-surface-variant">Scope:</span>
+<span class="text-primary font-semibold">System Administration (Root)</span>
+</div>
+</div>
+</div>
+<!-- Title and Action Row -->
+<div class="flex flex-wrap items-end justify-between gap-md pt-xs">
+<div class="flex flex-col">
+<div class="flex items-center gap-sm">
+<h1 class="font-headline-lg text-headline-lg font-bold tracking-tight text-on-surface">Administration</h1>
+<span class="px-sm py-xs rounded bg-primary/10 text-primary font-label-caps text-label-caps uppercase tracking-wider font-semibold">NCIIPC-SEC-09 Hardened</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant pt-xs max-w-3xl">
+          Manage institutional role authorizations, cryptographic access scopes, rule heuristics, offline analytical models, and system integrity attestations.
+        </p>
+</div>
+<div class="flex items-center gap-sm">
+<button class="flex items-center gap-xs px-md py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors font-body-sm text-body-sm font-medium" onclick="location.reload()">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+<span>Refresh</span>
+</button>
+<a class="flex items-center gap-xs px-md py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors font-body-sm text-body-sm font-medium" href="#/governance/audit">
+<span class="material-symbols-outlined text-[18px]">policy</span>
+<span>View Audit</span>
+</a>
+<button class="flex items-center gap-xs px-md py-xs rounded bg-primary-container text-on-primary-container font-body-sm text-body-sm font-semibold hover:brightness-110 shadow-sm transition-all" id="open-user-modal-btn">
+<span class="material-symbols-outlined text-[18px]">person_add</span>
+<span>+ Create User</span>
+</button>
+</div>
+</div>
+</div>
+<!-- KPI STRIP (8 CARDS) -->
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-sm my-md">
+<!-- Active Users -->
+<div class="flex flex-col p-sm rounded bg-surface-container-low shadow-sm">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Active Users</span>
+<div class="flex items-baseline justify-between mt-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">24</span>
+<span class="font-code-sm text-code-sm text-secondary">3 Orgs</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline mt-xs truncate">MFA Enforced 100%</span>
+</div>
+<!-- Administrators -->
+<div class="flex flex-col p-sm rounded bg-surface-container-low shadow-sm">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Administrators</span>
+<div class="flex items-baseline justify-between mt-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-primary">3</span>
+<span class="font-code-sm text-code-sm text-outline">Root</span>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface-variant mt-xs truncate">FIPS HSM Quorum</span>
+</div>
+<!-- Examiners -->
+<div class="flex flex-col p-sm rounded bg-surface-container-low shadow-sm">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Examiners</span>
+<div class="flex items-baseline justify-between mt-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">8</span>
+<span class="font-code-sm text-code-sm text-secondary">Accredited</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline mt-xs truncate">NCIIPC Certified</span>
+</div>
+<!-- Supervisors -->
+<div class="flex flex-col p-sm rounded bg-surface-container-low shadow-sm">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Supervisors</span>
+<div class="flex items-baseline justify-between mt-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">5</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">Senior</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline mt-xs truncate">Sector Assigned</span>
+</div>
+<!-- CSEs Configured -->
+<div class="flex flex-col p-sm rounded bg-surface-container-low shadow-sm">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">CSEs Configured</span>
+<div class="flex items-baseline justify-between mt-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">8</span>
+<span class="font-code-sm text-code-sm text-tertiary">Critical</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline mt-xs truncate">Energy, Hydro, Grid</span>
+</div>
+<!-- Active Controls -->
+<div class="flex flex-col p-sm rounded bg-surface-container-low shadow-sm">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Active Controls</span>
+<div class="flex items-baseline justify-between mt-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">20</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant">CSF</span>
+</div>
+<span class="font-code-sm text-code-sm text-secondary mt-xs truncate">NCIIPC-CSF v3.2</span>
+</div>
+<!-- Active Rule Version -->
+<div class="flex flex-col p-sm rounded bg-surface-container-low shadow-sm">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Rule Version</span>
+<div class="flex items-baseline justify-between mt-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-secondary">R-2.4</span>
+<span class="font-code-sm text-code-sm text-outline">Q3-26</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline mt-xs truncate">Execution Gap v2.4</span>
+</div>
+<!-- Analytics Version -->
+<div class="flex flex-col p-sm rounded bg-surface-container-low shadow-sm">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Model Version</span>
+<div class="flex items-baseline justify-between mt-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-primary">AN-1.8</span>
+<span class="font-code-sm text-code-sm text-secondary">Offline</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline mt-xs truncate">Local DuckDB/Polars</span>
+</div>
+</div>
+<!-- GOVERNANCE NAVIGATION TABS -->
+<div class="flex items-center gap-xs overflow-x-auto pb-xs mb-md font-body-sm text-body-sm">
+<button class="px-md py-xs rounded bg-surface-container-highest text-on-surface font-semibold flex items-center gap-xs whitespace-nowrap shadow-sm">
+<span>Users</span>
+<span class="px-xs py-0.5 rounded bg-primary/20 text-primary font-code-sm text-code-sm">24</span>
+</button>
+<button class="px-md py-xs rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-xs whitespace-nowrap transition-colors">
+<span>Roles &amp; Permissions</span>
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-outline font-code-sm text-code-sm">6 Roles</span>
+</button>
+<button class="px-md py-xs rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-xs whitespace-nowrap transition-colors">
+<span>CSE Access Scopes</span>
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-outline font-code-sm text-code-sm">18 Grants</span>
+</button>
+<button class="px-md py-xs rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-xs whitespace-nowrap transition-colors">
+<span>Control Library</span>
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-outline font-code-sm text-code-sm">20 Active</span>
+</button>
+<button class="px-md py-xs rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-xs whitespace-nowrap transition-colors">
+<span>Rule Versions</span>
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-outline font-code-sm text-code-sm">R-2.4 Current</span>
+</button>
+<button class="px-md py-xs rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-xs whitespace-nowrap transition-colors">
+<span>Model Versions</span>
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-outline font-code-sm text-code-sm">AN-1.8 Local</span>
+</button>
+<button class="px-md py-xs rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-xs whitespace-nowrap transition-colors">
+<span>System Health</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="text-secondary font-code-sm text-code-sm">Air-Gapped</span>
+</button>
+<button class="px-md py-xs rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center gap-xs whitespace-nowrap transition-colors">
+<span>Security Policy</span>
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-outline font-code-sm text-code-sm">Hardened</span>
+</button>
+</div>
+<!-- MAIN WORKSPACE: ASYMMETRIC USER MANAGEMENT + SIDE INSPECTOR -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-md mb-xl items-start">
+<!-- LEFT 8 COLS: Search, Filters & User Management Table -->
+<div class="xl:col-span-8 flex flex-col gap-sm">
+<!-- Filter Bar -->
+<div class="p-sm rounded bg-surface-container-low flex flex-col md:flex-row items-stretch md:items-center justify-between gap-sm">
+<div class="flex-1 flex items-center gap-xs px-sm py-xs rounded bg-surface-container-lowest">
+<span class="material-symbols-outlined text-outline text-[18px]">search</span>
+<input class="bg-transparent border-none text-on-surface placeholder:text-outline text-body-sm font-body-sm focus:outline-none w-full" placeholder="Search User ID, Name, Organization, CSE..." type="text"/>
+</div>
+<div class="flex flex-wrap items-center gap-xs">
+<select class="px-sm py-xs rounded bg-surface-container-high text-on-surface font-body-sm text-body-sm focus:outline-none cursor-pointer">
+<option>Role: All</option>
+<option>Administrator</option>
+<option>Examiner</option>
+<option>Supervisor</option>
+<option>CSE User</option>
+</select>
+<select class="px-sm py-xs rounded bg-surface-container-high text-on-surface font-body-sm text-body-sm focus:outline-none cursor-pointer">
+<option>Organization: All</option>
+<option>NCIIPC</option>
+<option>NorthGrid Energy</option>
+<option>TransCo-South</option>
+<option>HydroCorp</option>
+</select>
+<select class="px-sm py-xs rounded bg-surface-container-high text-on-surface font-body-sm text-body-sm focus:outline-none cursor-pointer">
+<option>Status: Active</option>
+<option>Suspended</option>
+<option>Revoked</option>
+</select>
+<button class="px-sm py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface flex items-center gap-xs font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+<span>MFA: All</span>
+</button>
+</div>
+</div>
+<!-- Users Table -->
+<div class="rounded bg-surface-container-low overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="bg-surface-container text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider">
+<th class="py-xs px-sm font-semibold">User ID</th>
+<th class="py-xs px-sm font-semibold">Identity / Name</th>
+<th class="py-xs px-sm font-semibold">Role</th>
+<th class="py-xs px-sm font-semibold">Organization</th>
+<th class="py-xs px-sm font-semibold">CSE Access Scope</th>
+<th class="py-xs px-sm font-semibold">Status</th>
+<th class="py-xs px-sm font-semibold">Last Active</th>
+<th class="py-xs px-sm font-semibold">MFA Method</th>
+<th class="py-xs px-sm font-semibold text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-none">
+<!-- Row 1: Root Admin -->
+<tr class="hover:bg-surface-container/60 transition-colors">
+<td class="py-sm px-sm font-code-sm text-code-sm text-primary font-semibold whitespace-nowrap">USR-001</td>
+<td class="py-sm px-sm">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Admin Lead (NCIIPC Root)</span>
+<span class="font-code-sm text-code-sm text-outline">lead-admin@nciipc.gov.in</span>
+</div>
+</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-primary/20 text-primary font-label-caps text-label-caps uppercase font-bold">Administrator</span>
+</td>
+<td class="py-sm px-sm text-on-surface-variant">NCIIPC</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-secondary font-semibold">Global (All 8 CSEs)</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<div class="flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold">ACTIVE</span>
+</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-outline whitespace-nowrap">26 Sep 19:42</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-code-sm text-code-sm">Hardware Token</span>
+</td>
+<td class="py-sm px-sm text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-xs">
+<button class="px-xs py-0.5 rounded hover:bg-surface-container-high text-primary font-code-sm text-code-sm">Manage</button>
+<a class="px-xs py-0.5 rounded hover:bg-surface-container-high text-on-surface-variant font-code-sm text-code-sm" href="#/governance/audit?actor=USR-001">Audit</a>
+</div>
+</td>
+</tr>
+<!-- Row 2: Selected Examiner (USR-104) -->
+<tr class="bg-surface-container-high/80 hover:bg-surface-container-high transition-colors">
+<td class="py-sm px-sm font-code-sm text-code-sm text-secondary font-semibold whitespace-nowrap">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px] text-secondary">arrow_right</span>
+<span>USR-104</span>
+</div>
+</td>
+<td class="py-sm px-sm">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Lead Examiner NC-8802</span>
+<span class="font-code-sm text-code-sm text-outline">nc-8802@examiner.nciipc.gov.in</span>
+</div>
+</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-secondary-container/50 text-secondary-fixed font-label-caps text-label-caps uppercase font-bold">Examiner</span>
+</td>
+<td class="py-sm px-sm text-on-surface-variant">NCIIPC</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface">CSE-014, CSE-021</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<div class="flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold">ACTIVE</span>
+</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-outline whitespace-nowrap">26 Sep 18:15</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-secondary font-code-sm text-code-sm">FIPS-140-2 L3</span>
+</td>
+<td class="py-sm px-sm text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-xs">
+<button class="px-xs py-0.5 rounded bg-primary-container text-on-primary-container font-code-sm text-code-sm">Inspecting</button>
+<a class="px-xs py-0.5 rounded hover:bg-surface-container text-on-surface-variant font-code-sm text-code-sm" href="#/governance/audit?actor=USR-104">Audit</a>
+</div>
+</td>
+</tr>
+<!-- Row 3: Senior Supervisor SS-402 -->
+<tr class="hover:bg-surface-container/60 transition-colors">
+<td class="py-sm px-sm font-code-sm text-code-sm text-primary font-semibold whitespace-nowrap">USR-117</td>
+<td class="py-sm px-sm">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Senior Supervisor SS-402</span>
+<span class="font-code-sm text-code-sm text-outline">ss-402@supervisor.nciipc.gov.in</span>
+</div>
+</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-primary-container/30 text-primary font-label-caps text-label-caps uppercase font-bold">Supervisor</span>
+</td>
+<td class="py-sm px-sm text-on-surface-variant">NCIIPC</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface">CSE-014, CSE-027, CSE-009</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<div class="flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold">ACTIVE</span>
+</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-outline whitespace-nowrap">25 Sep 14:20</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-secondary font-code-sm text-code-sm">FIPS-140-2 L3</span>
+</td>
+<td class="py-sm px-sm text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-xs">
+<button class="px-xs py-0.5 rounded hover:bg-surface-container-high text-primary font-code-sm text-code-sm">Manage</button>
+<a class="px-xs py-0.5 rounded hover:bg-surface-container-high text-on-surface-variant font-code-sm text-code-sm" href="#/governance/audit?actor=USR-117">Audit</a>
+</div>
+</td>
+</tr>
+<!-- Row 4: Forensic Examiner -->
+<tr class="hover:bg-surface-container/60 transition-colors">
+<td class="py-sm px-sm font-code-sm text-code-sm text-primary font-semibold whitespace-nowrap">USR-109</td>
+<td class="py-sm px-sm">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Forensic Examiner NC-8809</span>
+<span class="font-code-sm text-code-sm text-outline">nc-8809@examiner.nciipc.gov.in</span>
+</div>
+</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-secondary-container/50 text-secondary-fixed font-label-caps text-label-caps uppercase font-bold">Examiner</span>
+</td>
+<td class="py-sm px-sm text-on-surface-variant">NCIIPC</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface">CSE-008, CSE-031</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<div class="flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold">ACTIVE</span>
+</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-outline whitespace-nowrap">26 Sep 11:04</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-secondary font-code-sm text-code-sm">FIPS-140-2 L3</span>
+</td>
+<td class="py-sm px-sm text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-xs">
+<button class="px-xs py-0.5 rounded hover:bg-surface-container-high text-primary font-code-sm text-code-sm">Manage</button>
+<a class="px-xs py-0.5 rounded hover:bg-surface-container-high text-on-surface-variant font-code-sm text-code-sm" href="#/governance/audit?actor=USR-109">Audit</a>
+</div>
+</td>
+</tr>
+<!-- Row 5: CSE User (NorthGrid) -->
+<tr class="hover:bg-surface-container/60 transition-colors">
+<td class="py-sm px-sm font-code-sm text-code-sm text-primary font-semibold whitespace-nowrap">USR-204</td>
+<td class="py-sm px-sm">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">NorthGrid Submission Lead</span>
+<span class="font-code-sm text-code-sm text-outline">sec-audit@northgrid.co.in</span>
+</div>
+</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-caps text-label-caps uppercase font-bold">CSE User</span>
+</td>
+<td class="py-sm px-sm text-on-surface">NorthGrid Energy (CSE-014)</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-tertiary">CSE-014 Only (Isolated)</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<div class="flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold">ACTIVE</span>
+</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-outline whitespace-nowrap">26 Sep 16:40</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-code-sm text-code-sm">Gateway Token</span>
+</td>
+<td class="py-sm px-sm text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-xs">
+<button class="px-xs py-0.5 rounded hover:bg-surface-container-high text-primary font-code-sm text-code-sm">Manage</button>
+<a class="px-xs py-0.5 rounded hover:bg-surface-container-high text-on-surface-variant font-code-sm text-code-sm" href="#/governance/audit?actor=USR-204">Audit</a>
+</div>
+</td>
+</tr>
+<!-- Row 6: CSE User (Transco) -->
+<tr class="hover:bg-surface-container/60 transition-colors">
+<td class="py-sm px-sm font-code-sm text-code-sm text-primary font-semibold whitespace-nowrap">USR-219</td>
+<td class="py-sm px-sm">
+<div class="flex flex-col">
+<span class="font-semibold text-on-surface">Transco Evidence Team</span>
+<span class="font-code-sm text-code-sm text-outline">regulatory@transcosouth.gov.in</span>
+</div>
+</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-caps text-label-caps uppercase font-bold">CSE User</span>
+</td>
+<td class="py-sm px-sm text-on-surface">TransCo-South (CSE-027)</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-tertiary">CSE-027 Only (Isolated)</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<div class="flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold">ACTIVE</span>
+</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-outline whitespace-nowrap">24 Sep 09:12</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-code-sm text-code-sm">Gateway Token</span>
+</td>
+<td class="py-sm px-sm text-right whitespace-nowrap">
+<div class="flex items-center justify-end gap-xs">
+<button class="px-xs py-0.5 rounded hover:bg-surface-container-high text-primary font-code-sm text-code-sm">Manage</button>
+<a class="px-xs py-0.5 rounded hover:bg-surface-container-high text-on-surface-variant font-code-sm text-code-sm" href="#/governance/audit?actor=USR-219">Audit</a>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination / Status Footer -->
+<div class="p-sm bg-surface-container flex items-center justify-between text-on-surface-variant font-code-sm text-code-sm">
+<span>Showing 6 of 24 Authorized Operators</span>
+<div class="flex items-center gap-xs">
+<span class="text-outline">Air-Gap Policy: Session Bound (15m Expire)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT 4 COLS: Side Panel / Selected User Inspector (USR-104) -->
+<div class="xl:col-span-4 flex flex-col gap-sm">
+<div class="p-md rounded bg-surface-container-low shadow-sm flex flex-col gap-md">
+<!-- Header of Inspector -->
+<div class="flex items-start justify-between pb-sm bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-bold">Authorization Inspector</span>
+<div class="flex items-center gap-xs mt-0.5">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">USR-104</span>
+<span class="px-xs py-0.5 rounded bg-secondary-container/60 text-secondary-fixed font-code-sm text-code-sm font-semibold">ACTIVE</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Lead Examiner NC-8802 (NCIIPC Division II)</span>
+</div>
+<div class="w-9 h-9 rounded bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+</div>
+</div>
+<!-- Credential & Cryptographic Profile -->
+<div class="p-sm rounded bg-surface-container flex flex-col gap-xs font-code-sm text-code-sm">
+<div class="flex justify-between items-center">
+<span class="text-outline">MFA Token:</span>
+<span class="text-secondary font-semibold">FIPS-140-2 Level 3 Smartcard</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-outline">Key Fingerprint:</span>
+<span class="text-on-surface">7F:8A:92:4B:C1:99:E0</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-outline">Last Validation:</span>
+<span class="text-on-surface">26 Sep 2026 18:15:02 IST</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-outline">Privilege Expiry:</span>
+<span class="text-tertiary">31 Dec 2026 (Annual Review)</span>
+</div>
+</div>
+<!-- Assigned CSE Scopes -->
+<div class="flex flex-col gap-xs">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Assigned CSE Scopes</span>
+<div class="p-sm rounded bg-surface-container flex flex-col gap-0.5">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">CSE-014 • NorthGrid Energy PLC</span>
+<span class="px-xs py-0.5 rounded bg-primary/20 text-primary font-code-sm text-code-sm">SUPERVISORY</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline">Sector: Power &amp; Transmission | Tier-1 Critical</span>
+</div>
+<div class="p-sm rounded bg-surface-container flex flex-col gap-0.5">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">CSE-021 • MahaHydro Corp</span>
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-code-sm text-code-sm">ASSESSMENT</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline">Sector: Hydro Generation | Tier-2 Critical</span>
+</div>
+</div>
+<!-- Permitted Capability Matrix -->
+<div class="flex flex-col gap-xs">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Capability Matrix (RBAC &amp; ABAC)</span>
+<div class="flex flex-col gap-1 font-body-sm text-body-sm">
+<div class="flex items-center justify-between py-1 px-sm rounded bg-surface-container">
+<span class="text-on-surface">Supervisory Overview &amp; CSE Assessment</span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold">VIEW, DRILLDOWN</span>
+</div>
+<div class="flex items-center justify-between py-1 px-sm rounded bg-surface-container">
+<span class="text-on-surface">Analytical Findings &amp; Signals</span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold">EXAMINE, ADJUDICATE</span>
+</div>
+<div class="flex items-center justify-between py-1 px-sm rounded bg-surface-container">
+<span class="text-on-surface">Evidence Repository &amp; Sampling</span>
+<span class="font-code-sm text-code-sm text-secondary font-semibold">ACCESS, REQUEST</span>
+</div>
+<div class="flex items-center justify-between py-1 px-sm rounded bg-surface-container">
+<span class="text-on-surface">Verification Sign-off</span>
+<span class="font-code-sm text-code-sm text-primary font-semibold">FORMAL CLOSE</span>
+</div>
+<div class="flex items-center justify-between py-1 px-sm rounded bg-surface-container-lowest">
+<span class="text-on-surface-variant">User Administration / Root Config</span>
+<span class="font-code-sm text-code-sm text-error font-semibold">DENIED (403)</span>
+</div>
+<div class="flex items-center justify-between py-1 px-sm rounded bg-surface-container-lowest">
+<span class="text-on-surface-variant">Rule Alteration &amp; ML Retraining</span>
+<span class="font-code-sm text-code-sm text-error font-semibold">DENIED (403)</span>
+</div>
+</div>
+</div>
+<!-- Direct Actions -->
+<div class="flex flex-col gap-xs pt-xs">
+<a class="w-full flex items-center justify-center gap-xs py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-body-sm text-body-sm font-semibold transition-colors" href="#/governance/audit?actor=USR-104">
+<span class="material-symbols-outlined text-[16px]">history_edu</span>
+<span>View Complete User Audit Trail</span>
+</a>
+<button class="w-full flex items-center justify-center gap-xs py-xs rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-body-sm text-body-sm font-medium transition-colors">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>Modify Scope Grant (Lead Admin Sign-off Required)</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- LOWER SECTION: 3 INSTITUTIONAL GOVERNANCE CARDS -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md mb-xl">
+<!-- CARD A: Control Library & Schema Versioning -->
+<div class="p-md rounded bg-surface-container-low shadow-sm flex flex-col justify-between gap-md">
+<div class="flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[22px]">account_tree</span>
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface">Control Library &amp; Schemas</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-secondary-container/40 text-secondary-fixed font-code-sm text-code-sm font-bold">NCIIPC-CSF v3.2</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Authoritative technical specifications codified for automated telemetry and evidence validation under National Critical Information Infrastructure guidelines.
+        </p>
+<!-- Showcase: CTRL-07 Evolution -->
+<div class="p-sm rounded bg-surface-container flex flex-col gap-xs">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm font-semibold text-primary">CTRL-07: Incident Escalation &amp; Review</span>
+<span class="px-xs py-0.5 rounded bg-surface-container-highest font-code-sm text-code-sm text-on-surface">Schema v3.2</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline">Target: Energy &amp; Power Dispatch Nodes</span>
+<div class="flex flex-col gap-1 mt-1 text-on-surface-variant font-code-sm text-code-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px] text-secondary">check_circle</span>
+<span>5 Required Evidence Artifacts (v3.2 Spec)</span>
+</div>
+<div class="pl-md text-outline">
+              ESC-221 (Telemetry), ESC-222 (Auth), EVD-761 (Response), CLS-421 (Sign-off), INV-104 (RCA)
+            </div>
+<div class="flex items-center gap-xs text-tertiary mt-1">
+<span class="material-symbols-outlined text-[14px]">history</span>
+<span>v3.1 Legacy: 3 artifacts. Control drift active monitoring.</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-sm pt-xs">
+<button class="flex-1 py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm font-medium transition-colors">
+          View 20 Active Controls
+        </button>
+<button class="px-md py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-primary font-body-sm text-body-sm font-medium transition-colors">
+          Changelog
+        </button>
+</div>
+</div>
+<!-- CARD B: Offline Analytical Model Governance -->
+<div class="p-md rounded bg-surface-container-low shadow-sm flex flex-col justify-between gap-md">
+<div class="flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[22px]">psychology</span>
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface">Offline Model Governance</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-primary/20 text-primary font-code-sm text-code-sm font-bold">AN-1.8 Engine</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Strictly local analytical heuristic engines and statistical tree ensembles executing inside the isolated enclave without cloud telemetry or external API calls.
+        </p>
+<!-- Model Specs -->
+<div class="p-sm rounded bg-surface-container flex flex-col gap-xs font-code-sm text-code-sm">
+<div class="flex justify-between items-center">
+<span class="text-outline">Signal Heuristics Engine:</span>
+<span class="text-on-surface">Polars / Local DuckDB v0.10</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-outline">Process Conformance:</span>
+<span class="text-on-surface">Offline PM4Py Token Replay</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-outline">NCIIPC Validation:</span>
+<span class="text-secondary font-semibold">VALIDATED Q3-2026 (Board NC-9)</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-outline">External Network Call:</span>
+<span class="text-secondary font-semibold">ZERO (Air-Gapped Sandbox)</span>
+</div>
+</div>
+<!-- Statutory Note -->
+<div class="p-sm rounded bg-surface-container-lowest flex items-start gap-xs">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">info</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+<strong class="text-on-surface">Statutory Notice:</strong> Automated heuristics provide non-binding supervisory indicators. Formal adjudications are strictly reserved for accredited human examiners.
+          </span>
+</div>
+</div>
+<div class="flex items-center gap-sm pt-xs">
+<button class="w-full py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm font-medium transition-colors">
+          Audit Model Weights &amp; Heuristic Formulas
+        </button>
+</div>
+</div>
+<!-- CARD C: Air-Gapped Security & Enclave Health -->
+<div class="p-md rounded bg-surface-container-low shadow-sm flex flex-col justify-between gap-md">
+<div class="flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[22px]">shield</span>
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface">Enclave Integrity</span>
+</div>
+<div class="flex items-center gap-xs px-xs py-0.5 rounded bg-secondary-container/40 text-secondary-fixed font-code-sm text-code-sm font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>100% ISOLATED</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Hardware and protocol verification ensuring cryptographic non-repudiation, tamper-evident write logs, and complete physical air-gap enforcement.
+        </p>
+<!-- Checklist -->
+<div class="flex flex-col gap-xs font-body-sm text-body-sm">
+<div class="flex items-center justify-between py-1 px-sm rounded bg-surface-container">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[16px]">check_circle</span>
+<span class="text-on-surface">Physical Network Air-Gap</span>
+</div>
+<span class="font-code-sm text-code-sm text-secondary">ACTIVE</span>
+</div>
+<div class="flex items-center justify-between py-1 px-sm rounded bg-surface-container">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[16px]">check_circle</span>
+<span class="text-on-surface">Cloud / External API Calls</span>
+</div>
+<span class="font-code-sm text-code-sm text-secondary">HARD-BLOCKED</span>
+</div>
+<div class="flex items-center justify-between py-1 px-sm rounded bg-surface-container">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[16px]">check_circle</span>
+<span class="text-on-surface">Ledger SHA-256 Checksum</span>
+</div>
+<span class="font-code-sm text-code-sm text-secondary">1,842 BLOCKS OK</span>
+</div>
+<div class="flex items-center justify-between py-1 px-sm rounded bg-surface-container">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[16px]">check_circle</span>
+<span class="text-on-surface">Inactivity Auto-Lock</span>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface">15 MIN ENFORCED</span>
+</div>
+</div>
+</div>
+<div class="pt-xs">
+<button class="w-full flex items-center justify-center gap-xs py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-secondary font-body-sm text-body-sm font-semibold transition-colors">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span>Generate Air-Gap Security Attestation Dossier (PDF)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- ADMINISTRATIVE ACTIVITY & CHANGE LEDGER -->
+<div class="p-md rounded bg-surface-container-low shadow-sm flex flex-col gap-md">
+<div class="flex flex-wrap items-center justify-between gap-sm">
+<div class="flex flex-col">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">receipt_long</span>
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface">Administrative Governance Ledger</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Immutable administrative modifications logged to write-once cryptographic ledger.</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="font-code-sm text-code-sm text-outline">Ledger Root Hash:</span>
+<span class="font-code-sm text-code-sm text-primary px-xs py-0.5 rounded bg-surface-container font-mono">0x4F92...99BA</span>
+<a class="px-sm py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm font-medium transition-colors" href="#/governance/audit">
+          Full Audit Trail →
+        </a>
+</div>
+</div>
+<!-- Ledger Table -->
+<div class="rounded bg-surface-container overflow-hidden">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="bg-surface-container-highest text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider">
+<th class="py-xs px-sm font-semibold">Timestamp (IST)</th>
+<th class="py-xs px-sm font-semibold">Actor / Identity</th>
+<th class="py-xs px-sm font-semibold">Governance Action</th>
+<th class="py-xs px-sm font-semibold">Modification Details</th>
+<th class="py-xs px-sm font-semibold">Approval / Sign-off</th>
+<th class="py-xs px-sm font-semibold text-right">Audit Ref</th>
+</tr>
+</thead>
+<tbody class="divide-none font-code-sm text-code-sm">
+<tr class="hover:bg-surface-container-high/50 transition-colors">
+<td class="py-sm px-sm text-outline whitespace-nowrap">26 Sep 2026 19:35:12</td>
+<td class="py-sm px-sm text-primary font-semibold whitespace-nowrap">USR-001 (Lead Admin)</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-primary/20 text-primary font-semibold">SCOPE_UPDATE</span>
+</td>
+<td class="py-sm px-sm text-on-surface">USR-104 granted SUPERVISORY access for CSE-014 (NorthGrid Energy)</td>
+<td class="py-sm px-sm text-on-surface-variant">Dual-Authorized (Lead Admin NC-1)</td>
+<td class="py-sm px-sm text-right text-secondary whitespace-nowrap">AUD-2026-4821</td>
+</tr>
+<tr class="hover:bg-surface-container-high/50 transition-colors">
+<td class="py-sm px-sm text-outline whitespace-nowrap">26 Sep 2026 14:10:04</td>
+<td class="py-sm px-sm text-primary font-semibold whitespace-nowrap">USR-001 (Lead Admin)</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-secondary-container/40 text-secondary-fixed font-semibold">RULE_DEPLOY</span>
+</td>
+<td class="py-sm px-sm text-on-surface">Activated Rule Version R-2.4 (Execution Gap Heuristics across Q3 Batch)</td>
+<td class="py-sm px-sm text-on-surface-variant">Board Ratification NC-SEC-09</td>
+<td class="py-sm px-sm text-right text-secondary whitespace-nowrap">AUD-2026-4819</td>
+</tr>
+<tr class="hover:bg-surface-container-high/50 transition-colors">
+<td class="py-sm px-sm text-outline whitespace-nowrap">25 Sep 2026 17:05:44</td>
+<td class="py-sm px-sm text-primary font-semibold whitespace-nowrap">USR-001 (Lead Admin)</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-tertiary font-semibold">SCHEMA_UPGRADE</span>
+</td>
+<td class="py-sm px-sm text-on-surface">Upgraded CTRL-07 specification to v3.2; added mandatory ESC-221 telemetry requirement</td>
+<td class="py-sm px-sm text-on-surface-variant">NCIIPC-CSF Working Group</td>
+<td class="py-sm px-sm text-right text-secondary whitespace-nowrap">AUD-2026-4790</td>
+</tr>
+<tr class="hover:bg-surface-container-high/50 transition-colors">
+<td class="py-sm px-sm text-outline whitespace-nowrap">24 Sep 2026 09:00:22</td>
+<td class="py-sm px-sm text-primary font-semibold whitespace-nowrap">USR-001 (Lead Admin)</td>
+<td class="py-sm px-sm whitespace-nowrap">
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-on-surface font-semibold">POLICY_ENFORCE</span>
+</td>
+<td class="py-sm px-sm text-on-surface">Enforced FIPS-140-2 Level 3 hardware token authentication across all Examiner and Supervisor profiles</td>
+<td class="py-sm px-sm text-on-surface-variant">Executive Directive ED-04</td>
+<td class="py-sm px-sm text-right text-secondary whitespace-nowrap">AUD-2026-4752</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- CREATE USER MODAL / DRAWER (HIDDEN BY DEFAULT, TOGGLED VIA JS) -->
+<div class="fixed inset-0 z-50 bg-surface-container-lowest/80 backdrop-blur-sm flex items-center justify-center p-md hidden" id="create-user-modal">
+<div class="w-full max-w-2xl bg-surface-container-low rounded-xl shadow-xl p-md flex flex-col gap-md">
+<!-- Modal Header -->
+<div class="flex items-center justify-between pb-sm bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Provision Institutional Operator</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Grant cryptographically scoped access to SAT-SA Air-Gapped Enclave</span>
+</div>
+<button class="p-xs rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface" id="close-modal-btn">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Form Inputs -->
+<form class="flex flex-col gap-md" id="create-user-form">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Official Full Name</label>
+<input class="px-sm py-xs rounded bg-surface-container text-on-surface font-body-sm text-body-sm focus:outline-none placeholder:text-outline" placeholder="e.g. Vikramaditya Sharma" required="" type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Official Email / ID</label>
+<input class="px-sm py-xs rounded bg-surface-container text-on-surface font-body-sm text-body-sm focus:outline-none placeholder:text-outline" placeholder="v.sharma@nciipc.gov.in" required="" type="email"/>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Assigned Role</label>
+<select class="px-sm py-xs rounded bg-surface-container text-on-surface font-body-sm text-body-sm focus:outline-none">
+<option value="Examiner">Examiner (Accredited)</option>
+<option value="Supervisor">Supervisor (Senior Review)</option>
+<option value="CSE User">CSE User (Evidence Submission Only)</option>
+<option value="Administrator">Administrator (Lead / Root)</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Organization Designation</label>
+<select class="px-sm py-xs rounded bg-surface-container text-on-surface font-body-sm text-body-sm focus:outline-none">
+<option value="NCIIPC">NCIIPC (Headquarters)</option>
+<option value="NorthGrid">NorthGrid Energy PLC (CSE-014)</option>
+<option value="Transco">TransCo-South (CSE-027)</option>
+<option value="HydroCorp">MahaHydro Corp (CSE-021)</option>
+</select>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Authorized CSE Access Scopes</label>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-xs p-sm rounded bg-surface-container font-code-sm text-code-sm">
+<label class="flex items-center gap-xs cursor-pointer">
+<input checked="" class="rounded bg-surface-container-high text-primary" type="checkbox"/>
+<span>CSE-014 (NorthGrid)</span>
+</label>
+<label class="flex items-center gap-xs cursor-pointer">
+<input checked="" class="rounded bg-surface-container-high text-primary" type="checkbox"/>
+<span>CSE-021 (HydroCorp)</span>
+</label>
+<label class="flex items-center gap-xs cursor-pointer">
+<input class="rounded bg-surface-container-high text-primary" type="checkbox"/>
+<span>CSE-027 (Transco)</span>
+</label>
+<label class="flex items-center gap-xs cursor-pointer">
+<input class="rounded bg-surface-container-high text-primary" type="checkbox"/>
+<span>CSE-009 (GasGrid)</span>
+</label>
+</div>
+</div>
+<div class="p-sm rounded bg-surface-container-high/50 flex items-start gap-xs font-code-sm text-code-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-[18px] shrink-0 mt-0.5">verified_user</span>
+<span>
+            Upon creation, an initial hardware-token registration certificate will be generated and signed by the NCIIPC Root CA. No passwords will be sent over unencrypted channels.
+          </span>
+</div>
+<!-- Modal Actions -->
+<div class="flex items-center justify-end gap-sm pt-xs">
+<button class="px-md py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm" id="cancel-modal-btn" type="button">
+            Cancel
+          </button>
+<button class="flex items-center gap-xs px-md py-xs rounded bg-primary-container text-on-primary-container font-body-sm text-body-sm font-semibold hover:brightness-110 shadow-sm" type="submit">
+<span class="material-symbols-outlined text-[16px]">check</span>
+<span>Issue Credentials &amp; Commit to Ledger</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- INLINE CLIENT MICRO-INTERACTIONS SCRIPT -->
+<script>
+    (function initAdminPage() {
+      // Modal interactive handlers
+      const modal = document.getElementById('create-user-modal');
+      const openBtn = document.getElementById('open-user-modal-btn');
+      const closeBtn = document.getElementById('close-modal-btn');
+      const cancelBtn = document.getElementById('cancel-modal-btn');
+      const form = document.getElementById('create-user-form');
+
+      if (openBtn && modal) {
+        openBtn.addEventListener('click', () => {
+          modal.classList.remove('hidden');
+        });
+      }
+
+      const closeModal = () => {
+        if (modal) modal.classList.add('hidden');
+      };
+
+      if (closeBtn) closeBtn.addEventListener('click', closeModal);
+      if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+
+      if (form) {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          alert('Air-Gap Security Notice: Administrative grant queued. Cryptographic ledger block committed successfully.');
+          closeModal();
+        });
+      }
+    })();
+  </script>
+</div></main></div></body></html>

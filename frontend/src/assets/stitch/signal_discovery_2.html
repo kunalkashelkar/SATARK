@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"on-tertiary-fixed":"#351000","surface-container-highest":"#31353c","on-tertiary-fixed-variant":"#7a3000","surface-dim":"#10141a","secondary":"#7bdb80","on-tertiary-container":"#fffdff","primary":"#afc6ff","on-surface-variant":"#c2c6d6","surface-container-high":"#262a31","primary-fixed-dim":"#afc6ff","surface-bright":"#353940","surface-container-lowest":"#0a0e14","on-tertiary":"#561f00","tertiary-container":"#c55100","outline":"#8c90a0","on-error-container":"#ffdad6","on-primary-fixed-variant":"#004299","background":"#10141a","surface":"#10141a","on-primary":"#002d6d","surface-tint":"#afc6ff","on-surface":"#dfe2eb","primary-fixed":"#d9e2ff","on-primary-fixed":"#001944","inverse-surface":"#dfe2eb","on-primary-container":"#fffcff","on-secondary-fixed-variant":"#005319","on-secondary":"#00390e","inverse-on-surface":"#2d3137","surface-variant":"#31353c","secondary-container":"#007124","surface-container":"#1c2026","outline-variant":"#424754","surface-container-low":"#181c22","on-secondary-container":"#91f294","error":"#ffb4ab","error-container":"#93000a","tertiary":"#ffb693","tertiary-fixed-dim":"#ffb693","tertiary-fixed":"#ffdbcc","inverse-primary":"#0059c8","on-error":"#690005","on-background":"#dfe2eb","primary-container":"#1f6feb","on-secondary-fixed":"#002106","secondary-fixed":"#97f999","secondary-fixed-dim":"#7bdb80"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"md":"16px","xl":"32px","margin":"24px","xs":"4px","lg":"24px","sm":"8px","base":"4px","gutter":"16px"},"fontFamily":{"code-md":["JetBrains Mono"],"code-sm":["JetBrains Mono"],"body-sm":["Inter"],"body-md":["Inter"],"headline-md":["Inter"],"body-lg":["Inter"],"label-caps":["Inter"],"headline-sm":["Inter"],"headline-lg":["Inter"]},"fontSize":{"code-md":["14px",{"lineHeight":"1.6","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"1.6","fontWeight":"400"}],"body-sm":["12px",{"lineHeight":"1.5","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"1.5","fontWeight":"400"}],"headline-md":["24px",{"lineHeight":"1.25","letterSpacing":"-0.01em","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"1.5","fontWeight":"400"}],"label-caps":["11px",{"lineHeight":"1.2","letterSpacing":"0.05em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"1.5","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"1.25","letterSpacing":"-0.02em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-[250px] bg-surface-container-low flex flex-col z-50 overflow-y-auto"><div class="p-md pb-sm bg-surface-container"><div class="flex items-center gap-sm mb-xs"><div class="w-sm h-sm rounded-full bg-secondary"></div><span class="font-label-caps text-label-caps uppercase text-on-surface tracking-wider font-bold">Govt of India / NCIIPC</span></div><div class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">SAT-SA</div><div class="font-body-sm text-body-sm text-on-surface-variant">Supervisory Analytics Tool</div></div><nav class="flex-1 px-sm py-sm flex flex-col gap-xs" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded"><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Overview</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="overview" href="#"><span class="material-symbols-outlined text-[16px]">dashboard</span><span>Overview</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Supervision</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="cse-assessments" href="#"><span class="material-symbols-outlined text-[16px]">domain_verification</span><span>CSE Assessments</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="priority-queue" href="#"><span class="material-symbols-outlined text-[16px]">low_priority</span><span>Priority Queue</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="recommended-samples" href="#"><span class="material-symbols-outlined text-[16px]">fact_check</span><span>Recommended Samples</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Analytics</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="execution-gaps" href="#"><span class="material-symbols-outlined text-[16px]">rule_folder</span><span>Execution Gaps</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="negative-space" href="#"><span class="material-symbols-outlined text-[16px]">contrast</span><span>Negative Space</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="process-analysis" href="#"><span class="material-symbols-outlined text-[16px]">account_tree</span><span>Process Analysis</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="evidence-quality" href="#"><span class="material-symbols-outlined text-[16px]">verified</span><span>Evidence Quality</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="behavioural-analysis" href="#"><span class="material-symbols-outlined text-[16px]">psychology</span><span>Behavioural Analysis</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="coverage" href="#"><span class="material-symbols-outlined text-[16px]">radar</span><span>Coverage</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="consistency" href="#"><span class="material-symbols-outlined text-[16px]">stacked_line_chart</span><span>Consistency</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Assessment</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="findings" href="#"><span class="material-symbols-outlined text-[16px]">warning</span><span>Findings</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="evidence" href="#"><span class="material-symbols-outlined text-[16px]">inventory</span><span>Evidence</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="remediation" href="#"><span class="material-symbols-outlined text-[16px]">published_with_changes</span><span>Remediation</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="verification" href="#"><span class="material-symbols-outlined text-[16px]">security</span><span>Verification</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Intelligence</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="historical-trends" href="#"><span class="material-symbols-outlined text-[16px]">timeline</span><span>Historical Trends</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="peer-comparison" href="#"><span class="material-symbols-outlined text-[16px]">compare_arrows</span><span>Peer Comparison</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="signal-discovery" href="#"><span class="material-symbols-outlined text-[16px]">bubble_chart</span><span>Signal Discovery</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Governance</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="audit" href="#"><span class="material-symbols-outlined text-[16px]">policy</span><span>Audit</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="administration" href="#"><span class="material-symbols-outlined text-[16px]">admin_panel_settings</span><span>Administration</span></a></nav><div class="p-sm bg-surface-container-lowest font-code-sm text-code-sm text-outline flex items-center justify-between"><span>SYS-ID: NC-4029</span><span class="w-2 h-2 rounded-full bg-secondary"></span></div></aside><div class="pl-[250px]"><header class="fixed top-0 left-[250px] right-0 h-14 bg-surface-container/95 backdrop-blur-md z-40 px-margin flex items-center justify-between"><div class="flex items-center gap-md"><div class="flex items-center gap-xs font-code-sm text-code-sm text-on-surface-variant"><span class="text-primary font-semibold">SAT-SA</span><span>/</span><span>Overview</span></div><div class="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-code-sm text-code-sm text-secondary font-medium tracking-wide">INTERNAL / AIR-GAPPED (TLS 1.3 / FIPS-140-2)</span></div></div><div class="flex items-center gap-md"><div class="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high"><span class="material-symbols-outlined text-[16px] text-secondary">verified_user</span><span class="font-code-sm text-code-sm text-on-surface">Audit: SYNCED</span></div><button class="relative p-xs rounded hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary"></span></button><div class="flex items-center gap-sm pl-sm"><div class="flex flex-col text-right"><span class="font-body-sm text-body-sm font-semibold text-on-surface leading-tight">Supervisor</span><span class="font-label-caps text-label-caps text-on-surface-variant leading-tight">NCIIPC</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-14 px-margin bg-surface"><div class="flex flex-col w-full text-on-surface">
+<!-- TOP BREADCRUMB & METRIC RUNNER BAR (Injected dynamically into App Shell context) -->
+<div class="flex flex-col gap-sm pb-md">
+<!-- Meta status row -->
+<div class="flex flex-wrap items-center justify-between gap-sm text-on-surface-variant font-code-sm text-code-sm">
+<div class="flex items-center gap-xs">
+<span class="text-primary font-semibold">SAT-SA</span>
+<span class="text-outline">/</span>
+<span class="text-on-surface-variant">Intelligence</span>
+<span class="text-outline">/</span>
+<span class="text-on-surface font-semibold">Signal Discovery</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="flex items-center gap-xs px-sm py-xs bg-surface-container rounded font-code-sm text-code-sm text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+          FIPS-140-2 L3 // AIR-GAP VERIFIED
+        </span>
+<span class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px] text-primary">account_circle</span>
+          Supervisor NC-8802 (NCIIPC)
+        </span>
+</div>
+</div>
+<!-- Header & Action Ribbon -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md pt-xs">
+<div>
+<div class="flex items-center gap-sm">
+<h1 class="font-headline-lg text-headline-lg tracking-tight text-on-surface font-bold">Signal Discovery</h1>
+<span class="px-sm py-xs bg-surface-container-high text-primary font-code-sm text-code-sm rounded">AN-1.8.4-HEURISTICS</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">
+          Identify, correlate, and investigate empirical supervisory signals derived from operational telemetry.
+        </p>
+</div>
+<div class="flex flex-wrap items-center gap-sm">
+<button class="flex items-center gap-xs px-md py-sm rounded bg-surface-container hover:bg-surface-container-high transition-colors font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-primary">refresh</span>
+<span>Refresh Signals</span>
+</button>
+<button class="flex items-center gap-xs px-md py-sm rounded bg-surface-container hover:bg-surface-container-high transition-colors font-body-sm text-body-sm text-on-surface">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+<span>Configure Heuristics</span>
+</button>
+<button class="flex items-center gap-xs px-md py-sm rounded bg-primary text-on-primary hover:bg-primary-fixed transition-colors font-body-sm text-body-sm font-semibold shadow-sm">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span>Export Dossier (ZIP.sig)</span>
+</button>
+</div>
+</div>
+<!-- Statutory Statutory Boundary Banner -->
+<div class="p-md rounded bg-surface-container-low flex items-start gap-md mt-sm">
+<div class="p-xs bg-tertiary-container/30 text-tertiary rounded flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">gavel</span>
+</div>
+<div class="flex flex-col gap-xs min-w-0">
+<div class="flex items-center gap-sm">
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-tertiary font-bold">SUPERVISORY INTERPRETATION BOUNDARY // NCIIPC DIRECTIVE SEC-402</span>
+<span class="px-xs py-0.5 rounded bg-surface-container-highest font-code-sm text-code-sm text-outline">STATUTORY NOTICE</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          A supervisory signal is an empirical analytical observation, <strong class="text-on-surface font-semibold">NOT a final regulatory violation or confirmed finding</strong>. Signals serve to prioritize human examiner attention across disparate telemetry. Final adjudications strictly require examiner verification and adversarial validation.
+        </p>
+</div>
+</div>
+</div>
+<!-- SUMMARY KPI STRIP (6 CARDS) -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-sm pb-md">
+<div class="p-md bg-surface-container-low rounded flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase tracking-wider">Total Signals</span>
+<span class="material-symbols-outlined text-[16px] text-primary">sensors</span>
+</div>
+<div class="mt-sm">
+<div class="font-headline-lg text-headline-lg font-bold text-on-surface">42</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">Across 8 CII CSEs</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-low rounded flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase tracking-wider">High Priority</span>
+<span class="w-2 h-2 rounded-full bg-error"></span>
+</div>
+<div class="mt-sm">
+<div class="font-headline-lg text-headline-lg font-bold text-error">09</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">Immediate docket queue</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-low rounded flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase tracking-wider">Under Review</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary">pending_actions</span>
+</div>
+<div class="mt-sm">
+<div class="font-headline-lg text-headline-lg font-bold text-tertiary">14</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">Active human examiner audit</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-low rounded flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase tracking-wider">Recurring</span>
+<span class="material-symbols-outlined text-[16px] text-primary">history</span>
+</div>
+<div class="mt-sm">
+<div class="font-headline-lg text-headline-lg font-bold text-primary">08</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">≥ 2 Assessment cycles</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-low rounded flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase tracking-wider">Multi-Source</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">hub</span>
+</div>
+<div class="mt-sm">
+<div class="font-headline-lg text-headline-lg font-bold text-secondary">17</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">SIEM + Case + Syslog</div>
+</div>
+</div>
+<div class="p-md bg-surface-container-low rounded flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase tracking-wider">Unresolved Gaps</span>
+<span class="material-symbols-outlined text-[16px] text-outline">query_stats</span>
+</div>
+<div class="mt-sm">
+<div class="font-headline-lg text-headline-lg font-bold text-outline">06</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">Discrepancy / Time drift</div>
+</div>
+</div>
+</div>
+<!-- SCOPE & FILTER TOOLBAR -->
+<div class="bg-surface-container-low rounded p-md mb-md flex flex-col gap-sm">
+<div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-sm">
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Entity (CSE)</label>
+<div class="relative">
+<select class="w-full bg-surface-container text-on-surface font-body-sm text-body-sm px-sm py-xs rounded appearance-none focus:outline-none">
+<option>CSE-014 (NorthGrid Energy) [Active]</option>
+<option>CSE-021 (Western Hydro Sys)</option>
+<option>CSE-027 (National Gas Dispatch)</option>
+<option>All Entities (8 CSEs)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-[14px] text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Sector Scope</label>
+<div class="relative">
+<select class="w-full bg-surface-container text-on-surface font-body-sm text-body-sm px-sm py-xs rounded appearance-none focus:outline-none">
+<option>Energy &amp; Power Grid (CII-01)</option>
+<option>Telecom &amp; Satellite (CII-02)</option>
+<option>Financial Infrastructure (CII-03)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-[14px] text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Assessment Cycle</label>
+<div class="relative">
+<select class="w-full bg-surface-container text-on-surface font-body-sm text-body-sm px-sm py-xs rounded appearance-none focus:outline-none">
+<option>Q3 2026 (Active Supervisory)</option>
+<option>Q2 2026 (Historical Baseline)</option>
+<option>Q1 2026 (Archived)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-[14px] text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Signal Type</label>
+<div class="relative">
+<select class="w-full bg-surface-container text-on-surface font-body-sm text-body-sm px-sm py-xs rounded appearance-none focus:outline-none">
+<option>All Types (11 Categories)</option>
+<option>Execution Gap</option>
+<option>Negative Space</option>
+<option>Process Deviation</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-[14px] text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Priority</label>
+<div class="relative">
+<select class="w-full bg-surface-container text-on-surface font-body-sm text-body-sm px-sm py-xs rounded appearance-none focus:outline-none">
+<option>All Priorities (High/Med/Low)</option>
+<option>High Priority Only</option>
+<option>Medium Priority Only</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-[14px] text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Evidence Strength</label>
+<div class="relative">
+<select class="w-full bg-surface-container text-on-surface font-body-sm text-body-sm px-sm py-xs rounded appearance-none focus:outline-none">
+<option>Strong &amp; Medium (≥ 60%)</option>
+<option>Strong Only (≥ 80%)</option>
+<option>All Confidence Strata</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-[14px] text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Recurrence</label>
+<div class="relative">
+<select class="w-full bg-surface-container text-on-surface font-body-sm text-body-sm px-sm py-xs rounded appearance-none focus:outline-none">
+<option>All Recurrence</option>
+<option>Recurring (≥ 2 Cycles)</option>
+<option>First Time Detected</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-[14px] text-outline pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Category Pills & Global Fast Query Search -->
+<div class="flex flex-wrap items-center justify-between gap-sm pt-xs">
+<div class="flex flex-wrap items-center gap-xs">
+<button class="px-sm py-xs rounded-full bg-primary text-on-primary font-label-caps text-label-caps uppercase font-bold">All (42)</button>
+<button class="px-sm py-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">Execution Gap (10)</button>
+<button class="px-sm py-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">Negative Space (7)</button>
+<button class="px-sm py-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">Process Dev (6)</button>
+<button class="px-sm py-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">Investigation (5)</button>
+<button class="px-sm py-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">Behavioural (4)</button>
+<button class="px-sm py-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">Consistency (4)</button>
+<button class="px-sm py-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">Historical (3)</button>
+<button class="px-sm py-xs rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-label-caps text-label-caps uppercase">Coverage (3)</button>
+</div>
+<div class="relative w-full lg:w-96">
+<span class="material-symbols-outlined absolute left-2 top-2 text-[16px] text-outline">search</span>
+<input class="w-full bg-surface-container-lowest text-on-surface pl-8 pr-sm py-xs font-code-sm text-code-sm rounded placeholder-outline focus:outline-none" placeholder="Search SIG-0142, CASE-1042, FND-0142, CTRL-07, EVD-742..." type="text"/>
+</div>
+</div>
+</div>
+<!-- MAIN DUAL-COLUMN SECTION -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-md items-start">
+<!-- LEFT COLUMN: SIGNAL LEDGER & DISTRIBUTION (60% ~ 7 cols) -->
+<div class="lg:col-span-7 flex flex-col gap-md">
+<!-- Horizontal Distribution Breakdown -->
+<div class="bg-surface-container-low p-md rounded flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-bold">
+<span class="material-symbols-outlined text-[15px] text-primary">stacked_bar_chart</span>
+<span>Signal Spectrum Distribution by Heuristic Class</span>
+</div>
+<span class="font-code-sm text-code-sm text-outline">42 Active Signals</span>
+</div>
+<!-- Multi-segment progress ribbon -->
+<div class="h-3 w-full rounded bg-surface-container flex overflow-hidden">
+<div class="bg-primary hover:opacity-90 transition-opacity" style="width: 23.8%" title="Execution Gap: 10 (23.8%)"></div>
+<div class="bg-tertiary hover:opacity-90 transition-opacity" style="width: 16.6%" title="Negative Space: 7 (16.6%)"></div>
+<div class="bg-secondary hover:opacity-90 transition-opacity" style="width: 14.2%" title="Process Deviation: 6 (14.2%)"></div>
+<div class="bg-primary-container hover:opacity-90 transition-opacity" style="width: 11.9%" title="Investigation: 5 (11.9%)"></div>
+<div class="bg-error hover:opacity-90 transition-opacity" style="width: 9.5%" title="Behavioural: 4 (9.5%)"></div>
+<div class="bg-secondary-fixed-dim hover:opacity-90 transition-opacity" style="width: 9.5%" title="Consistency: 4 (9.5%)"></div>
+<div class="bg-tertiary-fixed-dim hover:opacity-90 transition-opacity" style="width: 7.2%" title="Coverage Gap: 3 (7.2%)"></div>
+<div class="bg-outline hover:opacity-90 transition-opacity" style="width: 7.2%" title="Historical: 3 (7.2%)"></div>
+</div>
+<div class="flex flex-wrap items-center justify-between text-on-surface-variant font-code-sm text-code-sm pt-xs">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary"></span>Gap (10)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-tertiary"></span>NegSpace (7)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary"></span>Process (6)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary-container"></span>Inves (5)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-error"></span>Behav (4)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary-fixed-dim"></span>Consist (4)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-outline"></span>Hist/Cov (6)</span>
+</div>
+</div>
+<!-- Enterprise Dense Ledger Table -->
+<div class="bg-surface-container-low rounded overflow-hidden shadow-sm">
+<div class="p-md bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface">Supervisory Signal Ledger</span>
+<span class="px-xs py-0.5 rounded bg-surface-container-highest text-primary font-code-sm text-code-sm font-semibold">6 of 42 In-Scope</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant font-code-sm text-code-sm">
+<span>Sort: Priority (Desc)</span>
+<span class="material-symbols-outlined text-[14px]">unfold_more</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead class="bg-surface-container-lowest text-on-surface-variant font-label-caps text-label-caps uppercase tracking-wider">
+<tr>
+<th class="px-md py-sm">Signal ID</th>
+<th class="px-sm py-sm">CSE</th>
+<th class="px-sm py-sm">Type</th>
+<th class="px-md py-sm">Observation Description</th>
+<th class="px-sm py-sm">Priority</th>
+<th class="px-sm py-sm">Evidence Strength</th>
+<th class="px-sm py-sm">Uncertainty</th>
+<th class="px-sm py-sm">Recurr</th>
+<th class="px-sm py-sm">Correlated</th>
+<th class="px-sm py-sm">Status</th>
+<th class="px-md py-sm text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-transparent">
+<!-- ACTIVE SELECTED ROW: SIG-0142 -->
+<tr class="bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer ring-1 ring-inset ring-primary/40">
+<td class="px-md py-md font-code-sm text-code-sm font-semibold text-primary">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span>SIG-0142</span>
+</div>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface">CSE-014</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">Execution Gap</td>
+<td class="px-md py-md text-on-surface max-w-xs">
+<div class="font-semibold text-on-surface truncate">Expected escalation step not observed</div>
+<div class="text-on-surface-variant text-body-sm truncate">Case CASE-1042 bypassed statutory ESC-221</div>
+</td>
+<td class="px-sm py-md">
+<span class="inline-flex items-center gap-1 px-sm py-0.5 rounded-full bg-error/20 text-error font-code-sm text-code-sm font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> HIGH
+                  </span>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm">
+<span class="text-secondary font-bold">STRONG</span> <span class="text-on-surface-variant">(88%)</span>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-secondary">LOW</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface">2 Cycles</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-primary font-bold">5 Signals</td>
+<td class="px-sm py-md">
+<span class="px-sm py-0.5 rounded bg-tertiary-container/30 text-tertiary font-label-caps text-label-caps uppercase">REVIEW</span>
+</td>
+<td class="px-md py-md text-right font-code-sm text-code-sm font-bold text-primary">
+<span class="flex items-center justify-end gap-1">Focus <span class="material-symbols-outlined text-[14px]">arrow_forward</span></span>
+</td>
+</tr>
+<!-- ROW 2: SIG-0138 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+<td class="px-md py-md font-code-sm text-code-sm text-on-surface font-semibold">SIG-0138</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">CSE-014</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">Negative Space</td>
+<td class="px-md py-md text-on-surface-variant max-w-xs truncate">
+                  Expected response evidence not represented in archive
+                </td>
+<td class="px-sm py-md">
+<span class="inline-flex items-center gap-1 px-sm py-0.5 rounded-full bg-error/20 text-error font-code-sm text-code-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> HIGH
+                  </span>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm">
+<span class="text-tertiary">MEDIUM</span> <span class="text-outline">(64%)</span>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-tertiary">MODERATE</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">2 Cycles</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-outline">4 Signals</td>
+<td class="px-sm py-md">
+<span class="px-sm py-0.5 rounded bg-tertiary-container/30 text-tertiary font-label-caps text-label-caps uppercase">REVIEW</span>
+</td>
+<td class="px-md py-md text-right font-code-sm text-code-sm text-outline hover:text-primary">Inspect →</td>
+</tr>
+<!-- ROW 3: SIG-0119 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+<td class="px-md py-md font-code-sm text-code-sm text-on-surface font-semibold">SIG-0119</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">CSE-014</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">Consistency</td>
+<td class="px-md py-md text-on-surface-variant max-w-xs truncate">
+                  Conflicting response state across case system vs syslog
+                </td>
+<td class="px-sm py-md">
+<span class="inline-flex items-center gap-1 px-sm py-0.5 rounded-full bg-tertiary/20 text-tertiary font-code-sm text-code-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> MEDIUM
+                  </span>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm">
+<span class="text-secondary">STRONG</span> <span class="text-outline">(91%)</span>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-secondary">LOW</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">1 Cycle</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-outline">3 Signals</td>
+<td class="px-sm py-md">
+<span class="px-sm py-0.5 rounded bg-tertiary-container/30 text-tertiary font-label-caps text-label-caps uppercase">REVIEW</span>
+</td>
+<td class="px-md py-md text-right font-code-sm text-code-sm text-outline hover:text-primary">Inspect →</td>
+</tr>
+<!-- ROW 4: SIG-0107 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+<td class="px-md py-md font-code-sm text-code-sm text-on-surface font-semibold">SIG-0107</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">CSE-021</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">Coverage Gap</td>
+<td class="px-md py-md text-on-surface-variant max-w-xs truncate">
+                  Control CTRL-04 evidence coverage below 60% requirement
+                </td>
+<td class="px-sm py-md">
+<span class="inline-flex items-center gap-1 px-sm py-0.5 rounded-full bg-tertiary/20 text-tertiary font-code-sm text-code-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> MEDIUM
+                  </span>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm">
+<span class="text-tertiary">MEDIUM</span> <span class="text-outline">(72%)</span>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-tertiary">MODERATE</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">1 Cycle</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-outline">2 Signals</td>
+<td class="px-sm py-md">
+<span class="px-sm py-0.5 rounded bg-primary-container/30 text-primary font-label-caps text-label-caps uppercase">CANDIDATE</span>
+</td>
+<td class="px-md py-md text-right font-code-sm text-code-sm text-outline hover:text-primary">Inspect →</td>
+</tr>
+<!-- ROW 5: SIG-0094 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+<td class="px-md py-md font-code-sm text-code-sm text-on-surface font-semibold">SIG-0094</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">CSE-014</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-on-surface-variant">Behavioural</td>
+<td class="px-md py-md text-on-surface-variant max-w-xs truncate">
+                  Late-stage evidence submission burst within 48h of cutoff
+                </td>
+<td class="px-sm py-md">
+<span class="inline-flex items-center gap-1 px-sm py-0.5 rounded-full bg-error/20 text-error font-code-sm text-code-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span> HIGH
+                  </span>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm">
+<span class="text-secondary">STRONG</span> <span class="text-outline">(85%)</span>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-tertiary">MODERATE</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-error font-bold">3 Cycles</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-outline">4 Signals</td>
+<td class="px-sm py-md">
+<span class="px-sm py-0.5 rounded bg-tertiary-container/30 text-tertiary font-label-caps text-label-caps uppercase">REVIEW</span>
+</td>
+<td class="px-md py-md text-right font-code-sm text-code-sm text-outline hover:text-primary">Inspect →</td>
+</tr>
+<!-- ROW 6: SIG-0082 -->
+<tr class="bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer">
+<td class="px-md py-md font-code-sm text-code-sm text-outline font-semibold">SIG-0082</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-outline">CSE-027</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-outline">Process Dev</td>
+<td class="px-md py-md text-outline max-w-xs truncate">
+                  Investigation bypassed straight to closure without action note
+                </td>
+<td class="px-sm py-md">
+<span class="inline-flex items-center gap-1 px-sm py-0.5 rounded-full bg-surface-container-highest text-outline font-code-sm text-code-sm">
+                    LOW
+                  </span>
+</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-outline">
+                  MEDIUM (58%)
+                </td>
+<td class="px-sm py-md font-code-sm text-code-sm text-error">HIGH</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-outline">0 Cycles</td>
+<td class="px-sm py-md font-code-sm text-code-sm text-outline">1 Signal</td>
+<td class="px-sm py-md">
+<span class="px-sm py-0.5 rounded bg-surface-container-highest text-outline font-label-caps text-label-caps uppercase">DISMISSED</span>
+</td>
+<td class="px-md py-md text-right font-code-sm text-code-sm text-outline hover:text-primary">Inspect →</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Ledger Footer Pagination & Telemetry Stamp -->
+<div class="p-sm bg-surface-container-lowest flex items-center justify-between text-on-surface-variant font-code-sm text-code-sm">
+<span>Showing 1-6 of 42 empirical signals (Heuristic engine active: TLS-sync 12:44:02 IST)</span>
+<div class="flex items-center gap-xs">
+<button class="px-xs py-0.5 bg-surface-container rounded hover:bg-surface-container-high text-on-surface">←</button>
+<span class="px-xs text-primary font-bold">1</span>
+<span class="px-xs">2</span>
+<span class="px-xs">3</span>
+<button class="px-xs py-0.5 bg-surface-container rounded hover:bg-surface-container-high text-on-surface">→</button>
+</div>
+</div>
+</div>
+<!-- Quick Guidance Annotation Panel -->
+<div class="bg-surface-container-low p-md rounded flex items-center justify-between gap-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-[24px]">terminal</span>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">Algorithmic Heuristic Ingestion</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Signals are derived mathematically from SIEM event-delta logs, case ticketing states, and offline PM4Py conformance traces.</div>
+</div>
+</div>
+<span class="font-code-sm text-code-sm text-secondary bg-surface-container px-sm py-xs rounded shrink-0">HEURISTIC R-2.4 ACTIVE</span>
+</div>
+</div>
+<!-- RIGHT COLUMN: SIGNAL INSPECTION & FUSION DRAWER (40% ~ 5 cols) -->
+<div class="lg:col-span-5 flex flex-col gap-md">
+<!-- Signal Inspection Header Card -->
+<div class="bg-surface-container-low rounded p-md flex flex-col gap-sm shadow-md">
+<div class="flex items-start justify-between">
+<div>
+<div class="flex items-center gap-xs">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">SIG-0142</span>
+<span class="px-sm py-0.5 rounded bg-error/20 text-error font-code-sm text-code-sm font-bold">HIGH PRIORITY</span>
+<span class="px-sm py-0.5 rounded bg-tertiary-container/30 text-tertiary font-label-caps text-label-caps uppercase">UNDER REVIEW</span>
+</div>
+<div class="font-headline-sm text-headline-sm text-primary font-semibold mt-xs">Expected Escalation Step Not Observed</div>
+</div>
+<button class="p-xs hover:bg-surface-container rounded text-outline hover:text-on-surface" title="Expand inspection full screen">
+<span class="material-symbols-outlined text-[18px]">open_in_full</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-xs bg-surface-container p-sm rounded font-code-sm text-code-sm">
+<div><span class="text-outline">Entity:</span> <span class="text-on-surface font-semibold">CSE-014 (NorthGrid)</span></div>
+<div><span class="text-outline">Control:</span> <span class="text-primary font-semibold">CTRL-07 v3.2</span></div>
+<div><span class="text-outline">Case Key:</span> <span class="text-on-surface font-semibold">CASE-1042</span></div>
+<div><span class="text-outline">Cycle:</span> <span class="text-on-surface-variant font-semibold">Q3 2026 (Active)</span></div>
+</div>
+</div>
+<!-- Expected vs Observed Process Analysis -->
+<div class="bg-surface-container-low rounded p-md flex flex-col gap-sm">
+<div class="flex items-center gap-xs font-label-caps text-label-caps uppercase text-tertiary font-bold">
+<span class="material-symbols-outlined text-[16px]">compare</span>
+<span>Why was this signal generated? (Conformance Delta)</span>
+</div>
+<div class="flex flex-col gap-sm">
+<!-- Expected Sequence -->
+<div>
+<div class="font-label-caps text-label-caps uppercase text-outline mb-xs">Statutory Standard Expected Sequence</div>
+<div class="flex items-center gap-1 font-code-sm text-code-sm overflow-x-auto pb-1">
+<span class="px-xs py-1 rounded bg-surface-container text-on-surface">Alert</span>
+<span class="text-outline">→</span>
+<span class="px-xs py-1 rounded bg-surface-container text-on-surface">Case</span>
+<span class="text-outline">→</span>
+<span class="px-xs py-1 rounded bg-surface-container text-on-surface">Investigation</span>
+<span class="text-outline">→</span>
+<span class="px-xs py-1 rounded bg-secondary/20 text-secondary font-bold ring-1 ring-secondary/40">[ESCALATION]</span>
+<span class="text-outline">→</span>
+<span class="px-xs py-1 rounded bg-surface-container text-on-surface">Response</span>
+<span class="text-outline">→</span>
+<span class="px-xs py-1 rounded bg-surface-container text-on-surface">Closure</span>
+</div>
+</div>
+<!-- Observed Sequence -->
+<div>
+<div class="font-label-caps text-label-caps uppercase text-error mb-xs">Observed Telemetry Sequence (CASE-1042)</div>
+<div class="flex items-center gap-1 font-code-sm text-code-sm overflow-x-auto pb-1">
+<span class="px-xs py-1 rounded bg-surface-container text-on-surface">Alert</span>
+<span class="text-outline">→</span>
+<span class="px-xs py-1 rounded bg-surface-container text-on-surface">Case</span>
+<span class="text-outline">→</span>
+<span class="px-xs py-1 rounded bg-surface-container text-on-surface">Investigation</span>
+<span class="text-outline">→</span>
+<span class="px-xs py-1 rounded bg-error/20 text-error font-bold line-through ring-1 ring-error/40">[MISSING/SKIPPED]</span>
+<span class="text-outline">→</span>
+<span class="px-xs py-1 rounded bg-surface-container text-on-surface">Response</span>
+<span class="text-outline">→</span>
+<span class="px-xs py-1 rounded bg-surface-container text-on-surface">Closure</span>
+</div>
+</div>
+</div>
+<div class="p-sm bg-surface-container rounded text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+<strong class="text-on-surface">Analytical Discrepancy:</strong> Case CASE-1042 triggered High Severity SCADA alert ALR-8821 on 2026-07-14. Operational records reflect direct handover from investigation INV-338 to containment response RES-118 with zero cryptographic record of required supervisory escalation ESC-221.
+        </div>
+</div>
+<!-- Correlation & Evidence Fusion Network -->
+<div class="bg-surface-container-low rounded p-md flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs font-label-caps text-label-caps uppercase text-primary font-bold">
+<span class="material-symbols-outlined text-[16px]">bubble_chart</span>
+<span>Signal Correlation &amp; Evidence Fusion Network</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-primary/20 text-primary font-code-sm text-code-sm">5 Convergent Links</span>
+</div>
+<div class="p-md bg-surface-container rounded flex flex-col gap-md relative overflow-hidden">
+<!-- Central Hub Indicator -->
+<div class="flex items-center justify-between pb-xs bg-surface-container-lowest p-sm rounded">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-code-sm text-code-sm text-on-surface font-bold">Fusion Node: CASE-1042 • CTRL-07</span>
+</div>
+<span class="font-code-sm text-code-sm text-secondary">Convergence 0.94</span>
+</div>
+<!-- Network node cluster visualization -->
+<div class="grid grid-cols-2 gap-sm font-code-sm text-code-sm">
+<div class="p-xs bg-surface-container-lowest rounded flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="text-on-surface-variant truncate">GAP-0071 (Missing Trace)</span>
+</div>
+<div class="p-xs bg-surface-container-lowest rounded flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span class="text-on-surface-variant truncate">NS-0041 (Archive Null)</span>
+</div>
+<div class="p-xs bg-surface-container-lowest rounded flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="text-on-surface-variant truncate">PD-0031 (Flow Bypass)</span>
+</div>
+<div class="p-xs bg-surface-container-lowest rounded flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+<span class="text-on-surface-variant truncate">CON-0018 (State Clash)</span>
+</div>
+<div class="p-xs bg-surface-container-lowest rounded flex items-center gap-xs col-span-2">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+<span class="text-on-surface-variant truncate">HIS-0008 (Recurring Precedent: Q2 2025, Q1 2026)</span>
+</div>
+</div>
+<!-- Target Candidate Finding link -->
+<div class="p-sm bg-primary/10 rounded flex items-center justify-between">
+<div class="flex items-center gap-xs font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">target</span>
+<span class="text-primary font-bold">Target Finding Proposal: FND-0142</span>
+</div>
+<span class="text-on-surface-variant font-code-sm text-code-sm">Non-Adjudicated</span>
+</div>
+</div>
+</div>
+<!-- Multi-Factor Uncertainty & Evidence Confidence Gauge -->
+<div class="bg-surface-container-low rounded p-md flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-bold">Multi-Factor Uncertainty &amp; Evidence Context</span>
+<span class="font-code-sm text-code-sm text-outline">PM4Py Conformance Model</span>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="p-sm bg-surface-container rounded flex flex-col gap-xs">
+<div class="flex justify-between font-code-sm text-code-sm">
+<span class="text-on-surface-variant">Evidence Completeness</span>
+<span class="text-primary font-bold">86%</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-1.5 rounded overflow-hidden">
+<div class="bg-primary h-full" style="width: 86%"></div>
+</div>
+<span class="text-body-sm text-on-surface-variant">Low-to-Moderate Uncertainty</span>
+</div>
+<div class="p-sm bg-surface-container rounded flex flex-col gap-xs">
+<div class="flex justify-between font-code-sm text-code-sm">
+<span class="text-on-surface-variant">Mapping Confidence</span>
+<span class="text-secondary font-bold">92%</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-1.5 rounded overflow-hidden">
+<div class="bg-secondary h-full" style="width: 92%"></div>
+</div>
+<span class="text-body-sm text-on-surface-variant">Direct Telemetry Anchors</span>
+</div>
+<div class="p-sm bg-surface-container rounded flex flex-col gap-xs">
+<div class="flex justify-between font-code-sm text-code-sm">
+<span class="text-on-surface-variant">Timestamp Consistency</span>
+<span class="text-secondary font-bold">92%</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-1.5 rounded overflow-hidden">
+<div class="bg-secondary h-full" style="width: 92%"></div>
+</div>
+<span class="text-body-sm text-on-surface-variant">PTP-Synced Hardware Clock</span>
+</div>
+<div class="p-sm bg-surface-container rounded flex flex-col gap-xs">
+<div class="flex justify-between font-code-sm text-code-sm">
+<span class="text-on-surface-variant">Precedent Strength</span>
+<span class="text-tertiary font-bold">2 Prior Cycles</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-1.5 rounded overflow-hidden">
+<div class="bg-tertiary h-full" style="width: 66%"></div>
+</div>
+<span class="text-body-sm text-on-surface-variant">Established Trend in CSE-014</span>
+</div>
+</div>
+<div class="p-xs bg-surface-container-lowest rounded font-code-sm text-code-sm text-outline flex justify-between">
+<span>Engine: AN-1.8.4 Offline PM4Py</span>
+<span>Rule: R-2.4 (Execution Gap Heuristic)</span>
+</div>
+</div>
+<!-- Longitudinal Signal Evolution Timeline -->
+<div class="bg-surface-container-low rounded p-md flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-bold">Longitudinal Signal Evolution (Assessment Cycles)</span>
+<span class="material-symbols-outlined text-[16px] text-primary">timeline</span>
+</div>
+<div class="relative pl-6 flex flex-col gap-md py-xs font-code-sm text-code-sm">
+<!-- Timeline Vertical Track -->
+<div class="absolute left-2.5 top-2 bottom-2 w-0.5 bg-surface-container-highest"></div>
+<!-- Event 1 -->
+<div class="relative flex items-start gap-sm">
+<span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<div>
+<div class="text-on-surface font-semibold">Q2 2025: First related occurrence observed</div>
+<div class="text-on-surface-variant text-body-sm">Initial anomaly detected during routine grid SCADA review.</div>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="relative flex items-start gap-sm">
+<span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<div>
+<div class="text-on-surface font-semibold">Q4 2025: Compliant (Escalations verified)</div>
+<div class="text-on-surface-variant text-body-sm">CSE-014 uploaded all ESC dossiers. Conformance reached 98%.</div>
+</div>
+</div>
+<!-- Event 3 -->
+<div class="relative flex items-start gap-sm">
+<span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<div>
+<div class="text-on-surface font-semibold">Q1 2026: Single escalation lag flagged</div>
+<div class="text-on-surface-variant text-body-sm">Signal SIG-0044 registered; closed after informal supervisor inquiry.</div>
+</div>
+</div>
+<!-- Event 4 -->
+<div class="relative flex items-start gap-sm">
+<span class="absolute -left-6 top-1 w-2.5 h-2.5 rounded-full bg-error animate-pulse"></span>
+<div>
+<div class="text-error font-bold">Q3 2026: Recurring pattern detected (SIG-0142)</div>
+<div class="text-on-surface text-body-sm">Telemetry verifies systemic bypass of ESC-221 step in CASE-1042.</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Supporting Evidence & Cryptographic Provenance -->
+<div class="bg-surface-container-low rounded p-md flex flex-col gap-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant font-bold">Supporting Evidence &amp; Cryptographic Provenance</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">verified</span>
+</div>
+<div class="flex flex-col gap-xs font-code-sm text-code-sm">
+<div class="p-sm bg-surface-container rounded flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-on-surface font-semibold">EVD-742 • Investigation Record</span>
+<span class="text-outline text-body-sm font-mono truncate max-w-[200px]">SHA-256: 7ac419fb2190...</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-secondary/20 text-secondary font-bold text-label-caps uppercase">VERIFIED</span>
+</div>
+<div class="p-sm bg-surface-container rounded flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-on-surface font-semibold">EVD-761 • Containment Response Log</span>
+<span class="text-outline text-body-sm font-mono truncate max-w-[200px]">SHA-256: 9f8a4e320d18...</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-secondary/20 text-secondary font-bold text-label-caps uppercase">VERIFIED</span>
+</div>
+<div class="p-sm bg-surface-container rounded flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-error font-semibold">ESC-221 • Statutory Escalation Dossier</span>
+<span class="text-outline text-body-sm">Status: NOT SUBMITTED IN REPO</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-error/20 text-error font-bold text-label-caps uppercase">DEMANDED</span>
+</div>
+</div>
+</div>
+<!-- Human Examiner Adjudication & Decision Panel -->
+<div class="bg-surface-container rounded p-md flex flex-col gap-sm shadow-xl">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">policy</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">Human Examiner Adjudication Panel</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Empirical observations require human supervisor appraisal before graduating into regulatory compliance dockets.
+        </p>
+<!-- Adjudication actions stack -->
+<div class="flex flex-col gap-xs pt-xs">
+<button class="w-full flex items-center justify-center gap-xs px-md py-sm bg-primary text-on-primary hover:bg-primary-fixed rounded font-body-sm text-body-sm font-bold shadow-sm transition-colors">
+<span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
+<span>Create Candidate Finding (FND-0142)</span>
+</button>
+<div class="grid grid-cols-2 gap-xs">
+<button class="flex items-center justify-center gap-xs px-sm py-xs bg-surface-container-high hover:bg-surface-bright text-on-surface rounded font-body-sm text-body-sm transition-colors">
+<span class="material-symbols-outlined text-[16px] text-primary">link</span>
+<span>Correlate Findings</span>
+</button>
+<button class="flex items-center justify-center gap-xs px-sm py-xs bg-surface-container-high hover:bg-surface-bright text-on-surface rounded font-body-sm text-body-sm transition-colors">
+<span class="material-symbols-outlined text-[16px] text-tertiary">contact_support</span>
+<span>Request Evidence (RFI)</span>
+</button>
+</div>
+<div class="grid grid-cols-2 gap-xs">
+<button class="flex items-center justify-center gap-xs px-sm py-xs bg-surface-container-high hover:bg-surface-bright text-error rounded font-body-sm text-body-sm transition-colors">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+<span>Dismiss with Rationale</span>
+</button>
+<button class="flex items-center justify-center gap-xs px-sm py-xs bg-surface-container-high hover:bg-surface-bright text-on-surface-variant hover:text-on-surface rounded font-body-sm text-body-sm transition-colors">
+<span class="material-symbols-outlined text-[16px]">edit_note</span>
+<span>Add Examiner Note</span>
+</button>
+</div>
+</div>
+<!-- Institutional Legal Footer -->
+<div class="p-sm bg-surface-container-lowest rounded mt-xs font-code-sm text-code-sm text-outline leading-tight">
+<span class="text-tertiary font-bold">SUPERVISORY MAXIM:</span> SIGNAL ≠ FINDING | PRIORITY ≠ DECISION | CORRELATION ≠ PROOF. SAT-SA provides mathematical evidence fusion; the accredited human examiner renders the formal determination.
+        </div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>

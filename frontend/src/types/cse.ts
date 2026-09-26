@@ -4,18 +4,21 @@ export interface CSEAssessment {
   id: string;
   cseId: string;
   cseName: string;
-  sector: string;
+  sector: 'Energy' | 'Banking' | 'Telecom' | 'Transport' | 'Oil & Gas';
   period: string;
-  evidenceReadiness: number; // percentage
-  supervisoryPriority: Priority;
+  evidenceReadiness: number; // percentage (e.g., 71% for CSE-014)
+  readinessCategory: 'Deficient' | 'Acceptable' | 'Robust';
+  supervisoryPriority: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
   executionGapsCount: number;
   negativeSpaceCount: number;
   processDeviationsCount: number;
   openFindingsCount: number;
+  criticalFindingsCount: number;
   remediationCount: number;
-  status: 'UNDER_EXAMINATION' | 'PENDING_SUBMISSION' | 'ASSESSMENT_COMPLETED';
-  claimedCapability: 'HIGH' | 'MEDIUM' | 'LOW';
-  observedCapability: 'HIGH' | 'MEDIUM' | 'LOW';
-  capabilityDiscrepancy: boolean;
+  status: 'Review Required' | 'Under Review' | 'Monitoring';
+  claimedCapability: number; // e.g. 24 controls claimed
+  observedCapability: number; // e.g. 19 controls observed
+  capabilityDiscrepancyCount: number; // 5 controls
+  primarySignal: string;
   signalsSummary: string[];
 }

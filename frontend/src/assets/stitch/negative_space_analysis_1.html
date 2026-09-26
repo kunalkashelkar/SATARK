@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"on-tertiary-fixed":"#351000","surface-container-highest":"#31353c","on-tertiary-fixed-variant":"#7a3000","surface-dim":"#10141a","secondary":"#7bdb80","on-tertiary-container":"#fffdff","primary":"#afc6ff","on-surface-variant":"#c2c6d6","surface-container-high":"#262a31","primary-fixed-dim":"#afc6ff","surface-bright":"#353940","surface-container-lowest":"#0a0e14","on-tertiary":"#561f00","tertiary-container":"#c55100","outline":"#8c90a0","on-error-container":"#ffdad6","on-primary-fixed-variant":"#004299","background":"#10141a","surface":"#10141a","on-primary":"#002d6d","surface-tint":"#afc6ff","on-surface":"#dfe2eb","primary-fixed":"#d9e2ff","on-primary-fixed":"#001944","inverse-surface":"#dfe2eb","on-primary-container":"#fffcff","on-secondary-fixed-variant":"#005319","on-secondary":"#00390e","inverse-on-surface":"#2d3137","surface-variant":"#31353c","secondary-container":"#007124","surface-container":"#1c2026","outline-variant":"#424754","surface-container-low":"#181c22","on-secondary-container":"#91f294","error":"#ffb4ab","error-container":"#93000a","tertiary":"#ffb693","tertiary-fixed-dim":"#ffb693","tertiary-fixed":"#ffdbcc","inverse-primary":"#0059c8","on-error":"#690005","on-background":"#dfe2eb","primary-container":"#1f6feb","on-secondary-fixed":"#002106","secondary-fixed":"#97f999","secondary-fixed-dim":"#7bdb80"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"md":"16px","xl":"32px","margin":"24px","xs":"4px","lg":"24px","sm":"8px","base":"4px","gutter":"16px"},"fontFamily":{"code-md":["JetBrains Mono"],"code-sm":["JetBrains Mono"],"body-sm":["Inter"],"body-md":["Inter"],"headline-md":["Inter"],"body-lg":["Inter"],"label-caps":["Inter"],"headline-sm":["Inter"],"headline-lg":["Inter"]},"fontSize":{"code-md":["14px",{"lineHeight":"1.6","fontWeight":"400"}],"code-sm":["12px",{"lineHeight":"1.6","fontWeight":"400"}],"body-sm":["12px",{"lineHeight":"1.5","fontWeight":"400"}],"body-md":["14px",{"lineHeight":"1.5","fontWeight":"400"}],"headline-md":["24px",{"lineHeight":"1.25","letterSpacing":"-0.01em","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"1.5","fontWeight":"400"}],"label-caps":["11px",{"lineHeight":"1.2","letterSpacing":"0.05em","fontWeight":"600"}],"headline-sm":["20px",{"lineHeight":"1.5","fontWeight":"600"}],"headline-lg":["32px",{"lineHeight":"1.25","letterSpacing":"-0.02em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-[250px] bg-surface-container-low flex flex-col z-50 overflow-y-auto"><div class="p-md pb-sm bg-surface-container"><div class="flex items-center gap-sm mb-xs"><div class="w-sm h-sm rounded-full bg-secondary"></div><span class="font-label-caps text-label-caps uppercase text-on-surface tracking-wider font-bold">Govt of India / NCIIPC</span></div><div class="font-headline-sm text-headline-sm text-primary tracking-tight font-bold">SAT-SA</div><div class="font-body-sm text-body-sm text-on-surface-variant">Supervisory Analytics Tool</div></div><nav class="flex-1 px-sm py-sm flex flex-col gap-xs" data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded"><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Overview</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="overview" href="#"><span class="material-symbols-outlined text-[16px]">dashboard</span><span>Overview</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Supervision</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="cse-assessments" href="#"><span class="material-symbols-outlined text-[16px]">domain_verification</span><span>CSE Assessments</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="priority-queue" href="#"><span class="material-symbols-outlined text-[16px]">low_priority</span><span>Priority Queue</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="recommended-samples" href="#"><span class="material-symbols-outlined text-[16px]">fact_check</span><span>Recommended Samples</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Analytics</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="execution-gaps" href="#"><span class="material-symbols-outlined text-[16px]">rule_folder</span><span>Execution Gaps</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="negative-space" href="#"><span class="material-symbols-outlined text-[16px]">contrast</span><span>Negative Space</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="process-analysis" href="#"><span class="material-symbols-outlined text-[16px]">account_tree</span><span>Process Analysis</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="evidence-quality" href="#"><span class="material-symbols-outlined text-[16px]">verified</span><span>Evidence Quality</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="behavioural-analysis" href="#"><span class="material-symbols-outlined text-[16px]">psychology</span><span>Behavioural Analysis</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="coverage" href="#"><span class="material-symbols-outlined text-[16px]">radar</span><span>Coverage</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="consistency" href="#"><span class="material-symbols-outlined text-[16px]">stacked_line_chart</span><span>Consistency</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Assessment</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="findings" href="#"><span class="material-symbols-outlined text-[16px]">warning</span><span>Findings</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="evidence" href="#"><span class="material-symbols-outlined text-[16px]">inventory</span><span>Evidence</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="remediation" href="#"><span class="material-symbols-outlined text-[16px]">published_with_changes</span><span>Remediation</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="verification" href="#"><span class="material-symbols-outlined text-[16px]">security</span><span>Verification</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Intelligence</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="historical-trends" href="#"><span class="material-symbols-outlined text-[16px]">timeline</span><span>Historical Trends</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="peer-comparison" href="#"><span class="material-symbols-outlined text-[16px]">compare_arrows</span><span>Peer Comparison</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="signal-discovery" href="#"><span class="material-symbols-outlined text-[16px]">bubble_chart</span><span>Signal Discovery</span></a><div class="px-sm pt-sm pb-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold tracking-wider">Governance</div><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="audit" href="#"><span class="material-symbols-outlined text-[16px]">policy</span><span>Audit</span></a><a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded font-body-sm text-body-sm transition-colors" data-path="administration" href="#"><span class="material-symbols-outlined text-[16px]">admin_panel_settings</span><span>Administration</span></a></nav><div class="p-sm bg-surface-container-lowest font-code-sm text-code-sm text-outline flex items-center justify-between"><span>SYS-ID: NC-4029</span><span class="w-2 h-2 rounded-full bg-secondary"></span></div></aside><div class="pl-[250px]"><header class="fixed top-0 left-[250px] right-0 h-14 bg-surface-container/95 backdrop-blur-md z-40 px-margin flex items-center justify-between"><div class="flex items-center gap-md"><div class="flex items-center gap-xs font-code-sm text-code-sm text-on-surface-variant"><span class="text-primary font-semibold">SAT-SA</span><span>/</span><span>Overview</span></div><div class="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-code-sm text-code-sm text-secondary font-medium tracking-wide">INTERNAL / AIR-GAPPED (TLS 1.3 / FIPS-140-2)</span></div></div><div class="flex items-center gap-md"><div class="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high"><span class="material-symbols-outlined text-[16px] text-secondary">verified_user</span><span class="font-code-sm text-code-sm text-on-surface">Audit: SYNCED</span></div><button class="relative p-xs rounded hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-primary"></span></button><div class="flex items-center gap-sm pl-sm"><div class="flex flex-col text-right"><span class="font-body-sm text-body-sm font-semibold text-on-surface leading-tight">Supervisor</span><span class="font-label-caps text-label-caps text-on-surface-variant leading-tight">NCIIPC</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-14 px-margin bg-surface"><div class="flex flex-col w-full text-on-surface">
+<!-- TOP BREADCRUMB & CONTEXT BANNER -->
+<div class="flex flex-wrap items-center justify-between gap-y-sm py-sm mb-sm font-code-sm text-code-sm text-on-surface-variant">
+<div class="flex items-center gap-xs">
+<span class="text-primary font-semibold">SAT-SA</span>
+<span>/</span>
+<a class="hover:text-primary transition-colors" href="#">Analytics</a>
+<span>/</span>
+<span class="text-on-surface font-semibold">Negative Space</span>
+<span class="ml-sm px-xs py-0.5 rounded bg-primary-container/20 text-primary text-[10px] font-bold uppercase tracking-wider">CSE-014 Selected</span>
+</div>
+<div class="flex items-center gap-sm">
+<span class="inline-flex items-center gap-xs px-sm py-0.5 rounded bg-surface-container-high text-outline text-[11px] font-label-caps">
+<span class="material-symbols-outlined text-[13px] text-secondary">verified</span>
+        CANON: Missing Evidence ≠ Confirmed Failure
+      </span>
+<span class="inline-flex items-center gap-xs px-sm py-0.5 rounded bg-surface-container-high text-secondary text-[11px] font-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+        AIR-GAPPED / INTERNAL ENCLAVE
+      </span>
+</div>
+</div>
+<!-- TITLE + HEADER TOOLBAR -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-md mb-lg">
+<div>
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-[28px]">contrast</span>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Negative Space Analysis</h1>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs max-w-4xl">
+        Identify expected evidence that is absent, unavailable, unconfirmed, or not submitted according to control, process, and supervisory assessment models.
+      </p>
+</div>
+<!-- Global Screen Controls -->
+<div class="flex flex-wrap items-center gap-xs font-body-sm text-body-sm">
+<div class="flex items-center bg-surface-container px-sm py-xs rounded">
+<span class="text-on-surface-variant mr-xs text-[11px] font-label-caps uppercase">Cycle</span>
+<select class="bg-transparent text-on-surface font-medium focus:outline-none cursor-pointer" id="cycleFilter">
+<option class="bg-surface-container-high" value="Q3 2026">Q3 2026 (Active Cycle)</option>
+<option class="bg-surface-container-high" value="Q2 2026">Q2 2026 (Audited)</option>
+<option class="bg-surface-container-high" value="Q1 2026">Q1 2026 (Archived)</option>
+</select>
+</div>
+<div class="flex items-center bg-surface-container px-sm py-xs rounded">
+<span class="text-on-surface-variant mr-xs text-[11px] font-label-caps uppercase">Target CSE</span>
+<select class="bg-transparent text-primary font-semibold focus:outline-none cursor-pointer" id="globalCseFilter">
+<option class="bg-surface-container-high" value="CSE-014">CSE-014 (NorthGrid Energy)</option>
+<option class="bg-surface-container-high" value="ALL">All Monitored CSEs (6)</option>
+<option class="bg-surface-container-high" value="CSE-007">CSE-007 (Apex Banking)</option>
+<option class="bg-surface-container-high" value="CSE-021">CSE-021 (TelcoBharat)</option>
+<option class="bg-surface-container-high" value="CSE-011">CSE-011 (RailSignalling Corp)</option>
+<option class="bg-surface-container-high" value="CSE-003">CSE-003 (PetroVault Oil &amp; Gas)</option>
+<option class="bg-surface-container-high" value="CSE-018">CSE-018 (State Health Infra)</option>
+</select>
+</div>
+<button class="flex items-center gap-xs px-sm py-xs rounded bg-surface-container hover:bg-surface-container-high text-on-surface transition-colors" id="exportBtn">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+<span>Export Package</span>
+</button>
+<button class="flex items-center gap-xs px-sm py-xs rounded bg-primary-container hover:bg-primary-container/80 text-on-primary-container transition-all" id="syncTelemetryBtn">
+<span class="material-symbols-outlined text-[16px]" id="syncIcon">sync</span>
+<span id="syncText">Sync Engine</span>
+</button>
+</div>
+</div>
+<!-- SUMMARY METRICS STRIP (Bento Grid) -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-sm mb-lg">
+<!-- Total Candidates -->
+<div class="bg-surface-container p-md rounded flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Negative Space</span>
+<span class="material-symbols-outlined text-[16px] text-primary">data_loss_prevention</span>
+</div>
+<div class="mt-sm">
+<div class="font-headline-lg text-headline-lg text-primary font-bold">15</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Across 6 CSE Enclaves</div>
+</div>
+</div>
+<!-- Not Submitted -->
+<div class="bg-surface-container p-md rounded flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Not Submitted</span>
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+</div>
+<div class="mt-sm">
+<div class="font-headline-lg text-headline-lg text-tertiary font-bold">08</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Telemetry not ingested</div>
+</div>
+</div>
+<!-- Absent Confirmed -->
+<div class="bg-surface-container p-md rounded flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Absent Confirmed</span>
+<span class="w-2 h-2 rounded-full bg-error"></span>
+</div>
+<div class="mt-sm">
+<div class="font-headline-lg text-headline-lg text-error font-bold">04</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Source confirms absent</div>
+</div>
+</div>
+<!-- Unknown -->
+<div class="bg-surface-container p-md rounded flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Unknown / Blind</span>
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+</div>
+<div class="mt-sm">
+<div class="font-headline-lg text-headline-lg text-outline font-bold">03</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Telemetry inconclusive</div>
+</div>
+</div>
+<!-- High Priority -->
+<div class="bg-surface-container p-md rounded flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">High Priority</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary">priority_high</span>
+</div>
+<div class="mt-sm">
+<div class="font-headline-lg text-headline-lg text-on-surface font-bold">06</div>
+<div class="font-body-sm text-body-sm text-tertiary">Actionable Items</div>
+</div>
+</div>
+<!-- Active Selection (CSE-014 Context) -->
+<div class="bg-surface-container-high p-md rounded flex flex-col justify-between col-span-2 md:col-span-3 lg:col-span-1">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps uppercase text-secondary font-bold">CSE-014 Status</span>
+<a class="text-primary hover:text-primary-fixed text-xs font-semibold flex items-center" href="#">
+          Open CSE <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+<div class="mt-xs">
+<div class="flex items-baseline gap-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">4</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Candidates</span>
+</div>
+<div class="font-code-sm text-code-sm text-on-surface-variant text-[11px] mt-xs">
+          Readiness: <span class="text-secondary font-semibold">71%</span> | Gaps: <span class="text-tertiary font-semibold">7</span>
+</div>
+</div>
+</div>
+</div>
+<!-- VISUAL CENTERPIECE: PROCEDURAL PIPELINE DIAGRAM -->
+<div class="bg-surface-container p-md rounded mb-lg">
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-sm mb-md gap-xs">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">account_tree</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Negative Space Deduction Architecture</span>
+</div>
+<div class="flex items-center gap-sm font-code-sm text-code-sm text-on-surface-variant text-[11px]">
+<span>Model: NCIIPC-NSD-v2.1</span>
+<span>•</span>
+<span class="text-primary">Interactive Trace: CASE-1042 / CTRL-07</span>
+</div>
+</div>
+<!-- Pipeline Step Indicators -->
+<div class="grid grid-cols-1 md:grid-cols-5 gap-sm relative">
+<!-- Step 1 -->
+<div class="bg-surface-container-low p-sm rounded flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between font-label-caps text-label-caps text-outline uppercase mb-xs">
+<span>Stage 01</span>
+<span class="material-symbols-outlined text-[14px] text-outline">gavel</span>
+</div>
+<div class="font-body-md text-body-md font-semibold text-on-surface">Expected Evidence</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">
+            Control mandate, SOC Playbook, or regulation prescribes telemetry.
+          </p>
+</div>
+<div class="mt-sm pt-xs bg-surface-container p-xs rounded font-code-sm text-code-sm text-[11px] text-primary">
+          Mandate: CTRL-07 Escalation
+        </div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-low p-sm rounded flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between font-label-caps text-label-caps text-outline uppercase mb-xs">
+<span>Stage 02</span>
+<span class="material-symbols-outlined text-[14px] text-outline">rule</span>
+</div>
+<div class="font-body-md text-body-md font-semibold text-on-surface">Expected Coverage</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">
+            Condition-triggered rule: Alert Level = Critical &amp; SLA &gt; 30m triggers escalation artifact.
+          </p>
+</div>
+<div class="mt-sm pt-xs bg-surface-container p-xs rounded font-code-sm text-code-sm text-[11px] text-secondary">
+          Condition: Triage &gt; P1
+        </div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-low p-sm rounded flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between font-label-caps text-label-caps text-outline uppercase mb-xs">
+<span>Stage 03</span>
+<span class="material-symbols-outlined text-[14px] text-outline">input</span>
+</div>
+<div class="font-body-md text-body-md font-semibold text-on-surface">Observed Telemetry</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">
+            Submitted audit batch SUB-2026-0914 ingested. Alert &amp; Case found; Escalation record missing.
+          </p>
+</div>
+<div class="mt-sm pt-xs bg-surface-container p-xs rounded font-code-sm text-code-sm text-[11px] text-tertiary">
+          Found: Case, PCAP | Missed: ESC
+        </div>
+</div>
+<!-- Step 4 -->
+<div class="bg-surface-container-low p-sm rounded flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between font-label-caps text-label-caps text-outline uppercase mb-xs">
+<span>Stage 04</span>
+<span class="material-symbols-outlined text-[14px] text-outline">category</span>
+</div>
+<div class="font-body-md text-body-md font-semibold text-on-surface">Canonical Taxonomy</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">
+            Classifier categorizes the void into one of 5 defined state vectors.
+          </p>
+</div>
+<div class="mt-sm pt-xs bg-surface-container p-xs rounded font-code-sm text-code-sm text-[11px] text-tertiary font-bold">
+          State: NOT_SUBMITTED
+        </div>
+</div>
+<!-- Step 5 -->
+<div class="bg-surface-container-high p-sm rounded flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between font-label-caps text-label-caps text-primary uppercase mb-xs">
+<span>Stage 05</span>
+<span class="material-symbols-outlined text-[14px] text-primary">flag</span>
+</div>
+<div class="font-body-md text-body-md font-semibold text-primary">Negative-Space Candidate</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs">
+            Flagged for Examiner verification. Injunction request generated.
+          </p>
+</div>
+<div class="mt-sm pt-xs bg-primary-container/20 p-xs rounded font-code-sm text-code-sm text-[11px] text-primary font-bold">
+          Candidate: NS-0041 (Active)
+        </div>
+</div>
+</div>
+<!-- Canonical State Legend Pills -->
+<div class="mt-md pt-sm flex flex-wrap items-center justify-between gap-sm text-[11px] font-label-caps">
+<span class="text-outline uppercase">Canonical Evidence Taxonomy:</span>
+<div class="flex flex-wrap items-center gap-xs">
+<span class="px-sm py-0.5 rounded bg-secondary/15 text-secondary flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>PRESENT: Telemetry verified in vault
+        </span>
+<span class="px-sm py-0.5 rounded bg-tertiary/15 text-tertiary flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>NOT_SUBMITTED: Expected by rule, not uploaded
+        </span>
+<span class="px-sm py-0.5 rounded bg-error/15 text-error flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>ABSENT_CONFIRMED: Source system confirms no generation
+        </span>
+<span class="px-sm py-0.5 rounded bg-outline/15 text-on-surface-variant flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>UNKNOWN: Telemetry inconclusive / missing feed
+        </span>
+<span class="px-sm py-0.5 rounded bg-surface-container-highest text-outline flex items-center gap-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>NOT_APPLICABLE: Out of control scope
+        </span>
+</div>
+</div>
+</div>
+<!-- FILTER & SEARCH CONTROL BAR -->
+<div class="bg-surface-container p-sm rounded mb-md flex flex-col lg:flex-row gap-sm items-stretch lg:items-center justify-between">
+<!-- Search Bar -->
+<div class="relative flex-1 min-w-[280px]">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+<input class="w-full bg-surface-container-lowest text-on-surface pl-9 pr-sm py-xs text-body-sm font-body-sm rounded focus:outline-none focus:bg-surface-container-high placeholder:text-outline" id="candidateSearchInput" placeholder="Search by Candidate ID, Case, Control, or Evidence type..." type="text"/>
+</div>
+<!-- Filter dropdowns -->
+<div class="flex flex-wrap items-center gap-xs">
+<select class="bg-surface-container-lowest text-on-surface text-body-sm font-body-sm px-sm py-xs rounded focus:outline-none cursor-pointer" id="tableCseFilter">
+<option value="ALL">All CSEs</option>
+<option selected="" value="CSE-014">CSE-014 (NorthGrid)</option>
+<option value="CSE-007">CSE-007 (Apex Bank)</option>
+<option value="CSE-021">CSE-021 (TelcoBharat)</option>
+<option value="CSE-011">CSE-011 (RailSignalling)</option>
+<option value="CSE-003">CSE-003 (PetroVault)</option>
+<option value="CSE-018">CSE-018 (State Health)</option>
+</select>
+<select class="bg-surface-container-lowest text-on-surface text-body-sm font-body-sm px-sm py-xs rounded focus:outline-none cursor-pointer" id="stateFilter">
+<option value="ALL">All States</option>
+<option value="NOT_SUBMITTED">NOT_SUBMITTED</option>
+<option value="ABSENT_CONFIRMED">ABSENT_CONFIRMED</option>
+<option value="UNKNOWN">UNKNOWN</option>
+<option value="NOT_APPLICABLE">NOT_APPLICABLE</option>
+</select>
+<select class="bg-surface-container-lowest text-on-surface text-body-sm font-body-sm px-sm py-xs rounded focus:outline-none cursor-pointer" id="priorityFilter">
+<option value="ALL">All Priorities</option>
+<option value="HIGH">High Priority</option>
+<option value="MEDIUM">Medium Priority</option>
+<option value="LOW">Low Priority</option>
+</select>
+<select class="bg-surface-container-lowest text-on-surface text-body-sm font-body-sm px-sm py-xs rounded focus:outline-none cursor-pointer" id="controlFilter">
+<option value="ALL">All Controls</option>
+<option value="CTRL-07">CTRL-07 (Escalation)</option>
+<option value="CTRL-12">CTRL-12 (Validation)</option>
+<option value="CTRL-04">CTRL-04 (Closure)</option>
+<option value="CTRL-15">CTRL-15 (Access Log)</option>
+<option value="CTRL-19">CTRL-19 (SCADA Bastion)</option>
+</select>
+<button class="px-sm py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-tertiary text-body-sm font-body-sm font-medium transition-colors flex items-center gap-xs" id="highPriorityToggle">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span>High Priority Only (6)</span>
+</button>
+<button class="px-sm py-xs rounded hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface text-body-sm font-body-sm transition-colors" id="resetFiltersBtn">
+        Reset
+      </button>
+</div>
+</div>
+<!-- MAIN SPLIT WORKSPACE: TABLE + DETAIL INSPECTOR DRAWER -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-md items-start mb-lg">
+<!-- DATA TABLE COLUMN -->
+<div class="xl:col-span-7 bg-surface-container rounded overflow-hidden transition-all duration-200" id="tableContainer">
+<div class="p-sm bg-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface">Candidate Telemetry Voids</span>
+<span class="px-xs py-0.5 rounded bg-surface-container text-primary font-code-sm text-code-sm text-[11px]" id="filteredCountBadge">Showing 4 of 15</span>
+</div>
+<div class="text-[11px] font-label-caps text-outline">CLICK ROW TO INSPECT PROVENANCE</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead class="bg-surface-container-low font-label-caps text-label-caps uppercase text-on-surface-variant">
+<tr>
+<th class="py-xs px-sm">ID</th>
+<th class="py-xs px-sm">CSE &amp; Sector</th>
+<th class="py-xs px-sm">Case Ref</th>
+<th class="py-xs px-sm">Expected Evidence</th>
+<th class="py-xs px-sm">Control</th>
+<th class="py-xs px-sm">Evidence State</th>
+<th class="py-xs px-sm">Priority</th>
+<th class="py-xs px-sm text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y-0" id="candidateTableBody">
+<!-- Row 1: Active selection -->
+<tr class="cursor-pointer bg-surface-container-highest hover:bg-surface-container-high transition-colors candidate-row border-l-2 border-primary" data-control="CTRL-07" data-cse="CSE-014" data-id="NS-0041" data-priority="HIGH" data-state="NOT_SUBMITTED">
+<td class="py-sm px-sm font-code-sm text-code-sm text-primary font-bold">NS-0041</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">CSE-014</div>
+<div class="text-[11px] text-on-surface-variant">Energy (NorthGrid)</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface">CASE-1042</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">Escalation Sign-off</div>
+<div class="text-[11px] text-outline">Tier-2 Escalation Record</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface-variant">CTRL-07</td>
+<td class="py-sm px-sm">
+<span class="inline-flex items-center gap-xs px-xs py-0.5 rounded bg-tertiary/15 text-tertiary text-[11px] font-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>NOT_SUBMITTED
+                </span>
+</td>
+<td class="py-sm px-sm">
+<span class="px-xs py-0.5 rounded bg-tertiary/20 text-tertiary text-[11px] font-bold">HIGH</span>
+</td>
+<td class="py-sm px-sm text-right">
+<button class="px-xs py-1 rounded bg-primary-container text-on-primary-container text-[11px] font-semibold hover:opacity-90">
+                  Inspect
+                </button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="cursor-pointer bg-surface-container hover:bg-surface-container-high transition-colors candidate-row" data-control="CTRL-19" data-cse="CSE-014" data-id="NS-0038" data-priority="HIGH" data-state="ABSENT_CONFIRMED">
+<td class="py-sm px-sm font-code-sm text-code-sm text-primary font-bold">NS-0038</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">CSE-014</div>
+<div class="text-[11px] text-on-surface-variant">Energy (NorthGrid)</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface">CASE-1037</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">SCADA Bastion Access Log</div>
+<div class="text-[11px] text-outline">Privileged Session Recording</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface-variant">CTRL-19</td>
+<td class="py-sm px-sm">
+<span class="inline-flex items-center gap-xs px-xs py-0.5 rounded bg-error/15 text-error text-[11px] font-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>ABSENT_CONFIRMED
+                </span>
+</td>
+<td class="py-sm px-sm">
+<span class="px-xs py-0.5 rounded bg-tertiary/20 text-tertiary text-[11px] font-bold">HIGH</span>
+</td>
+<td class="py-sm px-sm text-right">
+<button class="px-xs py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-[11px] font-semibold">
+                  Inspect
+                </button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="cursor-pointer bg-surface-container hover:bg-surface-container-high transition-colors candidate-row" data-control="CTRL-12" data-cse="CSE-014" data-id="NS-0034" data-priority="MEDIUM" data-state="NOT_SUBMITTED">
+<td class="py-sm px-sm font-code-sm text-code-sm text-primary font-bold">NS-0034</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">CSE-014</div>
+<div class="text-[11px] text-on-surface-variant">Energy (NorthGrid)</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface">CASE-1021</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">Response Validation Signoff</div>
+<div class="text-[11px] text-outline">Post-Containment Review</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface-variant">CTRL-12</td>
+<td class="py-sm px-sm">
+<span class="inline-flex items-center gap-xs px-xs py-0.5 rounded bg-tertiary/15 text-tertiary text-[11px] font-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>NOT_SUBMITTED
+                </span>
+</td>
+<td class="py-sm px-sm">
+<span class="px-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant text-[11px] font-bold">MED</span>
+</td>
+<td class="py-sm px-sm text-right">
+<button class="px-xs py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-[11px] font-semibold">
+                  Inspect
+                </button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="cursor-pointer bg-surface-container hover:bg-surface-container-high transition-colors candidate-row" data-control="CTRL-04" data-cse="CSE-014" data-id="NS-0031" data-priority="LOW" data-state="UNKNOWN">
+<td class="py-sm px-sm font-code-sm text-code-sm text-primary font-bold">NS-0031</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">CSE-014</div>
+<div class="text-[11px] text-on-surface-variant">Energy (NorthGrid)</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface">CASE-1008</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">Investigation Closure Artifact</div>
+<div class="text-[11px] text-outline">Root Cause Validation Memo</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface-variant">CTRL-04</td>
+<td class="py-sm px-sm">
+<span class="inline-flex items-center gap-xs px-xs py-0.5 rounded bg-outline/15 text-on-surface-variant text-[11px] font-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>UNKNOWN
+                </span>
+</td>
+<td class="py-sm px-sm">
+<span class="px-xs py-0.5 rounded bg-surface-container-high text-outline text-[11px] font-bold">LOW</span>
+</td>
+<td class="py-sm px-sm text-right">
+<button class="px-xs py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-[11px] font-semibold">
+                  Inspect
+                </button>
+</td>
+</tr>
+<!-- Row 5 (CSE-007) -->
+<tr class="cursor-pointer bg-surface-container hover:bg-surface-container-high transition-colors candidate-row hidden" data-control="CTRL-07" data-cse="CSE-007" data-id="NS-0029" data-priority="HIGH" data-state="NOT_SUBMITTED">
+<td class="py-sm px-sm font-code-sm text-code-sm text-primary font-bold">NS-0029</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">CSE-007</div>
+<div class="text-[11px] text-on-surface-variant">Banking (Apex)</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface">CASE-0994</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">Swift Core Isolation Log</div>
+<div class="text-[11px] text-outline">Firewall Network Partition</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface-variant">CTRL-07</td>
+<td class="py-sm px-sm">
+<span class="inline-flex items-center gap-xs px-xs py-0.5 rounded bg-tertiary/15 text-tertiary text-[11px] font-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>NOT_SUBMITTED
+                </span>
+</td>
+<td class="py-sm px-sm">
+<span class="px-xs py-0.5 rounded bg-tertiary/20 text-tertiary text-[11px] font-bold">HIGH</span>
+</td>
+<td class="py-sm px-sm text-right">
+<button class="px-xs py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-[11px] font-semibold">
+                  Inspect
+                </button>
+</td>
+</tr>
+<!-- Row 6 (CSE-021) -->
+<tr class="cursor-pointer bg-surface-container hover:bg-surface-container-high transition-colors candidate-row hidden" data-control="CTRL-15" data-cse="CSE-021" data-id="NS-0026" data-priority="HIGH" data-state="ABSENT_CONFIRMED">
+<td class="py-sm px-sm font-code-sm text-code-sm text-primary font-bold">NS-0026</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">CSE-021</div>
+<div class="text-[11px] text-on-surface-variant">Telecom (TelcoBharat)</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface">CASE-0982</td>
+<td class="py-sm px-sm">
+<div class="font-medium text-on-surface">SS7 Gateway Auth Traces</div>
+<div class="text-[11px] text-outline">Signalling Audit Ledger</div>
+</td>
+<td class="py-sm px-sm font-code-sm text-code-sm text-on-surface-variant">CTRL-15</td>
+<td class="py-sm px-sm">
+<span class="inline-flex items-center gap-xs px-xs py-0.5 rounded bg-error/15 text-error text-[11px] font-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>ABSENT_CONFIRMED
+                </span>
+</td>
+<td class="py-sm px-sm">
+<span class="px-xs py-0.5 rounded bg-tertiary/20 text-tertiary text-[11px] font-bold">HIGH</span>
+</td>
+<td class="py-sm px-sm text-right">
+<button class="px-xs py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-[11px] font-semibold">
+                  Inspect
+                </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-sm bg-surface-container-low flex items-center justify-between text-body-sm font-body-sm text-on-surface-variant">
+<span>Showing CSE-014 Candidates (4 detected)</span>
+<div class="flex items-center gap-xs">
+<button class="px-xs py-0.5 rounded bg-surface-container text-outline hover:text-on-surface" disabled="">Prev</button>
+<span class="font-code-sm text-code-sm text-on-surface">1 / 1</span>
+<button class="px-xs py-0.5 rounded bg-surface-container text-outline hover:text-on-surface" disabled="">Next</button>
+</div>
+</div>
+</div>
+<!-- CANDIDATE INSPECTION DRAWER (Default open for NS-0041) -->
+<div class="xl:col-span-5 bg-surface-container rounded p-md flex flex-col gap-md transition-all duration-200" id="inspectorDrawer">
+<!-- Drawer Header -->
+<div class="flex items-start justify-between pb-sm bg-surface-container-high p-sm rounded">
+<div>
+<div class="flex items-center gap-xs font-code-sm text-code-sm">
+<span class="text-primary font-bold text-base" id="drawerCandidateId">NS-0041</span>
+<span class="text-outline">|</span>
+<span class="text-secondary font-semibold" id="drawerCseId">CSE-014 (NorthGrid)</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant mt-xs">
+            Case: <span class="text-on-surface font-semibold" id="drawerCaseId">CASE-1042</span> • Control: <span class="text-primary font-semibold" id="drawerControlId">CTRL-07</span> (Incident Investigation &amp; Escalation)
+          </div>
+</div>
+<span class="inline-flex items-center gap-xs px-xs py-0.5 rounded bg-tertiary/20 text-tertiary text-[11px] font-label-caps uppercase" id="drawerBadgeState">
+          NOT_SUBMITTED
+        </span>
+</div>
+<!-- SECTION A: Why Was This Flagged? (Analytical Logic Trace) -->
+<div class="bg-surface-container-low p-sm rounded">
+<div class="font-label-caps text-label-caps uppercase text-primary font-bold mb-xs flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">psychology_alt</span>
+          Analytical Ingestion Chain
+        </div>
+<div class="font-body-sm text-body-sm text-on-surface-variant space-y-xs">
+<div class="flex items-start gap-xs">
+<span class="font-code-sm text-code-sm text-outline">01</span>
+<div><strong class="text-on-surface">Control Presumption:</strong> NCIIPC Rule 12(b) &amp; SOC SOP §4.2 mandate Tier-2 Supervisor Sign-off for Critical Alerts.</div>
+</div>
+<div class="flex items-start gap-xs">
+<span class="font-code-sm text-code-sm text-outline">02</span>
+<div><strong class="text-on-surface">Triage Severity Match:</strong> CASE-1042 was classified as <span class="text-error font-semibold">P1 / CRITICAL</span> (SCADA Telemetry Disruption).</div>
+</div>
+<div class="flex items-start gap-xs">
+<span class="font-code-sm text-code-sm text-outline">03</span>
+<div><strong class="text-on-surface">Telemetry Parsing:</strong> Submission batch <code class="font-code-sm text-code-sm text-primary">SUB-2026-0914</code> contains alert logs, PCAP, and ticket memo.</div>
+</div>
+<div class="flex items-start gap-xs">
+<span class="font-code-sm text-code-sm text-outline">04</span>
+<div><strong class="text-tertiary">Negative Space Finding:</strong> Escalation form artifact <code class="font-code-sm text-code-sm text-tertiary">ESC-221</code> is missing from repository.</div>
+</div>
+</div>
+</div>
+<!-- SECTION B: Non-Accusatory Context & Possible Explanations -->
+<div class="bg-surface-container-low p-sm rounded">
+<div class="flex items-center justify-between mb-xs">
+<span class="font-label-caps text-label-caps uppercase text-outline font-bold">Candidate Hypotheses (Non-Accusatory Evaluation)</span>
+<span class="font-code-sm text-code-sm text-secondary text-[11px]">Machine Confidence: 74%</span>
+</div>
+<div class="space-y-xs text-body-sm font-body-sm">
+<label class="flex items-start gap-sm p-xs rounded bg-surface-container cursor-pointer hover:bg-surface-container-high transition-colors">
+<input checked="" class="mt-1 accent-primary" name="hypothesis" type="radio"/>
+<div class="flex-1">
+<span class="text-on-surface font-medium">Evidence not submitted to repository</span>
+<p class="text-on-surface-variant text-[11px]">Artifact exists within CSE perimeter ticketing server but omitted during batch upload.</p>
+</div>
+<span class="font-code-sm text-code-sm text-secondary text-[11px] font-bold">74%</span>
+</label>
+<label class="flex items-start gap-sm p-xs rounded bg-surface-container cursor-pointer hover:bg-surface-container-high transition-colors">
+<input class="mt-1 accent-primary" name="hypothesis" type="radio"/>
+<div class="flex-1">
+<span class="text-on-surface font-medium">Schema translation mismatch</span>
+<p class="text-on-surface-variant text-[11px]">Escalation record logged under alternate custom field in NorthGrid Jira instance.</p>
+</div>
+<span class="font-code-sm text-code-sm text-outline text-[11px]">18%</span>
+</label>
+<label class="flex items-start gap-sm p-xs rounded bg-surface-container cursor-pointer hover:bg-surface-container-high transition-colors">
+<input class="mt-1 accent-primary" name="hypothesis" type="radio"/>
+<div class="flex-1">
+<span class="text-on-surface font-medium">Process failure (Evidence never created)</span>
+<p class="text-on-surface-variant text-[11px]">Escalation protocol was bypassed during live incident triage.</p>
+</div>
+<span class="font-code-sm text-code-sm text-outline text-[11px]">8%</span>
+</label>
+</div>
+<div class="mt-xs pt-xs font-code-sm text-code-sm text-[11px] text-tertiary flex items-center gap-xs">
+<span class="material-symbols-outlined text-[13px]">info</span>
+          Missing evidence does NOT confirm process violation. Field inquiry required.
+        </div>
+</div>
+<!-- SECTION C: Surrounding Evidence Traceability -->
+<div class="bg-surface-container-low p-sm rounded">
+<div class="font-label-caps text-label-caps uppercase text-outline font-bold mb-xs">
+          Surrounding Evidence Traceability Chain
+        </div>
+<div class="space-y-xs font-code-sm text-code-sm text-[12px]">
+<div class="flex items-center justify-between p-xs rounded bg-surface-container">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[14px]">check_circle</span>
+<span class="text-on-surface font-medium">CASE-1042 (Case Core Record)</span>
+</div>
+<span class="text-secondary font-bold">PRESENT / VERIFIED</span>
+</div>
+<div class="flex items-center justify-between p-xs rounded bg-surface-container">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[14px]">check_circle</span>
+<span class="text-on-surface font-medium">INV-338 (SOC Investigation Log)</span>
+</div>
+<span class="text-secondary font-bold">PRESENT / VERIFIED</span>
+</div>
+<div class="flex items-center justify-between p-xs rounded bg-surface-container">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[14px]">check_circle</span>
+<span class="text-on-surface font-medium">EVD-742 (Network PCAP Telemetry)</span>
+</div>
+<span class="text-secondary font-bold">PRESENT / VERIFIED</span>
+</div>
+<div class="flex items-center justify-between p-xs rounded bg-tertiary/10">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-tertiary text-[14px]">help</span>
+<span class="text-tertiary font-bold">ESC-221 (Escalation Sign-off)</span>
+</div>
+<span class="text-tertiary font-bold">NOT_SUBMITTED</span>
+</div>
+</div>
+<div class="mt-sm flex items-center gap-xs">
+<button class="flex-1 px-xs py-1 rounded bg-surface-container hover:bg-surface-container-high text-primary font-code-sm text-code-sm text-[11px] text-center transition-colors" id="viewProvenanceBtn">
+            SHA-256 Provenance
+          </button>
+<button class="flex-1 px-xs py-1 rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-code-sm text-code-sm text-[11px] text-center transition-colors" id="viewSourceBtn">
+            Raw Telemetry JSON
+          </button>
+</div>
+</div>
+<!-- SECTION D: Signal Fusion & Corroboration -->
+<div class="bg-surface-container-low p-sm rounded">
+<div class="font-label-caps text-label-caps uppercase text-outline font-bold mb-xs">
+          Signal Fusion &amp; Cross-Module Links
+        </div>
+<div class="grid grid-cols-2 gap-xs font-body-sm text-body-sm">
+<a class="p-xs rounded bg-surface-container hover:bg-surface-container-high transition-colors flex flex-col justify-between" href="#">
+<span class="text-[11px] font-label-caps text-outline uppercase">Execution Gap</span>
+<span class="text-tertiary font-medium text-xs mt-xs flex items-center justify-between">
+              GAP-0071 (Missing Step)
+              <span class="material-symbols-outlined text-[13px]">arrow_outward</span>
+</span>
+</a>
+<a class="p-xs rounded bg-surface-container hover:bg-surface-container-high transition-colors flex flex-col justify-between" href="#">
+<span class="text-[11px] font-label-caps text-outline uppercase">Related Finding</span>
+<span class="text-primary font-medium text-xs mt-xs flex items-center justify-between">
+              FND-0142 (Escalation Defect)
+              <span class="material-symbols-outlined text-[13px]">arrow_outward</span>
+</span>
+</a>
+</div>
+</div>
+<!-- SECTION E: Examiner Human-in-the-Loop Action Panel -->
+<div class="bg-surface-container-high p-sm rounded">
+<div class="font-label-caps text-label-caps uppercase text-secondary font-bold mb-xs flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">shield_person</span>
+          Examiner Supervisory Determination
+        </div>
+<!-- Human Review Actions -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-xs mb-sm">
+<button class="px-xs py-1.5 rounded bg-primary-container hover:bg-primary-container/80 text-on-primary-container font-body-sm text-body-sm font-semibold transition-colors text-center" id="btnValidate">
+            Validate
+          </button>
+<button class="px-xs py-1.5 rounded bg-surface-container hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm transition-colors text-center" id="btnQualify">
+            Qualify
+          </button>
+<button class="px-xs py-1.5 rounded bg-surface-container hover:bg-surface-container-highest text-error font-body-sm text-body-sm transition-colors text-center" id="btnReject">
+            Reject
+          </button>
+<button class="px-xs py-1.5 rounded bg-tertiary hover:bg-tertiary/90 text-on-tertiary-fixed font-body-sm text-body-sm font-semibold transition-colors text-center" id="btnInjunction">
+            Request
+          </button>
+</div>
+<!-- Inline Evidence Injunction Form -->
+<div class="bg-surface-container-lowest p-sm rounded space-y-xs">
+<div class="font-label-caps text-label-caps text-on-surface font-semibold uppercase">
+            Official Evidence Injunction Notice (NCIIPC Rule 14)
+          </div>
+<div>
+<label class="font-code-sm text-code-sm text-outline text-[11px] block">Evidence Specification</label>
+<input class="w-full bg-surface-container px-xs py-1 text-on-surface font-code-sm text-code-sm text-xs rounded focus:outline-none" id="evidenceSpecInput" type="text" value="Formal Tier-2 Incident Escalation ticket log &amp; SOC supervisor sign-off"/>
+</div>
+<div class="grid grid-cols-2 gap-xs">
+<div>
+<label class="font-code-sm text-code-sm text-outline text-[11px] block">Statutory Basis</label>
+<input class="w-full bg-surface-container px-xs py-1 text-on-surface font-code-sm text-code-sm text-xs rounded focus:outline-none" type="text" value="NCIIPC Rule 12(b) / Critical Infra"/>
+</div>
+<div>
+<label class="font-code-sm text-code-sm text-outline text-[11px] block">Recipient Channel</label>
+<input class="w-full bg-surface-container px-xs py-1 text-on-surface font-code-sm text-code-sm text-xs rounded focus:outline-none" type="text" value="NorthGrid CISO Enclave Desk"/>
+</div>
+</div>
+<div>
+<label class="font-code-sm text-code-sm text-outline text-[11px] block">Examiner Adjudication Notes</label>
+<textarea class="w-full bg-surface-container p-xs text-on-surface font-body-sm text-body-sm text-xs rounded focus:outline-none placeholder:text-outline" id="adjudicationNotes" placeholder="Record examiner reasoning prior to sending request..." rows="2"></textarea>
+</div>
+<div class="flex items-center justify-between pt-xs">
+<span class="text-[11px] font-code-sm text-outline">Audit Entry: NC-4029-LOG</span>
+<button class="px-sm py-1 rounded bg-secondary-container text-on-secondary-container hover:bg-secondary-container/80 font-body-sm text-body-sm font-semibold transition-colors flex items-center gap-xs" id="dispatchInjunctionBtn">
+<span class="material-symbols-outlined text-[14px]">send</span>
+<span>Dispatch Request</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- EVIDENCE COVERAGE & CONTROL BREAKDOWN (Analytics Mosaic) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md mb-lg">
+<!-- Coverage by Control -->
+<div class="bg-surface-container p-md rounded flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface">Evidence Coverage</span>
+<span class="font-code-sm text-code-sm text-primary">By Prescribed Control</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">
+          Percentage of required evidence artifacts confirmed present across evaluated cases.
+        </p>
+<div class="space-y-sm font-code-sm text-code-sm text-xs">
+<!-- CTRL-07 -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-on-surface font-medium">CTRL-07 (Escalation Protocol)</span>
+<span class="text-tertiary font-bold">80%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full rounded-full" style="width: 80%"></div>
+</div>
+</div>
+<!-- CTRL-12 -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-on-surface font-medium">CTRL-12 (Response Validation)</span>
+<span class="text-secondary font-bold">75%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<!-- CTRL-04 -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-on-surface font-medium">CTRL-04 (Investigation Closure)</span>
+<span class="text-secondary font-bold">83%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 83%"></div>
+</div>
+</div>
+<!-- CTRL-15 -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-on-surface font-medium">CTRL-15 (Identity Audit Ledger)</span>
+<span class="text-secondary font-bold">100%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 100%"></div>
+</div>
+</div>
+<!-- CTRL-19 -->
+<div>
+<div class="flex justify-between mb-1">
+<span class="text-on-surface font-medium">CTRL-19 (SCADA Bastion Recording)</span>
+<span class="text-error font-bold">43%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 43%"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-md pt-sm font-label-caps text-label-caps text-outline uppercase">
+        Vulnerability Index: High void rate in CTRL-19 SCADA Enclaves
+      </div>
+</div>
+<!-- Evidence State Distribution -->
+<div class="bg-surface-container p-md rounded flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface">Taxonomy Distribution</span>
+<span class="font-code-sm text-code-sm text-outline">N=120 Artifacts</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">
+          Proportion of telemetry evidence classified by canonical supervisory state.
+        </p>
+<!-- Donut / Ring Visualization representation -->
+<div class="flex items-center justify-center my-md">
+<svg class="w-36 h-36 transform -rotate-90" viewbox="0 0 36 36">
+<!-- Background circle -->
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4"></path>
+<!-- PRESENT 72% -->
+<path class="text-secondary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="72, 100" stroke-linecap="round" stroke-width="4"></path>
+<!-- NOT_SUBMITTED 11% -->
+<path class="text-tertiary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="11, 100" stroke-dashoffset="-72" stroke-width="4"></path>
+<!-- ABSENT_CONFIRMED 7% -->
+<path class="text-error" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="7, 100" stroke-dashoffset="-83" stroke-width="4"></path>
+<!-- UNKNOWN 6% -->
+<path class="text-outline" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="6, 100" stroke-dashoffset="-90" stroke-width="4"></path>
+</svg>
+</div>
+<div class="grid grid-cols-2 gap-xs font-code-sm text-code-sm text-[11px]">
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-on-surface">PRESENT: 72%</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-on-surface">NOT_SUBMITTED: 11%</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="text-on-surface">ABSENT: 7%</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="text-on-surface">UNKNOWN: 6%</span>
+</div>
+</div>
+</div>
+<div class="mt-md pt-sm font-label-caps text-label-caps text-outline uppercase">
+        24% Aggregate Non-Positive Space Telemetry
+      </div>
+</div>
+<!-- Negative Space by CSE -->
+<div class="bg-surface-container p-md rounded flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-sm">
+<span class="font-headline-sm text-headline-sm text-on-surface">Candidates by CSE</span>
+<span class="font-code-sm text-code-sm text-secondary">National Sector Rank</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-md">
+          Enclave distribution of detected negative space candidates across critical sectors.
+        </p>
+<div class="space-y-sm font-body-sm text-body-sm">
+<div class="flex items-center justify-between p-xs rounded bg-surface-container-high">
+<div class="flex items-center gap-xs">
+<span class="font-code-sm text-code-sm text-primary font-bold">CSE-014</span>
+<span class="text-on-surface">NorthGrid Energy</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-tertiary/20 text-tertiary font-bold font-code-sm text-code-sm text-xs">4 Candidates</span>
+</div>
+<div class="flex items-center justify-between p-xs rounded bg-surface-container-low">
+<div class="flex items-center gap-xs">
+<span class="font-code-sm text-code-sm text-outline font-bold">CSE-007</span>
+<span class="text-on-surface">Apex Banking Enclave</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant font-code-sm text-code-sm text-xs">3 Candidates</span>
+</div>
+<div class="flex items-center justify-between p-xs rounded bg-surface-container-low">
+<div class="flex items-center gap-xs">
+<span class="font-code-sm text-code-sm text-outline font-bold">CSE-021</span>
+<span class="text-on-surface">TelcoBharat Backbone</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant font-code-sm text-code-sm text-xs">3 Candidates</span>
+</div>
+<div class="flex items-center justify-between p-xs rounded bg-surface-container-low">
+<div class="flex items-center gap-xs">
+<span class="font-code-sm text-code-sm text-outline font-bold">CSE-011</span>
+<span class="text-on-surface">RailSignalling Central</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant font-code-sm text-code-sm text-xs">2 Candidates</span>
+</div>
+<div class="flex items-center justify-between p-xs rounded bg-surface-container-low">
+<div class="flex items-center gap-xs">
+<span class="font-code-sm text-code-sm text-outline font-bold">CSE-003</span>
+<span class="text-on-surface">PetroVault Refineries</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant font-code-sm text-code-sm text-xs">2 Candidates</span>
+</div>
+<div class="flex items-center justify-between p-xs rounded bg-surface-container-low">
+<div class="flex items-center gap-xs">
+<span class="font-code-sm text-code-sm text-outline font-bold">CSE-018</span>
+<span class="text-on-surface">State Health Registry</span>
+</div>
+<span class="px-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant font-code-sm text-code-sm text-xs">1 Candidate</span>
+</div>
+</div>
+</div>
+<div class="mt-md pt-sm font-label-caps text-label-caps text-primary uppercase">
+        Energy Sector holds 27% of active supervisory voids
+      </div>
+</div>
+</div>
+<!-- STATUTORY FOOTER / PROVENANCE ENCLAVE BANNER -->
+<div class="bg-surface-container-low p-sm rounded flex flex-col md:flex-row items-start md:items-center justify-between gap-sm mb-lg text-[11px] font-code-sm text-on-surface-variant">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[16px] text-secondary">encrypted</span>
+<span>Ledger Seal: <strong class="text-on-surface">SHA-256: 7f3a8b419c8309e17b8f991c2...e81</strong></span>
+<span>•</span>
+<span>Rule Engine: <span class="text-primary font-semibold">R-2.4 (Negative Space Core v1.4.2)</span></span>
+</div>
+<div class="text-outline">
+      STATUTORY NOTICE: Human examiner adjudication is mandatory under NCIIPC Sec 70A. Automated flags do not constitute punitive sanctions.
+    </div>
+</div>
+<!-- NOTIFICATION TOAST (Hidden by default) -->
+<div class="fixed bottom-6 right-6 bg-surface-container-highest text-on-surface px-md py-sm rounded shadow-xl flex items-center gap-sm transform translate-y-24 opacity-0 transition-all duration-300 z-50" id="toastNotification">
+<span class="material-symbols-outlined text-secondary text-[20px]" id="toastIcon">check_circle</span>
+<div>
+<div class="font-headline-sm text-xs font-bold text-on-surface" id="toastTitle">Action Recorded</div>
+<div class="font-body-sm text-body-sm text-[12px] text-on-surface-variant" id="toastDesc">Evidence request dispatched to NorthGrid CISO Enclave.</div>
+</div>
+</div>
+<!-- PROVENANCE MODAL (Hidden by default) -->
+<div class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-md hidden" id="provenanceModal">
+<div class="bg-surface-container p-md rounded max-w-xl w-full">
+<div class="flex items-center justify-between pb-sm mb-sm bg-surface-container-high p-sm rounded">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-secondary text-[18px]">fingerprint</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Cryptographic Telemetry Seal</span>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface" id="closeProvenanceBtn">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="space-y-sm font-code-sm text-code-sm text-xs">
+<div>
+<span class="text-outline block uppercase font-label-caps text-[10px]">Ingestion Batch</span>
+<span class="text-on-surface">SUB-2026-0914-NORTHGRID-P1</span>
+</div>
+<div>
+<span class="text-outline block uppercase font-label-caps text-[10px]">Batch Merkle Root Hash</span>
+<span class="text-primary font-bold break-all">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+</div>
+<div>
+<span class="text-outline block uppercase font-label-caps text-[10px]">Missing Artifact Fingerprint (Prescribed)</span>
+<span class="text-tertiary break-all">7f3a8b419c8309e17b8f991c2aa843b0284e81ff01c79a9234b677a284091c2</span>
+</div>
+<div>
+<span class="text-outline block uppercase font-label-caps text-[10px]">Time of Verification</span>
+<span class="text-on-surface">2026-09-15T08:14:22.091Z (Air-Gapped Time Enclave)</span>
+</div>
+</div>
+<div class="mt-md pt-sm flex justify-end">
+<button class="px-md py-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm font-medium" id="modalDoneBtn">
+          Close
+        </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+(function() {
+  // Candidate Dataset for Client-Side Interactivity
+  const candidates = {
+    'NS-0041': {
+      id: 'NS-0041',
+      cse: 'CSE-014',
+      cseName: 'CSE-014 (NorthGrid)',
+      caseId: 'CASE-1042',
+      controlId: 'CTRL-07',
+      controlName: 'Incident Investigation & Escalation',
+      state: 'NOT_SUBMITTED',
+      priority: 'HIGH',
+      expectedEvidence: 'Escalation Sign-off',
+      evidenceSpec: 'Formal Tier-2 Incident Escalation ticket log & SOC supervisor sign-off',
+      confidence: '74%',
+      explanation: 'Evidence omitted from batch upload SUB-2026-0914.'
+    },
+    'NS-0038': {
+      id: 'NS-0038',
+      cse: 'CSE-014',
+      cseName: 'CSE-014 (NorthGrid)',
+      caseId: 'CASE-1037',
+      controlId: 'CTRL-19',
+      controlName: 'SCADA Bastion Recording',
+      state: 'ABSENT_CONFIRMED',
+      priority: 'HIGH',
+      expectedEvidence: 'SCADA Bastion Access Log',
+      evidenceSpec: 'Privileged Jump Host access recording & perimeter firewall session log',
+      confidence: '92%',
+      explanation: 'Bastion host audit daemon confirmed disabled during maintenance.'
+    },
+    'NS-0034': {
+      id: 'NS-0034',
+      cse: 'CSE-014',
+      cseName: 'CSE-014 (NorthGrid)',
+      caseId: 'CASE-1021',
+      controlId: 'CTRL-12',
+      controlName: 'Response Validation',
+      state: 'NOT_SUBMITTED',
+      priority: 'MEDIUM',
+      expectedEvidence: 'Response Validation Signoff',
+      evidenceSpec: 'Post-containment sandbox report and containment verification token',
+      confidence: '68%',
+      explanation: 'Contained on EDR console but verification report unsubmitted.'
+    },
+    'NS-0031': {
+      id: 'NS-0031',
+      cse: 'CSE-014',
+      cseName: 'CSE-014 (NorthGrid)',
+      caseId: 'CASE-1008',
+      controlId: 'CTRL-04',
+      controlName: 'Investigation Closure',
+      state: 'UNKNOWN',
+      priority: 'LOW',
+      expectedEvidence: 'Investigation Closure Artifact',
+      evidenceSpec: 'Root cause analysis memo and signed closure statement',
+      confidence: '45%',
+      explanation: 'Telemetry inconclusive due to unlinked ticketing ID.'
+    },
+    'NS-0029': {
+      id: 'NS-0029',
+      cse: 'CSE-007',
+      cseName: 'CSE-007 (Apex Banking)',
+      caseId: 'CASE-0994',
+      controlId: 'CTRL-07',
+      controlName: 'Swift Core Isolation Log',
+      state: 'NOT_SUBMITTED',
+      priority: 'HIGH',
+      expectedEvidence: 'Swift Core Isolation Log',
+      evidenceSpec: 'Network segmentation firewall diff during transaction anomaly',
+      confidence: '81%',
+      explanation: 'Submitted package lacks network telemetry tier.'
+    },
+    'NS-0026': {
+      id: 'NS-0026',
+      cse: 'CSE-021',
+      cseName: 'CSE-021 (TelcoBharat)',
+      caseId: 'CASE-0982',
+      controlId: 'CTRL-15',
+      controlName: 'SS7 Gateway Auth Traces',
+      state: 'ABSENT_CONFIRMED',
+      priority: 'HIGH',
+      expectedEvidence: 'SS7 Gateway Auth Traces',
+      evidenceSpec: 'Signalling audit ledger logs between 02:00 and 04:00 IST',
+      confidence: '88%',
+      explanation: 'Gateway syslog server experienced local buffer overrun.'
+    }
+  };
+
+  // DOM Elements
+  const rows = document.querySelectorAll('.candidate-row');
+  const drawerCandidateId = document.getElementById('drawerCandidateId');
+  const drawerCseId = document.getElementById('drawerCseId');
+  const drawerCaseId = document.getElementById('drawerCaseId');
+  const drawerControlId = document.getElementById('drawerControlId');
+  const drawerBadgeState = document.getElementById('drawerBadgeState');
+  const evidenceSpecInput = document.getElementById('evidenceSpecInput');
+  const adjudicationNotes = document.getElementById('adjudicationNotes');
+
+  const globalCseFilter = document.getElementById('globalCseFilter');
+  const tableCseFilter = document.getElementById('tableCseFilter');
+  const stateFilter = document.getElementById('stateFilter');
+  const priorityFilter = document.getElementById('priorityFilter');
+  const controlFilter = document.getElementById('controlFilter');
+  const candidateSearchInput = document.getElementById('candidateSearchInput');
+  const highPriorityToggle = document.getElementById('highPriorityToggle');
+  const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+  const filteredCountBadge = document.getElementById('filteredCountBadge');
+
+  const toast = document.getElementById('toastNotification');
+  const toastTitle = document.getElementById('toastTitle');
+  const toastDesc = document.getElementById('toastDesc');
+  const toastIcon = document.getElementById('toastIcon');
+
+  const provenanceModal = document.getElementById('provenanceModal');
+  const viewProvenanceBtn = document.getElementById('viewProvenanceBtn');
+  const closeProvenanceBtn = document.getElementById('closeProvenanceBtn');
+  const modalDoneBtn = document.getElementById('modalDoneBtn');
+
+  const syncBtn = document.getElementById('syncTelemetryBtn');
+  const syncIcon = document.getElementById('syncIcon');
+  const syncText = document.getElementById('syncText');
+
+  let highPriorityOnly = false;
+
+  // Show Toast Helper
+  function showToast(title, desc, isSuccess = true) {
+    toastTitle.textContent = title;
+    toastDesc.textContent = desc;
+    toastIcon.textContent = isSuccess ? 'check_circle' : 'info';
+    toastIcon.className = `material-symbols-outlined text-[20px] ${isSuccess ? 'text-secondary' : 'text-primary'}`;
+    toast.classList.remove('translate-y-24', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    setTimeout(() => {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-24', 'opacity-0');
+    }, 3800);
+  }
+
+  // Row Selection & Drawer Update
+  function selectCandidate(candidateId) {
+    const data = candidates[candidateId];
+    if (!data) return;
+
+    rows.forEach(r => {
+      if (r.getAttribute('data-id') === candidateId) {
+        r.classList.add('bg-surface-container-highest', 'border-l-2', 'border-primary');
+        r.classList.remove('bg-surface-container');
+      } else {
+        r.classList.remove('bg-surface-container-highest', 'border-l-2', 'border-primary');
+        r.classList.add('bg-surface-container');
+      }
+    });
+
+    drawerCandidateId.textContent = data.id;
+    drawerCseId.textContent = data.cseName;
+    drawerCaseId.textContent = data.caseId;
+    drawerControlId.textContent = data.controlId;
+    drawerBadgeState.textContent = data.state;
+    evidenceSpecInput.value = data.evidenceSpec;
+
+    // Badge color mapping
+    if (data.state === 'NOT_SUBMITTED') {
+      drawerBadgeState.className = 'inline-flex items-center gap-xs px-xs py-0.5 rounded bg-tertiary/20 text-tertiary text-[11px] font-label-caps uppercase';
+    } else if (data.state === 'ABSENT_CONFIRMED') {
+      drawerBadgeState.className = 'inline-flex items-center gap-xs px-xs py-0.5 rounded bg-error/20 text-error text-[11px] font-label-caps uppercase';
+    } else {
+      drawerBadgeState.className = 'inline-flex items-center gap-xs px-xs py-0.5 rounded bg-outline/20 text-on-surface-variant text-[11px] font-label-caps uppercase';
+    }
+  }
+
+  // Attach click listener to table rows
+  rows.forEach(row => {
+    row.addEventListener('click', function() {
+      const id = this.getAttribute('data-id');
+      selectCandidate(id);
+    });
+  });
+
+  // Filter Logic
+  function applyFilters() {
+    const selectedCse = tableCseFilter.value;
+    const selectedState = stateFilter.value;
+    const selectedPriority = priorityFilter.value;
+    const selectedControl = controlFilter.value;
+    const searchTerm = candidateSearchInput.value.toLowerCase().trim();
+
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+      const rowId = row.getAttribute('data-id');
+      const rowCse = row.getAttribute('data-cse');
+      const rowState = row.getAttribute('data-state');
+      const rowPriority = row.getAttribute('data-priority');
+      const rowControl = row.getAttribute('data-control');
+      const textContent = row.textContent.toLowerCase();
+
+      const matchesCse = (selectedCse === 'ALL' || rowCse === selectedCse);
+      const matchesState = (selectedState === 'ALL' || rowState === selectedState);
+      const matchesPriority = (selectedPriority === 'ALL' || rowPriority === selectedPriority);
+      const matchesHighPriToggle = (!highPriorityOnly || rowPriority === 'HIGH');
+      const matchesControl = (selectedControl === 'ALL' || rowControl === selectedControl);
+      const matchesSearch = (!searchTerm || textContent.includes(searchTerm) || rowId.toLowerCase().includes(searchTerm));
+
+      if (matchesCse && matchesState && matchesPriority && matchesHighPriToggle && matchesControl && matchesSearch) {
+        row.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        row.classList.add('hidden');
+      }
+    });
+
+    filteredCountBadge.textContent = `Showing ${visibleCount} of 15`;
+  }
+
+  // Event Listeners for Filters
+  globalCseFilter.addEventListener('change', function() {
+    tableCseFilter.value = this.value;
+    applyFilters();
+  });
+
+  tableCseFilter.addEventListener('change', function() {
+    globalCseFilter.value = this.value;
+    applyFilters();
+  });
+
+  stateFilter.addEventListener('change', applyFilters);
+  priorityFilter.addEventListener('change', applyFilters);
+  controlFilter.addEventListener('change', applyFilters);
+  candidateSearchInput.addEventListener('input', applyFilters);
+
+  highPriorityToggle.addEventListener('click', function() {
+    highPriorityOnly = !highPriorityOnly;
+    if (highPriorityOnly) {
+      this.classList.add('bg-tertiary', 'text-on-tertiary-fixed');
+      this.classList.remove('bg-surface-container-high', 'text-tertiary');
+    } else {
+      this.classList.remove('bg-tertiary', 'text-on-tertiary-fixed');
+      this.classList.add('bg-surface-container-high', 'text-tertiary');
+    }
+    applyFilters();
+  });
+
+  resetFiltersBtn.addEventListener('click', function() {
+    globalCseFilter.value = 'ALL';
+    tableCseFilter.value = 'ALL';
+    stateFilter.value = 'ALL';
+    priorityFilter.value = 'ALL';
+    controlFilter.value = 'ALL';
+    candidateSearchInput.value = '';
+    highPriorityOnly = false;
+    highPriorityToggle.classList.remove('bg-tertiary', 'text-on-tertiary-fixed');
+    highPriorityToggle.classList.add('bg-surface-container-high', 'text-tertiary');
+    applyFilters();
+    showToast('Filters Reset', 'All supervisory candidates now displayed.');
+  });
+
+  // Action Buttons
+  document.getElementById('btnValidate').addEventListener('click', function() {
+    showToast('Candidate Validated', `${drawerCandidateId.textContent} flagged for formal supervisory inclusion.`);
+  });
+
+  document.getElementById('btnQualify').addEventListener('click', function() {
+    showToast('Candidate Qualified', 'Operational exception noted with conditional waiver.');
+  });
+
+  document.getElementById('btnReject').addEventListener('click', function() {
+    showToast('Candidate Rejected', 'Evidence non-existence justified by legitimate architecture.', false);
+  });
+
+  document.getElementById('btnInjunction').addEventListener('click', function() {
+    adjudicationNotes.focus();
+    showToast('Injunction Focus', 'Complete evidence request details before dispatch.', false);
+  });
+
+  document.getElementById('dispatchInjunctionBtn').addEventListener('click', function() {
+    const spec = evidenceSpecInput.value;
+    showToast('Injunction Dispatched', `Evidence request dispatched for ${drawerCandidateId.textContent}.`);
+  });
+
+  document.getElementById('exportBtn').addEventListener('click', function() {
+    showToast('Export Initiated', 'Compiling PDF/CSV Supervisory Dossier for Q3 2026.');
+  });
+
+  // Sync Engine Micro-Interaction
+  syncBtn.addEventListener('click', function() {
+    syncIcon.classList.add('animate-spin');
+    syncText.textContent = 'Ingesting Telemetry...';
+    syncBtn.disabled = true;
+
+    setTimeout(() => {
+      syncIcon.classList.remove('animate-spin');
+      syncText.textContent = 'Sync Engine';
+      syncBtn.disabled = false;
+      showToast('Engine Ingestion Synced', '15 candidates verified against latest Merkle proofs.');
+    }, 1200);
+  });
+
+  // Cryptographic Modal Handling
+  viewProvenanceBtn.addEventListener('click', function() {
+    provenanceModal.classList.remove('hidden');
+  });
+
+  closeProvenanceBtn.addEventListener('click', function() {
+    provenanceModal.classList.add('hidden');
+  });
+
+  modalDoneBtn.addEventListener('click', function() {
+    provenanceModal.classList.add('hidden');
+  });
+
+  document.getElementById('viewSourceBtn').addEventListener('click', function() {
+    showToast('Raw Telemetry Inspector', 'Ingestion payload decrypted into audit stream.');
+  });
+
+  // Initialize
+  applyFilters();
+})();
+</script></main></div></body></html>

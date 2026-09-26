@@ -1,157 +1,104 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Building2, 
-  ListFilter, 
-  Layers, 
-  GitFork, 
-  FileSearch, 
-  ShieldAlert, 
-  History, 
-  Users, 
-  CheckCircle2, 
-  FileText,
-  Sliders,
-  LogOut,
-  Shield
-} from 'lucide-react';
-import { cn } from '@/utils/cn';
 
 interface NavItemProps {
   to: string;
-  icon: React.ElementType;
+  iconName: string;
   label: string;
-  badge?: string | number;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ to, icon: Icon, label, badge }) => (
+const NavItem: React.FC<NavItemProps> = ({ to, iconName, label }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
-      cn(
-        'flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-colors',
+      `flex items-center gap-2 px-3 py-1.5 rounded font-sans text-xs transition-colors ${
         isActive
-          ? 'bg-blue-600/20 text-blue-400 border-l-2 border-blue-500'
-          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-      )
+          ? 'bg-[#1f6feb] text-white font-semibold'
+          : 'text-[#c2c6d6] hover:bg-[#1c2026] hover:text-[#dfe2eb]'
+      }`
     }
   >
-    <div className="flex items-center gap-2.5">
-      <Icon className="w-4 h-4" />
-      <span>{label}</span>
-    </div>
-    {badge !== undefined && (
-      <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-slate-800 text-slate-300 rounded border border-slate-700">
-        {badge}
-      </span>
-    )}
+    <span className="material-symbols-outlined text-[16px]">{iconName}</span>
+    <span>{label}</span>
   </NavLink>
 );
 
 export const Sidebar: React.FC = () => {
   return (
-    <aside className="w-64 bg-[#0d1322] border-r border-slate-800 flex flex-col h-screen fixed left-0 top-0 select-none z-30">
-      {/* Platform Branding */}
-      <div className="p-4 border-b border-slate-800/80 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 font-bold">
-            <Shield className="w-4 h-4" />
-          </div>
-          <div>
-            <div className="text-sm font-bold tracking-wider text-slate-100 flex items-center gap-1.5">
-              SAT-SA
-              <span className="text-[10px] px-1 py-0.2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded font-mono">
-                SECURE
-              </span>
-            </div>
-            <div className="text-[10px] text-slate-400 font-medium">NCIIPC SOC Assessment</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation Sections */}
-      <div className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
-        <div>
-          <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-            Overview
-          </div>
-          <NavItem to="/overview" icon={LayoutDashboard} label="Supervisory Overview" />
-        </div>
-
-        <div>
-          <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-            Supervision
-          </div>
-          <div className="space-y-1">
-            <NavItem to="/supervision/cses" icon={Building2} label="CSE Assessments" badge="24" />
-            <NavItem to="/supervision/priority" icon={ListFilter} label="Priority Queue" badge="6" />
-            <NavItem to="/supervision/sampling" icon={Layers} label="Supervisory Sampling" badge="28" />
-          </div>
-        </div>
-
-        <div>
-          <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-            Examiner Workspace
-          </div>
-          <div className="space-y-1">
-            <NavItem to="/assessment/findings" icon={ShieldAlert} label="Findings & Signals" badge="17" />
-            <NavItem to="/assessment/evidence" icon={FileSearch} label="Evidence Explorer" />
-            <NavItem to="/assessment/remediation" icon={CheckCircle2} label="Remediation & Verify" badge="9" />
-          </div>
-        </div>
-
-        <div>
-          <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-            Analytics Engines
-          </div>
-          <div className="space-y-1">
-            <NavItem to="/analytics/execution-gaps" icon={GitFork} label="Execution Gaps" badge="31" />
-            <NavItem to="/analytics/negative-space" icon={FileSearch} label="Negative Space" badge="14" />
-            <NavItem to="/analytics/process" icon={GitFork} label="Process Conformance" />
-            <NavItem to="/analytics/evidence-quality" icon={CheckCircle2} label="Evidence Quality" badge="92%" />
-          </div>
-        </div>
-
-        <div>
-          <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-            Intelligence
-          </div>
-          <div className="space-y-1">
-            <NavItem to="/intelligence/historical" icon={History} label="Historical Trends" />
-            <NavItem to="/intelligence/peer" icon={Users} label="Peer Comparison" />
-          </div>
-        </div>
-
-        <div>
-          <div className="px-3 mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-            Governance
-          </div>
-          <div className="space-y-1">
-            <NavItem to="/governance/audit" icon={FileText} label="Audit Trail" />
-            <NavItem to="/governance/administration" icon={Sliders} label="Administration" />
-          </div>
-        </div>
-      </div>
-
-      {/* Air-gap / Environment Footer */}
-      <div className="p-3 border-t border-slate-800 bg-[#090d17] text-[11px]">
-        <div className="flex items-center justify-between text-slate-400 mb-1.5">
-          <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            Air-Gapped Enclave
+    <aside className="fixed left-0 top-0 h-screen w-[250px] bg-[#181c22] border-r border-[#262a31] flex flex-col z-50 overflow-y-auto select-none">
+      {/* Brand Header */}
+      <div className="p-4 pb-2 bg-[#1c2026] border-b border-[#262a31]">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-2 h-2 rounded-full bg-[#7bdb80] animate-pulse"></div>
+          <span className="text-[11px] uppercase text-[#dfe2eb] tracking-wider font-bold">
+            Govt of India / NCIIPC
           </span>
-          <span className="font-mono text-[10px] text-slate-500">v0.9.4</span>
         </div>
-        <div className="flex items-center justify-between pt-2 border-t border-slate-800/60 text-slate-400">
-          <div className="flex flex-col">
-            <span className="font-medium text-slate-300">examiner_07</span>
-            <span className="text-[10px] text-slate-500">Senior Examiner</span>
-          </div>
-          <NavLink to="/login" className="p-1 hover:text-rose-400 text-slate-500 transition-colors" title="Sign Out">
-            <LogOut className="w-4 h-4" />
-          </NavLink>
+        <div className="text-xl text-[#afc6ff] tracking-tight font-bold font-mono">
+          SAT-SA
         </div>
+        <div className="text-xs text-[#c2c6d6]">
+          Supervisory Analytics Tool
+        </div>
+      </div>
+
+      {/* Navigation Groups */}
+      <nav className="flex-1 px-2 py-2 flex flex-col gap-1">
+        {/* OVERVIEW */}
+        <div className="px-3 pt-2 pb-1 text-[11px] uppercase text-[#8c90a0] font-semibold tracking-wider">
+          Overview
+        </div>
+        <NavItem to="/overview" iconName="dashboard" label="Overview" />
+
+        {/* SUPERVISION */}
+        <div className="px-3 pt-3 pb-1 text-[11px] uppercase text-[#8c90a0] font-semibold tracking-wider">
+          Supervision
+        </div>
+        <NavItem to="/supervision/cse-assessments" iconName="domain_verification" label="CSE Assessments" />
+        <NavItem to="/supervision/priority-queue" iconName="low_priority" label="Priority Queue" />
+        <NavItem to="/supervision/sampling" iconName="fact_check" label="Recommended Samples" />
+
+        {/* ANALYTICS */}
+        <div className="px-3 pt-3 pb-1 text-[11px] uppercase text-[#8c90a0] font-semibold tracking-wider">
+          Analytics
+        </div>
+        <NavItem to="/analytics/execution-gaps" iconName="rule_folder" label="Execution Gaps" />
+        <NavItem to="/analytics/negative-space" iconName="contrast" label="Negative Space" />
+        <NavItem to="/analytics/process-analysis" iconName="account_tree" label="Process Analysis" />
+        <NavItem to="/analytics/evidence-quality" iconName="verified" label="Evidence Quality" />
+        <NavItem to="/analytics/behavioural-analysis" iconName="psychology" label="Behavioural Analysis" />
+        <NavItem to="/analytics/coverage" iconName="radar" label="Coverage" />
+        <NavItem to="/analytics/consistency" iconName="stacked_line_chart" label="Consistency" />
+
+        {/* ASSESSMENT */}
+        <div className="px-3 pt-3 pb-1 text-[11px] uppercase text-[#8c90a0] font-semibold tracking-wider">
+          Assessment
+        </div>
+        <NavItem to="/findings" iconName="warning" label="Findings" />
+        <NavItem to="/evidence" iconName="inventory" label="Evidence" />
+        <NavItem to="/remediation" iconName="published_with_changes" label="Remediation" />
+        <NavItem to="/verification" iconName="security" label="Verification" />
+
+        {/* INTELLIGENCE */}
+        <div className="px-3 pt-3 pb-1 text-[11px] uppercase text-[#8c90a0] font-semibold tracking-wider">
+          Intelligence
+        </div>
+        <NavItem to="/analytics/historical-intelligence" iconName="timeline" label="Historical Trends" />
+        <NavItem to="/analytics/peer-comparison" iconName="compare_arrows" label="Peer Comparison" />
+        <NavItem to="/intelligence/signal-discovery" iconName="bubble_chart" label="Signal Discovery" />
+
+        {/* GOVERNANCE */}
+        <div className="px-3 pt-3 pb-1 text-[11px] uppercase text-[#8c90a0] font-semibold tracking-wider">
+          Governance
+        </div>
+        <NavItem to="/governance/audit" iconName="policy" label="Audit" />
+        <NavItem to="/governance/administration" iconName="admin_panel_settings" label="Administration" />
+      </nav>
+
+      {/* Footer Enclave Status */}
+      <div className="p-3 bg-[#0a0e14] border-t border-[#262a31] text-[11px] text-[#8c90a0] flex items-center justify-between font-mono">
+        <span>SYS-ID: NC-4029</span>
+        <span className="w-2 h-2 rounded-full bg-[#7bdb80]"></span>
       </div>
     </aside>
   );

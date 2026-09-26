@@ -97,7 +97,7 @@ export const DashboardOverviewPage: React.FC = () => {
                       {cse.signalsSummary[0] || 'Nominal'}
                     </td>
                     <td className="py-2.5 px-3">
-                      {cse.capabilityDiscrepancy ? (
+                      {cse.capabilityDiscrepancyCount > 0 ? (
                         <span className="px-2 py-0.5 text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded">
                           Review Required
                         </span>
@@ -107,7 +107,7 @@ export const DashboardOverviewPage: React.FC = () => {
                     </td>
                     <td className="py-2.5 px-3 text-right">
                       <Link
-                        to={`/supervision/cses/${cse.cseId}`}
+                        to={`/supervision/cse-assessments/${cse.cseId}`}
                         className="px-2.5 py-1 text-[11px] font-medium bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded border border-blue-500/30 transition-colors"
                       >
                         Inspect
