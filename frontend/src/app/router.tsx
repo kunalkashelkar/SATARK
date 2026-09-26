@@ -11,50 +11,22 @@ import { ExecutionGapsPage } from '@/pages/ExecutionGaps/ExecutionGapsPage';
 import { NegativeSpacePage } from '@/pages/NegativeSpace/NegativeSpacePage';
 import { SamplingPage } from '@/pages/Sampling/SamplingPage';
 import { RemediationPage } from '@/pages/Remediation/RemediationPage';
+import { VerificationPage } from '@/pages/Verification/VerificationPage';
 
-// Placeholder components for secondary prototype views
-const ProcessAnalysisPage = () => (
-  <div className="p-6 rounded-lg bg-[#0e1626] border border-slate-800 text-slate-300">
-    <h2 className="text-lg font-bold mb-2">Process Conformance & PM4Py Integration</h2>
-    <p className="text-xs text-slate-400">Reconstructed Petri net / event-log transition deviations across alert-to-closure nodes.</p>
-  </div>
-);
+import { ProcessAnalysisPage } from '@/pages/ProcessAnalysis/ProcessAnalysisPage';
 import { EvidenceQualityPage } from '@/pages/EvidenceQuality/EvidenceQualityPage';
 
-const EvidenceExplorerPage = () => (
-  <div className="p-6 rounded-lg bg-[#0e1626] border border-slate-800 text-slate-300">
-    <h2 className="text-lg font-bold mb-2">Evidence Explorer</h2>
-    <p className="text-xs text-slate-400">Searchable repository of raw canonical evidence records (Alerts, Cases, Investigations, Actions, Closures).</p>
-  </div>
-);
+import { EvidenceExplorerPage } from '@/pages/EvidenceExplorer/EvidenceExplorerPage';
 
-const HistoricalTrendsPage = () => (
-  <div className="p-6 rounded-lg bg-[#0e1626] border border-slate-800 text-slate-300">
-    <h2 className="text-lg font-bold mb-2">Historical Recurrence & Control Drift</h2>
-    <p className="text-xs text-slate-400">Multi-cycle finding recurrence tracking and remediation regression models.</p>
-  </div>
-);
+import { HistoricalIntelligencePage } from '@/pages/HistoricalIntelligence/HistoricalIntelligencePage';
 
-const PeerComparisonPage = () => (
-  <div className="p-6 rounded-lg bg-[#0e1626] border border-slate-800 text-slate-300">
-    <h2 className="text-lg font-bold mb-2">Cohort-Based Peer Benchmarking</h2>
-    <p className="text-xs text-slate-400">Access-controlled comparative deviation analysis against segmented sector cohorts.</p>
-  </div>
-);
-
-const AuditPage = () => (
-  <div className="p-6 rounded-lg bg-[#0e1626] border border-slate-800 text-slate-300">
-    <h2 className="text-lg font-bold mb-2">System Audit Trail & Accountability Log</h2>
-    <p className="text-xs text-slate-400">Tamper-evident logs of all examiner validations, rule versions, and cryptographic custody events.</p>
-  </div>
-);
-
-const AdministrationPage = () => (
-  <div className="p-6 rounded-lg bg-[#0e1626] border border-slate-800 text-slate-300">
-    <h2 className="text-lg font-bold mb-2">Platform Administration & Enclave Health</h2>
-    <p className="text-xs text-slate-400">Air-gapped deployment status, control libraries, rule catalog, and system health.</p>
-  </div>
-);
+import { PeerComparisonPage } from '@/pages/PeerComparison/PeerComparisonPage';
+import { BehaviouralAnalysisPage } from '@/pages/BehaviouralAnalysis/BehaviouralAnalysisPage';
+import { CoveragePage } from '@/pages/Coverage/CoveragePage';
+import { ConsistencyPage } from '@/pages/Consistency/ConsistencyPage';
+import { SignalDiscoveryPage } from '@/pages/SignalDiscovery/SignalDiscoveryPage';
+import { AuditTrailPage } from '@/pages/Audit/AuditTrailPage';
+import { AdministrationPage } from '@/pages/Administration/AdministrationPage';
 
 export const AppRouter: React.FC = () => {
   return (
@@ -77,21 +49,38 @@ export const AppRouter: React.FC = () => {
           <Route path="/analytics/execution-gaps" element={<ExecutionGapsPage />} />
           <Route path="/analytics/negative-space" element={<NegativeSpacePage />} />
           <Route path="/analytics/process" element={<ProcessAnalysisPage />} />
+          <Route path="/analytics/process-analysis" element={<ProcessAnalysisPage />} />
           <Route path="/analytics/evidence-quality" element={<EvidenceQualityPage />} />
+          <Route path="/analytics/behavioural-analysis" element={<BehaviouralAnalysisPage />} />
+          <Route path="/analytics/behavioural" element={<BehaviouralAnalysisPage />} />
+          <Route path="/analytics/coverage" element={<CoveragePage />} />
+          <Route path="/analytics/coverage-analysis" element={<CoveragePage />} />
+          <Route path="/analytics/consistency" element={<ConsistencyPage />} />
+          <Route path="/analytics/consistency-analysis" element={<ConsistencyPage />} />
 
           {/* Assessment & Examiner Workspace Routes */}
           <Route path="/assessment/findings" element={<FindingsListPage />} />
           <Route path="/assessment/findings/:findingId" element={<FindingDetailPage />} />
+          <Route path="/evidence" element={<EvidenceExplorerPage />} />
           <Route path="/assessment/evidence" element={<EvidenceExplorerPage />} />
+          <Route path="/remediation" element={<RemediationPage />} />
           <Route path="/assessment/remediation" element={<RemediationPage />} />
+          <Route path="/verification" element={<VerificationPage />} />
+          <Route path="/assessment/verification" element={<VerificationPage />} />
 
           {/* Intelligence Routes */}
-          <Route path="/intelligence/historical" element={<HistoricalTrendsPage />} />
+          <Route path="/analytics/historical-intelligence" element={<HistoricalIntelligencePage />} />
+          <Route path="/intelligence/historical" element={<HistoricalIntelligencePage />} />
+          <Route path="/analytics/peer-comparison" element={<PeerComparisonPage />} />
           <Route path="/intelligence/peer" element={<PeerComparisonPage />} />
+          <Route path="/intelligence/signal-discovery" element={<SignalDiscoveryPage />} />
+          <Route path="/analytics/signal-discovery" element={<SignalDiscoveryPage />} />
 
           {/* Governance Routes */}
-          <Route path="/governance/audit" element={<AuditPage />} />
+          <Route path="/governance/audit" element={<AuditTrailPage />} />
+          <Route path="/audit" element={<AuditTrailPage />} />
           <Route path="/governance/administration" element={<AdministrationPage />} />
+          <Route path="/administration" element={<AdministrationPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/overview" replace />} />
