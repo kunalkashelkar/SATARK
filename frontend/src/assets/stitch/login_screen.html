@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAT-SA | Secure Internal Access | NCIIPC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+          },
+          colors: {
+            bg: {
+              default: '#0B0E14',
+              surface: '#111620',
+              elevation: '#171D28',
+              hover: '#1E2533',
+            },
+            border: {
+              default: '#232B3B',
+              muted: '#1A212E',
+              emphasis: '#3B475C',
+            },
+            primer: {
+              blue: '#58A6FF',
+              blueHover: '#79B8FF',
+              green: '#238636',
+              greenHover: '#2EA043',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      background-color: #07090D;
+      background-image: 
+        radial-gradient(ellipse at 50% 0%, rgba(31, 111, 235, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.02) 1px, transparent 0);
+      background-size: 100% 100%, 24px 24px;
+      color: #E6EDF3;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-[#58A6FF]/20 selection:text-[#58A6FF]">
+
+  <!-- Top Security Classification Bar -->
+  <header class="w-full border-b border-[#1E2635] bg-[#0A0D13]/90 backdrop-blur px-6 py-2.5 flex items-center justify-between text-xs tracking-wider z-20">
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] bg-[#161B22] border border-[#30363D] text-[#8B949E] text-[11px] font-mono">
+        <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#3FB950] animate-pulse"></span>
+        AIR-GAPPED NODE
+      </div>
+      <span class="text-[#6E7681]">|</span>
+      <span class="text-[#8B949E] uppercase font-medium text-[11px] tracking-widest hidden sm:inline">Restricted Critical Infrastructure Environment</span>
+    </div>
+
+    <div class="flex items-center gap-4 text-[11px] font-mono text-[#8B949E]">
+      <span class="flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 text-[#58A6FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        TLS 1.3 / FIPS-140-2
+      </span>
+      <span class="text-[#30363D]">•</span>
+      <span class="text-[#6E7681]">NODE-DEL-04</span>
+    </div>
+  </header>
+
+  <!-- Main Login Workspace Container -->
+  <main class="flex-1 flex items-center justify-center px-4 py-8 relative">
+    <div class="w-full max-w-[460px] mx-auto flex flex-col items-center">
+
+      <!-- Institutional Identity Header -->
+      <div class="text-center mb-6">
+        <div class="flex items-center justify-center gap-2 mb-2">
+          <!-- Emblem / Institutional Badge -->
+          <div class="w-9 h-9 rounded-[6px] bg-[#111620] border border-[#232B3B] flex items-center justify-center shadow-inner">
+            <svg class="w-5 h-5 text-[#58A6FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+          </div>
+        </div>
+        
+        <p class="text-[11px] font-semibold text-[#8B949E] uppercase tracking-[0.2em] mb-0.5">Government of India</p>
+        <p class="text-[11px] font-medium text-[#7D8590] uppercase tracking-[0.14em]">National Critical Information Infrastructure Protection Centre</p>
+        
+        <div class="mt-3 inline-flex items-center gap-2">
+          <h1 class="text-xl font-bold tracking-tight text-[#F0F6FC] font-mono">SAT-SA</h1>
+          <span class="text-xs px-2 py-0.5 rounded-[4px] bg-[#161B22] border border-[#30363D] text-[#8B949E] font-mono font-medium">v1.0.0</span>
+        </div>
+        <p class="text-[12px] text-[#8B949E] mt-0.5">Supervisory Analytics Tool for SOC Assessment</p>
+      </div>
+
+      <!-- Secure Internal Access Card -->
+      <div class="w-full bg-[#0E131C] border border-[#232B3B] rounded-[8px] p-6 shadow-2xl relative">
+        <div class="flex items-center justify-between border-b border-[#1D2533] pb-3 mb-5">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#58A6FF]"></span>
+            <span class="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#C9D1D9]">Secure Internal Access</span>
+          </div>
+          <span class="text-[11px] text-[#7D8590] font-mono">ENCLAVE-AUTH</span>
+        </div>
+
+        <form id="loginForm" class="space-y-4" onsubmit="event.preventDefault(); handleSignIn();">
+          
+          <!-- Role Routing Selector (Supervisory vs Examiner) -->
+          <div class="space-y-1.5">
+            <label class="block text-[11px] font-medium uppercase tracking-wider text-[#8B949E] flex items-center justify-between">
+              <span>Target Workspace</span>
+              <span class="text-[10px] text-[#58A6FF] font-mono font-normal">Select Workspace</span>
+            </label>
+            <div class="grid grid-cols-2 gap-2 bg-[#090C12] p-1 rounded-[6px] border border-[#1E2635]">
+              <button type="button" id="role-supervisor" onclick="setRole('supervisor')" class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-[4px] text-xs font-medium transition-all bg-[#171E2B] text-[#58A6FF] border border-[#303E54] shadow-sm">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span>Supervisor</span>
+              </button>
+              <button type="button" id="role-examiner" onclick="setRole('examiner')" class="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-[4px] text-xs font-medium transition-all text-[#8B949E] hover:text-[#C9D1D9]">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                </svg>
+                <span>Examiner</span>
+              </button>
+            </div>
+            <div id="role-hint" class="text-[11px] text-[#6E7681] pt-0.5 flex items-center gap-1">
+              <svg class="w-3 h-3 text-[#58A6FF]" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+              </svg>
+              <span id="role-description">Accessing Cross-CSE Portfolio, Priority Queue & Sampling Engine</span>
+            </div>
+          </div>
+
+          <!-- User ID Field -->
+          <div class="space-y-1">
+            <label for="userId" class="block text-[11px] font-medium uppercase tracking-wider text-[#8B949E]">
+              User ID / Employee ID
+            </label>
+            <div class="relative">
+              <input 
+                id="userId" 
+                type="text" 
+                value="NCIIPC-SPV-0814" 
+                placeholder="Enter your User ID" 
+                required 
+                class="w-full h-9 rounded-[6px] border border-[#232B3B] bg-[#070A0F] px-3 text-xs text-[#F0F6FC] placeholder:text-[#484F58] focus:border-[#58A6FF] focus:outline-none focus:ring-1 focus:ring-[#58A6FF] font-mono transition-colors"
+              />
+              <div class="absolute right-2.5 top-2.5 text-[#484F58] font-mono text-[10px]">AUTH-ID</div>
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="space-y-1">
+            <div class="flex items-center justify-between">
+              <label for="password" class="block text-[11px] font-medium uppercase tracking-wider text-[#8B949E]">
+                Password
+              </label>
+              <span class="text-[10px] text-[#6E7681] font-mono">HW KEY ENABLED</span>
+            </div>
+            <div class="relative">
+              <input 
+                id="password" 
+                type="password" 
+                value="••••••••••••••••" 
+                placeholder="Enter your password" 
+                required 
+                class="w-full h-9 rounded-[6px] border border-[#232B3B] bg-[#070A0F] px-3 pr-9 text-xs text-[#F0F6FC] placeholder:text-[#484F58] focus:border-[#58A6FF] focus:outline-none focus:ring-1 focus:ring-[#58A6FF] font-mono transition-colors tracking-widest"
+              />
+              <button 
+                type="button" 
+                onclick="togglePasswordVisibility()" 
+                class="absolute right-2.5 top-2 text-[#6E7681] hover:text-[#C9D1D9] transition-colors focus:outline-none"
+                title="Toggle visibility"
+              >
+                <svg id="eyeIcon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- MFA Indicator (Clean non-cluttered badge) -->
+          <div class="py-1 px-2.5 rounded-[5px] bg-[#090D14] border border-[#1B2230] flex items-center justify-between text-[11px]">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#3FB950]"></span>
+              <span class="text-[#8B949E]">MFA Token Verification</span>
+            </div>
+            <span class="text-[#3FB950] font-mono font-medium text-[10px] tracking-wide">● SYNCED (STEP 2 READY)</span>
+          </div>
+
+          <!-- Sign In CTA -->
+          <div class="pt-2">
+            <button 
+              type="submit" 
+              id="submitBtn"
+              class="w-full h-9 rounded-[6px] bg-[#238636] hover:bg-[#2EA043] text-white text-xs font-semibold tracking-wide flex items-center justify-center gap-2 transition-colors border border-[rgba(240,246,252,0.1)] shadow-sm group"
+            >
+              <span id="submitLabel">Sign In to Supervisory Dashboard</span>
+              <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </div>
+
+        </form>
+
+        <!-- System Audit & Status Telemetry -->
+        <div class="mt-5 pt-4 border-t border-[#1D2533] space-y-3">
+          <div class="flex items-center justify-center gap-4 text-[10px] font-mono tracking-wider">
+            <span class="flex items-center gap-1.5 text-[#7EE787]">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#238636]"></span>
+              INTERNAL NETWORK
+            </span>
+            <span class="text-[#30363D]">|</span>
+            <span class="flex items-center gap-1.5 text-[#58A6FF]">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#1F6FEB]"></span>
+              AUDIT ENABLED
+            </span>
+            <span class="text-[#30363D]">|</span>
+            <span class="text-[#8B949E]">
+              SEC-ZONE 4
+            </span>
+          </div>
+
+          <!-- Statutory Warning Notice -->
+          <div class="rounded-[5px] bg-[#0A0D13] p-2.5 border border-[#1A2230] text-center">
+            <p class="text-[10px] font-semibold text-[#8B949E] tracking-wider uppercase">
+              Authorized Access Only
+            </p>
+            <p class="text-[10px] text-[#545D68] mt-0.5 leading-relaxed">
+              Security-relevant activities, supervisory actions, and examination records are logged and audited in accordance with NCIIPC Information Security Guidelines.
+            </p>
+          </div>
+
+          <div class="flex items-center justify-between text-[10px] font-mono text-[#484F58] pt-1">
+            <span>SESSION ID: 7F4A-91C0</span>
+            <span>BUILD: 2026.08.14-REV4</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick Nav Guidance Note -->
+      <div class="mt-4 text-center">
+        <p class="text-[11px] text-[#6E7681]">
+          Evaluating the prototype? Toggle between <button type="button" onclick="setRole('supervisor')" class="text-[#58A6FF] hover:underline font-medium">Supervisor</button> and <button type="button" onclick="setRole('examiner')" class="text-[#58A6FF] hover:underline font-medium">Examiner</button> modes above.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Institutional Footer -->
+  <footer class="w-full border-t border-[#1A212E] bg-[#080B0F] px-6 py-3 flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#6E7681] gap-2">
+    <div class="flex items-center gap-2">
+      <span class="font-mono text-[#8B949E]">SAT-SA</span>
+      <span>— Supervisory Analytics Tool for SOC Assessment</span>
+    </div>
+    <div class="flex items-center gap-4 font-mono text-[10px]">
+      <span>NO EXTERNAL CLOUD TELEMETRY</span>
+      <span class="text-[#30363D]">•</span>
+      <span>AIR-GAPPED COMPLIANT</span>
+      <span class="text-[#30363D]">•</span>
+      <span>NCIIPC CORE</span>
+    </div>
+  </footer>
+
+  <script>
+    let currentRole = 'supervisor';
+
+    function setRole(role) {
+      currentRole = role;
+      const btnSupervisor = document.getElementById('role-supervisor');
+      const btnExaminer = document.getElementById('role-examiner');
+      const roleDesc = document.getElementById('role-description');
+      const submitLabel = document.getElementById('submitLabel');
+      const userIdInput = document.getElementById('userId');
+
+      if (role === 'supervisor') {
+        btnSupervisor.className = 'flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-[4px] text-xs font-medium transition-all bg-[#171E2B] text-[#58A6FF] border border-[#303E54] shadow-sm';
+        btnExaminer.className = 'flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-[4px] text-xs font-medium transition-all text-[#8B949E] hover:text-[#C9D1D9]';
+        roleDesc.textContent = 'Accessing Cross-CSE Portfolio, Priority Queue & Sampling Engine';
+        submitLabel.textContent = 'Sign In to Supervisory Dashboard';
+        userIdInput.value = 'NCIIPC-SPV-0814';
+      } else {
+        btnExaminer.className = 'flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-[4px] text-xs font-medium transition-all bg-[#171E2B] text-[#58A6FF] border border-[#303E54] shadow-sm';
+        btnSupervisor.className = 'flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-[4px] text-xs font-medium transition-all text-[#8B949E] hover:text-[#C9D1D9]';
+        roleDesc.textContent = 'Accessing Finding Reasoning Chain, Evidence Timeline & Human Decision';
+        submitLabel.textContent = 'Sign In to Examiner Workspace';
+        userIdInput.value = 'NCIIPC-EXM-2041';
+      }
+    }
+
+    function togglePasswordVisibility() {
+      const passwordInput = document.getElementById('password');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+      } else {
+        passwordInput.type = 'password';
+      }
+    }
+
+    function handleSignIn() {
+      const submitBtn = document.getElementById('submitBtn');
+      const submitLabel = document.getElementById('submitLabel');
+      const prevLabel = submitLabel.textContent;
+      
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-80', 'cursor-wait');
+      submitLabel.textContent = 'Authenticating Enclave Session...';
+
+      setTimeout(() => {
+        submitLabel.textContent = `Routed to ${currentRole === 'supervisor' ? 'Supervisory Dashboard' : 'Examiner Workspace'} ✓`;
+        submitBtn.classList.remove('bg-[#238636]', 'hover:bg-[#2EA043]');
+        submitBtn.classList.add('bg-[#1f6feb]');
+        
+        setTimeout(() => {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('opacity-80', 'cursor-wait', 'bg-[#1f6feb]');
+          submitBtn.classList.add('bg-[#238636]', 'hover:bg-[#2EA043]');
+          submitLabel.textContent = prevLabel;
+        }, 1800);
+      }, 700);
+    }
+  </script>
+</body>
+</html>
