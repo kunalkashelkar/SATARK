@@ -9,6 +9,11 @@ from app.db.models import (
     AssessmentCycle,
     Control,
     ControlApplicability,
+    Evidence,
+    EvidenceProvenance,
+    EvidenceControlLink,
+    AnalyticalSignalModel,
+    AnalysisJobModel,
 )
 
 __all__ = [
@@ -22,4 +27,9 @@ __all__ = [
     "AssessmentCycle",
     "Control",
     "ControlApplicability",
+    "Evidence",
+    "EvidenceProvenance",
+    "EvidenceControlLink",
+    "AnalyticalSignalModel",
+    "AnalysisJobModel",
 ]

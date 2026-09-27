@@ -284,7 +284,191 @@ def seed_database(db: Session) -> None:
             db.add(access)
 
     db.commit()
-    logger.info("Database seeding successfully completed!")
+
+    # 8. Seed Deterministic Evidence Records with genuine Parquet artifacts and SHA-256 hashes
+    from app.services.evidence_service import EvidenceService
+    from app.schemas.evidence import EvidenceIngestRequest, EvidenceProvenanceBase
+    from app.db.models.evidence import Evidence
+
+    sample_evidences = [
+        {
+            "evidence_id": "EV-1042",
+            "cse_id": "CSE-014",
+            "control_id": "CTRL-07",
+            "control_code": "SOC.MON.07",
+            "category": "ALERT",
+            "state": "PRESENT",
+            "source_system": "SIEM",
+            "source_event_id": "ALR-44218",
+            "events": [
+                {
+                    "alert_id": "ALR-44218",
+                    "timestamp": "2026-09-26T09:12:04Z",
+                    "title": "Substation 4B PLC Boundary Alarm - Modbus unauthorized write",
+                    "severity": "CRITICAL",
+                    "analyst": "R. Sharma",
+                    "case_id": "CASE-1042",
+                    "src_ip": "10.14.88.21",
+                    "dest_ip": "10.14.102.5",
+                    "category": "Industrial Control / OT Incursion",
+                },
+                {
+                    "alert_id": "ALR-44219",
+                    "timestamp": "2026-09-26T09:12:35Z",
+                    "title": "Substation 4B Telemetry Ingestion Failure",
+                    "severity": "HIGH",
+                    "analyst": "R. Sharma",
+                    "case_id": "CASE-1042",
+                    "src_ip": "10.14.88.21",
+                    "dest_ip": "10.14.102.5",
+                    "category": "OT Telemetry Interruption",
+                }
+            ],
+            "provenance": EvidenceProvenanceBase(
+                collector="sat-collector-v2.8-fips",
+                transmission_token="TOK-NCIIPC-SEC-44218",
+                source_host="splunk-fwd-01.northgrid.internal",
+                source_ip="10.14.0.12",
+                custody_chain=[
+                    "CSE-014 SOC SIEM",
+                    "Air-Gap SFTP Drop",
+                    "NCIIPC Ingestion Security Gateway",
+                    "Supervisory Enclave Vault"
+                ],
+                received_by="NCIIPC Automated Enclave Gateway",
+            )
+        },
+        {
+            "evidence_id": "EVD-742",
+            "cse_id": "CSE-014",
+            "control_id": "CTRL-08",
+            "control_code": "SOC.PRC.08",
+            "category": "INVESTIGATION",
+            "state": "PRESENT",
+            "source_system": "CASE_MGMT",
+            "source_event_id": "INV-338",
+            "events": [
+                {
+                    "case_ref": "CASE-1042 / INV-338",
+                    "timestamp": "2026-09-26T09:42:18Z",
+                    "lead_analyst": "S. Kulkarni",
+                    "case_id": "CASE-1042",
+                    "phase": "TRIAGE_ANALYSIS",
+                    "severity": "HIGH",
+                    "playbook": "PW-04",
+                }
+            ],
+            "provenance": EvidenceProvenanceBase(
+                collector="sat-collector-v2.8-fips",
+                transmission_token="TOK-NCIIPC-SEC-742",
+                source_host="jira-soc.northgrid.internal",
+                source_ip="10.14.0.14",
+                custody_chain=[
+                    "CSE-014 Internal SOC",
+                    "Air-Gap SFTP Drop",
+                    "NCIIPC Collector Gateway",
+                    "Supervisory Enclave Vault"
+                ],
+                received_by="NCIIPC Automated Enclave Gateway",
+            )
+        },
+        {
+            "evidence_id": "EVD-761",
+            "cse_id": "CSE-014",
+            "control_id": "CTRL-07",
+            "control_code": "SOC.MON.07",
+            "category": "RESPONSE",
+            "state": "PRESENT",
+            "source_system": "GATEWAY",
+            "source_event_id": "RSP-089",
+            "events": [
+                {
+                    "log_id": "FW-BLOCKED-8819",
+                    "timestamp": "2026-09-26T11:08:44Z",
+                    "action": "BLOCK",
+                    "severity": "MEDIUM",
+                    "user": "FW-SOAR-BOT",
+                    "dest_port": 502,
+                    "bytes": 1024,
+                }
+            ],
+            "provenance": EvidenceProvenanceBase(
+                collector="sat-collector-v2.8-fips",
+                transmission_token="TOK-NCIIPC-SEC-761",
+                source_host="ng-fw-cluster.northgrid.internal",
+                source_ip="10.14.2.1",
+                custody_chain=[
+                    "CSE-014 Boundary Firewall",
+                    "NCIIPC Collector Gateway",
+                    "Supervisory Enclave Vault"
+                ],
+                received_by="NCIIPC Automated Enclave Gateway",
+            )
+        },
+        {
+            "evidence_id": "ESC-221",
+            "cse_id": "CSE-014",
+            "control_id": "CTRL-08",
+            "control_code": "SOC.PRC.08",
+            "category": "ESCALATION",
+            "state": "NOT_SUBMITTED",
+            "source_system": "TICKETING",
+            "source_event_id": "MISSING_ESCALATION",
+            "events": [
+                {
+                    "ticket_id": "TICK-EXPECTED-MISSING",
+                    "timestamp": "2026-09-26T10:00:00Z",
+                    "priority": "HIGH",
+                    "status": "UNSUBMITTED",
+                }
+            ],
+            "provenance": EvidenceProvenanceBase(
+                collector="sat-collector-v2.8-fips",
+                transmission_token="TOK-MISSING-ESC",
+                custody_chain=["Expected Statutory Channel", "Enclave Evidence Vault"],
+                received_by="NCIIPC Automated Enclave Gateway",
+            )
+        },
+        {
+            "evidence_id": "EV-2019",
+            "cse_id": "CSE-022",
+            "control_id": "CTRL-07",
+            "control_code": "SOC.MON.07",
+            "category": "ALERT",
+            "state": "PRESENT",
+            "source_system": "EDR",
+            "source_event_id": "EDR-DET-9921",
+            "events": [
+                {
+                    "detection_id": "EDR-DET-9921",
+                    "timestamp": "2026-09-26T08:15:00Z",
+                    "hostname": "kaveri-scada-hmi-01",
+                    "process_name": "cmd.exe",
+                    "action": "PROCESS_TERMINATED",
+                    "severity": "CRITICAL",
+                    "sha256": "4a1b028ec31a0029bce83719001e389291bacef9810419284102948124819231",
+                }
+            ],
+            "provenance": EvidenceProvenanceBase(
+                collector="sat-collector-v2.8-fips",
+                transmission_token="TOK-KAVERI-EDR-9921",
+                source_host="edr-broker.kaveri.internal",
+                source_ip="10.22.4.8",
+                custody_chain=["Kaveri EDR Server", "Air-Gap Gateway", "Supervisory Enclave Vault"],
+                received_by="NCIIPC Automated Enclave Gateway",
+            )
+        },
+    ]
+
+    for ev_data in sample_evidences:
+        existing = db.query(Evidence).filter(Evidence.public_id == ev_data["evidence_id"]).first()
+        if not existing:
+            EvidenceService.ingest_evidence(
+                db=db,
+                payload=EvidenceIngestRequest(**ev_data)
+            )
+
+    logger.info("Database and deterministic evidence seeding successfully completed!")
 
 
 if __name__ == "__main__":
