@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link, useLocation } from 'react-router-dom';
 import { useSupervisory } from '@/context/SupervisoryContext';
 import { Finding, Priority, FindingStatus } from '@/types';
 import { 
@@ -36,7 +36,10 @@ import {
 export const ReviewQueuePage: React.FC = () => {
   const { findings, cses, setActiveFindingId, requestEvidenceDemand } = useSupervisory();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const isFindingsView = location.pathname.startsWith('/findings');
 
   // Search & Filter State
   const [searchTerm, setSearchTerm] = useState('');
@@ -197,8 +200,8 @@ export const ReviewQueuePage: React.FC = () => {
       {/* 1. PAGE HEADER (Section 5)                                                */}
       {/* ========================================================================= */}
       <PageHeader
-        title="Supervisory Review Queue"
-        description="Items requiring supervisory or examiner attention."
+        title={isFindingsView ? "Supervisory Findings" : "Supervisory Review Queue"}
+        description={isFindingsView ? "Authoritative inventory of findings, qualified issues, and candidate signals." : "Items requiring supervisory or examiner attention."}
         badge={
           <span className="text-[11px] font-mono text-[#7bdb80] bg-[#7bdb80]/10 px-2.5 py-0.5 rounded border border-[#7bdb80]/30 font-medium">
             Human-in-the-Loop Active
