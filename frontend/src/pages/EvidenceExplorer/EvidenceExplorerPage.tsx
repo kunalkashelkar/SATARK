@@ -24,7 +24,8 @@ import {
   StatusBadge,
   Tabs,
   Timeline,
-  Button
+  Button,
+  Modal
 } from '@/components/common';
 
 export const EvidenceExplorerPage: React.FC = () => {
@@ -42,6 +43,7 @@ export const EvidenceExplorerPage: React.FC = () => {
 
   // Selected item for inspection panel
   const [selectedEvidence, setSelectedEvidence] = useState<MockEvidenceRecord | null>(evidence[0] || null);
+  const [inspectorModal, setInspectorModal] = useState<'ORIGINAL' | 'NORMALIZED' | 'RELATED' | null>(null);
 
   const resetFilters = () => {
     setSearchTerm('');
@@ -286,47 +288,108 @@ export const EvidenceExplorerPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-lg bg-[#14181f] border border-[#262a31] text-[12px] font-mono space-y-2">
+                    {/* Metadata Ledger (Section 17 fields) */}
+                    <div className="p-2.5 rounded bg-[#10141a] border border-[#212c3d] text-[11px] font-mono space-y-1.5">
                       <div className="flex justify-between">
-                        <span className="text-[#8c90a0]">Case Reference:</span>
-                        <span className="text-[#dfe2eb] font-semibold">{selectedEvidence.caseRef}</span>
+                        <span className="text-[#64748b]">Evidence ID:</span>
+                        <span className="text-[#60a5fa] font-bold">{selectedEvidence.id}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[#8c90a0]">Source System:</span>
+                        <span className="text-[#64748b]">Source:</span>
                         <span className="text-[#dfe2eb]">{selectedEvidence.source}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[#8c90a0]">Timestamp:</span>
+                        <span className="text-[#64748b]">Submitted By:</span>
+                        <span className="text-[#dfe2eb] truncate max-w-[170px]" title={`Compliance Officer (${selectedEvidence.cseId})`}>
+                          Officer • {selectedEvidence.cseId}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#64748b]">Assessment Period:</span>
+                        <span className="text-[#cbd5e1]">Q3 2026 Active Cycle</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#64748b]">Timestamp:</span>
                         <span className="text-[#dfe2eb]">{selectedEvidence.timestampTime || selectedEvidence.timestamp}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-[#8c90a0]">Integrity Check:</span>
-                        <span className="text-[#7bdb80] font-semibold flex items-center gap-1">
+                        <span className="text-[#64748b]">Integrity:</span>
+                        <span className="text-[#10b981] font-semibold flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3" />
-                          <span>FIPS Verified</span>
+                          <span>{selectedEvidence.integrity || 'VERIFIED (SHA-256)'}</span>
                         </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#64748b]">Classification:</span>
+                        <span className="text-[#fbbf24] font-semibold">RESTRICTED // LAW ENF</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#64748b]">Related Record:</span>
+                        <span className="text-[#60a5fa] font-bold">{selectedEvidence.caseRef || selectedEvidence.gapOrFinding}</span>
                       </div>
                     </div>
 
+                    {/* SHA-256 Digest */}
                     <div className="space-y-1 text-[11px] font-mono">
-                      <span className="text-[#8c90a0] uppercase">SHA-256 Digest:</span>
-                      <div className="p-2 rounded bg-[#10141a] border border-[#262a31] text-[#7bdb80] break-all select-all font-semibold">
+                      <span className="text-[#8c90a0] uppercase text-[10px]">SHA-256 Digest:</span>
+                      <div className="p-2 rounded bg-[#0d121a] border border-[#212c3d] text-[#10b981] break-all select-all font-semibold text-[10px]">
                         {selectedEvidence.hash}
                       </div>
                     </div>
 
+                    {/* Supervisory Provenance */}
                     <div className="space-y-1">
-                      <span className="text-[11px] text-[#8c90a0] font-mono uppercase">
+                      <span className="text-[10px] text-[#8c90a0] font-mono uppercase">
                         Supervisory Provenance:
                       </span>
-                      <p className="text-[12px] text-[#c2c6d6] leading-relaxed">
+                      <p className="text-[11px] text-[#cbd5e1] leading-relaxed p-2 rounded bg-[#0d121a] border border-[#212c3d]">
                         {selectedEvidence.gapNote || selectedEvidence.title}
                       </p>
                     </div>
 
-                    <div className="pt-2 border-t border-[#262a31]/60 flex items-center justify-between text-[11px] font-mono">
-                      <span className="text-[#8c90a0]">Enclave Storage</span>
-                      <span className="text-[#7bdb80]">READ-ONLY / IMMUTABLE</span>
+                    {/* Section 17 Forensic Action Buttons */}
+                    <div className="pt-2 border-t border-[#212c3d] space-y-1.5">
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="w-full text-[11px] justify-center"
+                          onClick={() => setInspectorModal('ORIGINAL')}
+                        >
+                          View Original
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          className="w-full text-[11px] justify-center"
+                          onClick={() => setInspectorModal('NORMALIZED')}
+                        >
+                          View Normalized
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full text-[11px] justify-center"
+                          onClick={() => setActiveTab('timeline')}
+                        >
+                          View Timeline
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full text-[11px] justify-center"
+                          onClick={() => setInspectorModal('RELATED')}
+                        >
+                          View Related
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="pt-1 text-[10px] font-mono flex items-center justify-between text-[#64748b]">
+                      <span>Enclave Storage</span>
+                      <span className="text-[#10b981]">READ-ONLY / IMMUTABLE</span>
                     </div>
                   </>
                 ) : (
@@ -400,6 +463,106 @@ export const EvidenceExplorerPage: React.FC = () => {
           </div>
         </Card>
       )}
+
+      {/* FORENSIC EVIDENCE INSPECTOR MODALS (Section 17) */}
+      <Modal
+        isOpen={inspectorModal !== null}
+        onClose={() => setInspectorModal(null)}
+        title={
+          inspectorModal === 'ORIGINAL'
+            ? `Original Ingested Telemetry — ${selectedEvidence?.id}`
+            : inspectorModal === 'NORMALIZED'
+            ? `Normalized Supervisory Schema — ${selectedEvidence?.id}`
+            : `Related Records & Case Linkages — ${selectedEvidence?.id}`
+        }
+        maxWidth="lg"
+      >
+        <div className="space-y-3 font-mono text-[12px]">
+          {inspectorModal === 'ORIGINAL' && selectedEvidence && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-[11px] text-[#8c90a0]">
+                <span>RAW_INGEST_PAYLOAD_UNALTERED</span>
+                <span className="text-[#10b981]">SHA-256 MATCH VERIFIED</span>
+              </div>
+              <pre className="p-3 rounded bg-[#0d121a] border border-[#212c3d] text-[#cbd5e1] overflow-x-auto text-[11px] max-h-96 leading-relaxed">
+{JSON.stringify({
+  _meta: {
+    enclave_ingress_timestamp: selectedEvidence.timestampTime || selectedEvidence.timestamp,
+    source_system: selectedEvidence.source,
+    entity_code: selectedEvidence.cseId,
+    fips_sha256: selectedEvidence.hash,
+    enclave_classification: "RESTRICTED_STATUTORY_RECORD"
+  },
+  payload: {
+    event_id: selectedEvidence.id,
+    case_ref: selectedEvidence.caseRef,
+    title: selectedEvidence.title,
+    record_type: selectedEvidence.recordType,
+    raw_status: selectedEvidence.status,
+    supervisory_note: selectedEvidence.gapNote || "None"
+  }
+}, null, 2)}
+              </pre>
+            </div>
+          )}
+
+          {inspectorModal === 'NORMALIZED' && selectedEvidence && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-[11px] text-[#8c90a0]">
+                <span>TAXONOMY: NCIIPC-SEC-70B-SUPERVISORY-STD-v2.4</span>
+                <span className="text-[#60a5fa]">CANONICAL FORMAT</span>
+              </div>
+              <pre className="p-3 rounded bg-[#0d121a] border border-[#212c3d] text-[#60a5fa] overflow-x-auto text-[11px] max-h-96 leading-relaxed">
+{JSON.stringify({
+  canonical_id: `SUP-EVD-${selectedEvidence.id}`,
+  regulatory_domain: "CRITICAL_SECTOR_CYBER_ASSURANCE",
+  mandate_reference: "IT_ACT_SEC_70B_MANDATE",
+  entity: {
+    id: selectedEvidence.cseId,
+    name: selectedEvidence.entity,
+    enclave_node: "ENCLAVE-70B"
+  },
+  assurance_vector: {
+    evidence_state: selectedEvidence.status,
+    integrity_proof: selectedEvidence.integrity,
+    tamper_proof_digest: selectedEvidence.hash
+  }
+}, null, 2)}
+              </pre>
+            </div>
+          )}
+
+          {inspectorModal === 'RELATED' && selectedEvidence && (
+            <div className="space-y-3">
+              <div className="p-3 rounded bg-[#0d121a] border border-[#212c3d] space-y-2 font-sans">
+                <div className="text-[12px] font-semibold text-[#f1f5f9]">Linked Case Investigation</div>
+                <div className="font-mono text-[11px] text-[#60a5fa]">Ref: {selectedEvidence.caseRef}</div>
+                <p className="text-[12px] text-[#94a3b8]">
+                  Associated with supervisory tracking record for entity {selectedEvidence.entity}.
+                </p>
+              </div>
+
+              <div className="p-3 rounded bg-[#0d121a] border border-[#212c3d] space-y-2 font-sans">
+                <div className="text-[12px] font-semibold text-[#f1f5f9]">Associated Supervisory Finding</div>
+                <div className="font-mono text-[11px] text-[#f87171]">{selectedEvidence.gapOrFinding}</div>
+                <p className="text-[12px] text-[#94a3b8]">
+                  Flagged as evidentiary trace in human examiner queue.
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div className="pt-2 border-t border-[#212c3d] flex justify-end">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setInspectorModal(null)}
+            >
+              Close Inspector
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </PageContainer>
   );
 };

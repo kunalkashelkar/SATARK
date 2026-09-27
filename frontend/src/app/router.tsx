@@ -12,6 +12,9 @@ import { RemediationPage } from '@/pages/Remediation/RemediationPage';
 import { GovernanceHubPage } from '@/pages/Governance/GovernanceHubPage';
 import { AnalysisHubPage } from '@/pages/Analysis/AnalysisHubPage';
 
+import { SupervisoryEvidenceGraphPage } from '@/pages/Graph/SupervisoryEvidenceGraphPage';
+import { SamplingPage } from '@/pages/Sampling/SamplingPage';
+
 // Wrapper for parameterized subtabs in Analysis
 const AnalysisSubTabRoute: React.FC = () => {
   const { subTab } = useParams<{ subTab: string }>();
@@ -39,15 +42,22 @@ export const AppRouter: React.FC = () => {
           <Route path="/findings" element={<ReviewQueuePage />} />
           <Route path="/findings/:findingId" element={<FindingDetailPage />} />
 
-          {/* 3. Evidence Routes */}
+          {/* 3. Supervisory Evidence Graph (Attack-Surface to Supervisory Graph) */}
+          <Route path="/graph" element={<SupervisoryEvidenceGraphPage />} />
+          <Route path="/evidence-graph" element={<SupervisoryEvidenceGraphPage />} />
+
+          {/* 4. Evidence Routes */}
           <Route path="/evidence" element={<EvidenceExplorerPage />} />
           <Route path="/evidence/:evidenceId" element={<EvidenceExplorerPage />} />
 
-          {/* 4. Remediation Routes */}
+          {/* 5. Sampling Routes */}
+          <Route path="/sampling" element={<SamplingPage />} />
+
+          {/* 6. Remediation Routes */}
           <Route path="/remediation" element={<RemediationPage />} />
           <Route path="/remediation/:remediationId" element={<RemediationPage />} />
 
-          {/* 5. Governance Routes */}
+          {/* 7. Governance Routes */}
           <Route path="/governance" element={<GovernanceHubPage />} />
           <Route path="/governance/audit" element={<GovernanceHubPage initialTab="audit" />} />
           <Route path="/governance/admin" element={<GovernanceHubPage initialTab="admin" />} />
@@ -55,7 +65,7 @@ export const AppRouter: React.FC = () => {
           <Route path="/audit" element={<Navigate to="/governance/audit" replace />} />
           <Route path="/administration" element={<Navigate to="/governance/admin" replace />} />
 
-          {/* 6. Grouped Analysis Hub Routes */}
+          {/* 8. Grouped Analysis Hub Routes */}
           <Route path="/analysis" element={<AnalysisHubPage />} />
           <Route path="/analysis/:subTab" element={<AnalysisSubTabRoute />} />
 
