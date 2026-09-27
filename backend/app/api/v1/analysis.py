@@ -140,7 +140,27 @@ def run_analytical_engine(
         assessment_id=payload.assessment_id if payload else None,
         parameters=payload.parameters if payload else {},
     )
-    return engine_registry.execute_engine(slug=engine.slug, context=context, persist=True)
+    result = engine_registry.execute_engine(slug=engine.slug, context=context, persist=True)
+
+    try:
+        from app.services.audit_service import AuditService
+        AuditService.log_event(
+            db=db,
+            action="ANALYSIS_EXECUTED",
+            actor_id=current_user.public_id,
+            entity_type="ENGINE",
+            entity_id=engine.slug,
+            after={
+                "signals_count": len(result.signals),
+                "cse_id": payload.cse_id if payload else None,
+            },
+            examiner_badge=current_user.badge,
+            reason=f"Analytical engine {engine.slug} ({engine.version}) executed",
+        )
+    except Exception:
+        pass
+
+    return result
 
 
 # 7. Retrieve Specific Engine State, 4 KPIs, Signals, and Trends

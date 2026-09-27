@@ -62,6 +62,7 @@ class EvidenceIngestRequest(EvidenceBase):
 class EvidenceValidateRequest(BaseModel):
     decision: str = Field(..., description="VALID, INVALID, or REJECTED")
     notes: Optional[str] = None
+    validated_by: Optional[str] = Field(None, description="Examiner or supervisor username/badge")
 
 
 class EvidenceIntegrityResponse(BaseModel):

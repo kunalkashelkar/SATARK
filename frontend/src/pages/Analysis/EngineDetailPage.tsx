@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   PageContainer, 
@@ -16,6 +16,7 @@ import {
   getEngineBySlug, 
   getSignalsByEngineSlug 
 } from '@/data/mock/analysis';
+import { analysisApi } from '@/api';
 import { AnalyticsSignalDrawer } from './components/AnalyticsSignalDrawer';
 import { 
   ArrowLeft, 
@@ -64,10 +65,51 @@ export const EngineDetailPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug
   const [showMoreFilters, setShowMoreFilters] = useState(false);
   const [secondaryFilter, setSecondaryFilter] = useState('ALL');
 
-  // Load signals for this engine
+  const [backendSignals, setBackendSignals] = useState<AnalyticsSignal[]>([]);
+
+  useEffect(() => {
+    analysisApi.getSignalsBySlug(engineMeta.slug)
+      .then(res => {
+        if (Array.isArray(res) && res.length > 0) {
+          const adapted = res.map((s: any) => ({
+            id: s.id || s.signalId,
+            signalId: s.signalId || s.id,
+            engineType: s.engineType || engineMeta.id,
+            title: s.title,
+            reason: s.reason || s.explanation || s.summary || s.title,
+            priority: (s.priority as any) || 'HIGH',
+            status: (s.status as any) || 'CANDIDATE',
+            cseId: s.cseId,
+            cseName: s.cseName || `${s.cseId} Operational Node`,
+            controlId: s.controlId || 'CTRL-07',
+            controlName: s.controlName || 'Continuous Security Monitoring',
+            score: s.score ?? 0.85,
+            findingId: s.findingId || (s.finding_id ? s.finding_id : undefined),
+            evidenceIds: s.evidenceIds || [],
+            expected: s.expected || 'Mandatory SLA dispatch protocol',
+            observed: s.observed || 'Local disposition without outbound escalation dispatch',
+            difference: s.difference || 'Observed deviation from mandated control baseline.',
+            whyFlagged: s.whyFlagged || s.reason || s.explanation,
+            gapSummary: s.gapSummary || s.title,
+            assessmentId: s.assessmentId || 'ASM-2026-Q3',
+            ruleVersion: s.ruleVersion || 'v2.4',
+            controlVersion: s.controlVersion || 'v3.2',
+            modelVersion: s.modelVersion || 'v1.8',
+            updatedAt: 'Recently'
+          }));
+          setBackendSignals(adapted);
+        }
+      })
+      .catch(() => {});
+  }, [engineMeta.slug, engineMeta.id]);
+
+  // Load signals for this engine (backend or fallback)
   const allEngineSignals = useMemo(() => {
+    if (backendSignals.length > 0) {
+      return backendSignals;
+    }
     return getSignalsByEngineSlug(engineMeta.slug);
-  }, [engineMeta.slug]);
+  }, [backendSignals, engineMeta.slug]);
 
   // Unique CSEs for dropdown
   const cseOptions = useMemo(() => {

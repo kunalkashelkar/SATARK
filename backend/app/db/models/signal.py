@@ -13,6 +13,9 @@ class Signal(Base):
     signal_id = Column(String(64), unique=True, nullable=False, index=True)  # e.g. SIG-2004, SIG-EG-01
     engine = Column(String(64), nullable=False, index=True)  # e.g. EXECUTION_GAP, execution-gap
     engine_version = Column(String(32), default="1.0.0", nullable=False)
+    rule_version = Column(String(32), default="R-2.4", nullable=False)
+    model_version = Column(String(32), nullable=True)  # e.g. MOD-BEHAV-01 or null
+    pipeline_version = Column(String(32), default="v3.1.0", nullable=False)
     cse_id = Column(GUID, ForeignKey("cses.id", ondelete="CASCADE"), nullable=False, index=True)
     control_id = Column(GUID, ForeignKey("controls.id", ondelete="SET NULL"), nullable=True, index=True)
     priority = Column(String(16), default="MEDIUM", nullable=False, index=True)  # CRITICAL, HIGH, MEDIUM, LOW

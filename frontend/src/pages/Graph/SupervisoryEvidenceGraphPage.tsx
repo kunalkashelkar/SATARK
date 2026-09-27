@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupervisory } from '@/context/SupervisoryContext';
 import { 
@@ -8,6 +8,7 @@ import {
   StatusBadge, 
   Button 
 } from '@/components/common';
+import { graphApi, GraphNode as ApiGraphNode, GraphLink as ApiGraphLink } from '@/api';
 import { 
   Shield, 
   FileText, 
@@ -27,12 +28,13 @@ import {
 
 interface GraphNode {
   id: string;
-  type: 'CSE' | 'CONTROL' | 'PROCESS' | 'CASE' | 'ALERT' | 'INVESTIGATION' | 'EVIDENCE' | 'SIGNAL' | 'CLOSURE';
+  type: string;
   label: string;
   sublabel: string;
   status: 'VERIFIED' | 'CRITICAL' | 'WARNING' | 'PENDING' | 'NEUTRAL';
   x: number;
   y: number;
+  detail_url?: string;
   data: {
     entity: string;
     details: string;
@@ -57,14 +59,61 @@ export const SupervisoryEvidenceGraphPage: React.FC = () => {
 
   const [selectedCseId, setSelectedCseId] = useState('CSE-014');
   const [filterType, setFilterType] = useState('ALL');
-  const [selectedNodeId, setSelectedNodeId] = useState<string>('sig-gap-0071');
+  const [selectedNodeId, setSelectedNodeId] = useState<string>('CSE-014');
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [apiNodes, setApiNodes] = useState<GraphNode[]>([]);
+  const [apiLinks, setApiLinks] = useState<GraphLink[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Real graph model derived from actual CSE-014 supervisory case telemetry
-  const nodes: GraphNode[] = useMemo(() => [
+  useEffect(() => {
+    setIsLoading(true);
+    graphApi.getGraph({ cse_id: selectedCseId !== 'ALL' ? selectedCseId : undefined })
+      .then(res => {
+        if (res.nodes && res.nodes.length > 0) {
+          const mappedNodes: GraphNode[] = res.nodes.map(n => ({
+            id: n.id,
+            type: n.type,
+            label: n.label,
+            sublabel: n.sublabel,
+            status: (n.status as any) || 'NEUTRAL',
+            x: n.x,
+            y: n.y,
+            detail_url: n.detail_url,
+            data: {
+              entity: n.data?.entity || 'NorthGrid Energy',
+              details: n.data?.details || n.label,
+              sha256: n.data?.sha256,
+              source: n.data?.source,
+              timestamp: n.data?.timestamp,
+              findingId: n.data?.findingId,
+              evidenceId: n.data?.evidenceId
+            }
+          }));
+
+          const mappedLinks: GraphLink[] = (res.links || []).map((l: any) => ({
+            from: l.from || l.from_node,
+            to: l.to || l.to_node,
+            label: l.label,
+            type: l.type || 'normal'
+          }));
+
+          setApiNodes(mappedNodes);
+          setApiLinks(mappedLinks);
+          if (mappedNodes.length > 0) {
+            setSelectedNodeId(mappedNodes[0].id);
+          }
+        }
+      })
+      .catch(err => {
+        console.error('Failed fetching supervisory graph:', err);
+      })
+      .finally(() => setIsLoading(false));
+  }, [selectedCseId]);
+  // Backend graph model with fallback
+  const fallbackNodes: GraphNode[] = useMemo(() => [
     // Level 1: CSE
     {
-      id: 'cse-014',
+      id: 'CSE-014',
       type: 'CSE',
       label: 'CSE-014: NorthGrid Transmission',
       sublabel: 'Energy Sector • Critical Priority',
@@ -80,7 +129,7 @@ export const SupervisoryEvidenceGraphPage: React.FC = () => {
     },
     // Level 2: Controls
     {
-      id: 'ctrl-07',
+      id: 'CTRL-07',
       type: 'CONTROL',
       label: 'CTRL-07: Tier-2 Escalation',
       sublabel: 'Mandatory 30m Escalation Window',
@@ -94,7 +143,7 @@ export const SupervisoryEvidenceGraphPage: React.FC = () => {
       }
     },
     {
-      id: 'ctrl-09',
+      id: 'CTRL-09',
       type: 'CONTROL',
       label: 'CTRL-09: Firewall Integrity',
       sublabel: 'Substation Perimeter Rules',
@@ -107,11 +156,11 @@ export const SupervisoryEvidenceGraphPage: React.FC = () => {
         source: 'NCIIPC-CSF v3.2'
       }
     },
-    // Level 3: Cases / Alerts
+    // Level 3: Cases / Alerts / Evidence
     {
-      id: 'case-1042',
-      type: 'CASE',
-      label: 'CASE-1042: SCADA Bus Anomaly',
+      id: 'EV-1042',
+      type: 'EVIDENCE',
+      label: 'EV-1042: SCADA Bus Anomaly',
       sublabel: 'Severity: High • 26 Sep 09:14 IST',
       status: 'CRITICAL',
       x: 480,
@@ -124,23 +173,7 @@ export const SupervisoryEvidenceGraphPage: React.FC = () => {
       }
     },
     {
-      id: 'alt-9901',
-      type: 'ALERT',
-      label: 'ALT-9901: Remote Command Trip',
-      sublabel: 'Ingested from OT SIEM',
-      status: 'WARNING',
-      x: 480,
-      y: 220,
-      data: {
-        entity: 'NorthGrid Energy',
-        details: 'Ingested alert trigger from RTU terminal without dual-operator hardware key authentication.',
-        source: 'OT SIEM Core',
-        timestamp: '26 Sep 2026 09:15:01'
-      }
-    },
-    // Level 4: Investigation & Evidence
-    {
-      id: 'evd-742',
+      id: 'EVD-742',
       type: 'EVIDENCE',
       label: 'EVD-742: Investigation Worklog',
       sublabel: 'Verified Ingestion (PRESENT)',
@@ -150,32 +183,15 @@ export const SupervisoryEvidenceGraphPage: React.FC = () => {
       data: {
         entity: 'NorthGrid Energy',
         details: 'Triage worklog completed by Shift Analyst at 09:42 IST. Confirms anomalous sequence.',
-        sha256: '9f8a3c22b918a99477e6f8812dd014a9ecba19001258d4a98218174fca1',
+        sha256: '7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069',
         source: 'SOC Case Management',
         timestamp: '26 Sep 2026 09:42:18'
       }
     },
     {
-      id: 'evd-missing',
-      type: 'EVIDENCE',
-      label: 'ESC-221: Regulatory Escalation',
-      sublabel: 'Omitted Record (NOT_SUBMITTED)',
-      status: 'CRITICAL',
-      x: 690,
-      y: 190,
-      data: {
-        entity: 'NorthGrid Energy',
-        details: 'Mandatory formal transmission token to statutory authority was not generated. Zero record in ledger.',
-        sha256: 'ABSENT_FROM_ENCLAVE_INGESTION',
-        source: 'Statutory Ingestion Gate',
-        timestamp: 'Expected by 09:44 IST'
-      }
-    },
-    // Level 5: Supervisory Signal & Adjudication
-    {
-      id: 'sig-gap-0071',
+      id: 'SIG-2004',
       type: 'SIGNAL',
-      label: 'GAP-0071: Execution Gap',
+      label: 'SIG-2004: Execution Gap',
       sublabel: 'Ref Finding: FND-0142',
       status: 'CRITICAL',
       x: 900,
@@ -189,34 +205,66 @@ export const SupervisoryEvidenceGraphPage: React.FC = () => {
       }
     },
     {
-      id: 'close-bypass',
-      type: 'CLOSURE',
-      label: 'Direct Closure Action',
-      sublabel: 'Single-Operator Premature Sign-off',
-      status: 'WARNING',
-      x: 900,
-      y: 270,
+      id: 'FND-0142',
+      type: 'FINDING',
+      label: 'FND-0142: Escalation Omission',
+      sublabel: 'Status: UNDER_REVIEW • Priority: CRITICAL',
+      status: 'CRITICAL',
+      x: 1080,
+      y: 140,
       data: {
         entity: 'NorthGrid Energy',
-        details: 'Incident was closed at 10:22 IST without statutory sign-off.',
-        source: 'SOAR Worklog',
-        timestamp: '26 Sep 2026 10:22:04'
+        findingId: 'FND-0142',
+        details: 'Alert ALR-44218 was closed in CASE-1042 without required Level-2 incident escalation token.',
+        source: 'Examiner Adjudication Dossier',
+        timestamp: '26 Sep 2026 14:18 IST'
+      }
+    },
+    {
+      id: 'REM-0038',
+      type: 'REMEDIATION',
+      label: 'REM-0038: Corrective Mandate',
+      sublabel: 'Status: OPEN • SLA: 8d remaining',
+      status: 'CRITICAL',
+      x: 1260,
+      y: 140,
+      data: {
+        entity: 'NorthGrid Energy',
+        details: 'Review CTRL-07 escalation workflow & submit cryptographic telemetry for INV-338 tier-2 dispatch.',
+        source: 'Remediation Lifecycle Engine',
+        timestamp: '26 Sep 2026 14:20 IST'
+      }
+    },
+    {
+      id: 'VRF-0038',
+      type: 'VERIFICATION',
+      label: 'VRF-0038: Verification Gate',
+      sublabel: 'Verdict: EVIDENCE_LOCKED • Confidence: 68%',
+      status: 'CRITICAL',
+      x: 1440,
+      y: 140,
+      data: {
+        entity: 'NorthGrid Energy',
+        details: 'Awaiting mandatory telemetry ESC-221 from NorthGrid. Statutory closure gate remains locked.',
+        source: 'Statutory Gate Authority',
+        timestamp: '26 Sep 2026 14:22 IST'
       }
     }
   ], []);
 
-  const links: GraphLink[] = useMemo(() => [
-    { from: 'cse-014', to: 'ctrl-07', label: 'Mandate Scope', type: 'normal' },
-    { from: 'cse-014', to: 'ctrl-09', label: 'Attested', type: 'verified' },
-    { from: 'ctrl-07', to: 'case-1042', label: 'Governs Incident', type: 'normal' },
-    { from: 'ctrl-07', to: 'alt-9901', label: 'Telemetry Rule', type: 'normal' },
-    { from: 'case-1042', to: 'evd-742', label: 'Submits Proof', type: 'verified' },
-    { from: 'case-1042', to: 'evd-missing', label: 'Missing Step', type: 'gap' },
-    { from: 'evd-missing', to: 'sig-gap-0071', label: 'Synthesizes', type: 'gap' },
-    { from: 'alt-9901', to: 'close-bypass', label: 'Direct Bypass', type: 'gap' },
-    { from: 'close-bypass', to: 'sig-gap-0071', label: 'Confirms Deviation', type: 'gap' },
+  const fallbackLinks: GraphLink[] = useMemo(() => [
+    { from: 'CSE-014', to: 'CTRL-07', label: 'Mandate Scope', type: 'normal' },
+    { from: 'CSE-014', to: 'CTRL-09', label: 'Attested', type: 'verified' },
+    { from: 'CTRL-07', to: 'EV-1042', label: 'Evaluates', type: 'normal' },
+    { from: 'EV-1042', to: 'EVD-742', label: 'Submits Proof', type: 'verified' },
+    { from: 'EVD-742', to: 'SIG-2004', label: 'Triggers', type: 'gap' },
+    { from: 'SIG-2004', to: 'FND-0142', label: 'Corroborates', type: 'gap' },
+    { from: 'FND-0142', to: 'REM-0038', label: 'Demands', type: 'normal' },
+    { from: 'REM-0038', to: 'VRF-0038', label: 'Validates', type: 'verified' },
   ], []);
 
+  const nodes = apiNodes.length > 0 ? apiNodes : fallbackNodes;
+  const links = apiLinks.length > 0 ? apiLinks : fallbackLinks;
   const selectedNode = nodes.find(n => n.id === selectedNodeId) || nodes[0];
 
   const getStatusColor = (status: GraphNode['status']) => {

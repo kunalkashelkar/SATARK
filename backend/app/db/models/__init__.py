@@ -7,6 +7,12 @@ from app.db.models.assessment import AssessmentCycle
 from app.db.models.control import Control, ControlApplicability
 from app.db.models.evidence import Evidence, EvidenceProvenance, EvidenceControlLink
 from app.db.models.analysis import AnalyticalSignalModel, AnalysisJobModel
+from app.db.models.signal import Signal, SignalEvidenceLink, FusedAssessmentContext
+from app.db.models.finding import Finding, FindingSignalLink, FindingEvidenceLink, AuditEvent
+from app.db.models.sampling import SamplingRun, SamplingItem
+from app.db.models.remediation import Remediation, RemediationFinding
+from app.db.models.verification import VerificationResult, VerificationGate
+from app.db.models.governance import SystemVersion, RuleVersion, ModelVersion, PipelineRun
 
 __all__ = [
     "Role",
@@ -23,4 +29,21 @@ __all__ = [
     "EvidenceControlLink",
     "AnalyticalSignalModel",
     "AnalysisJobModel",
+    "Signal",
+    "SignalEvidenceLink",
+    "FusedAssessmentContext",
+    "Finding",
+    "FindingSignalLink",
+    "FindingEvidenceLink",
+    "AuditEvent",
+    "SamplingRun",
+    "SamplingItem",
+    "Remediation",
+    "RemediationFinding",
+    "VerificationResult",
+    "VerificationGate",
+    "SystemVersion",
+    "RuleVersion",
+    "ModelVersion",
+    "PipelineRun",
 ]

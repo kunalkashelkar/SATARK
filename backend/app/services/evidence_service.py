@@ -24,6 +24,7 @@ from app.evidence.canonical_model import CanonicalEvent
 from app.evidence.normalization import EventNormalizer
 from app.evidence.storage import EvidenceStorage
 from app.evidence.clickhouse_adapter import clickhouse_adapter
+from app.services.audit_service import AuditService
 
 
 class EvidenceService:
@@ -300,6 +301,22 @@ class EvidenceService:
         db.commit()
         db.refresh(evidence)
 
+        # Log immutable audit event: EVIDENCE_INGESTED
+        AuditService.log_event(
+            db=db,
+            action="EVIDENCE_INGESTED",
+            actor_id=payload.source_system or "INGEST_GATEWAY",
+            entity_type="EVIDENCE",
+            entity_id=public_id,
+            after={
+                "cse_id": cse.public_id,
+                "category": payload.category,
+                "sha256": sha256_hash,
+                "state": payload.state,
+            },
+            reason=f"Cryptographic parquet payload stored and indexed for {cse.public_id}",
+        )
+
         logger.info(f"Successfully ingested evidence '{public_id}' with genuine SHA-256: {sha256_hash}")
         return cls._format_evidence_response(evidence)
 
@@ -411,6 +428,7 @@ class EvidenceService:
                 detail="Validation decision must be one of: VALID, INVALID, REJECTED",
             )
 
+        prev_status = evidence.validation_status
         evidence.validation_status = decision
         if decision == "VALID":
             if evidence.state in ("NOT_SUBMITTED", "UNKNOWN"):
@@ -421,6 +439,20 @@ class EvidenceService:
 
         db.commit()
         db.refresh(evidence)
+
+        # Log immutable audit event: EVIDENCE_VALIDATED
+        AuditService.log_event(
+            db=db,
+            action="EVIDENCE_VALIDATED",
+            actor_id=payload.validated_by or "EXAMINER",
+            entity_type="EVIDENCE",
+            entity_id=evidence.public_id,
+            before={"validation_status": prev_status},
+            after={"validation_status": decision},
+            examiner_badge=payload.validated_by or "EXAMINER",
+            reason=payload.notes or f"Examiner validated evidence status to {decision}",
+        )
+
         logger.info(f"Evidence '{evidence.public_id}' validation updated to {decision}")
         return cls._format_evidence_response(evidence)
 

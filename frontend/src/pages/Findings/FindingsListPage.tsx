@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { mockFindings } from '@/data/mock/findings';
+import { useSupervisory } from '@/context/SupervisoryContext';
 import { Finding, FindingStatus } from '@/types';
 
 interface ExtendedFinding extends Finding {
@@ -13,10 +13,13 @@ interface ExtendedFinding extends Finding {
 }
 
 export const FindingsListPage: React.FC = () => {
+  const { findings } = useSupervisory();
+  const fnd0142 = findings.find(f => f.id === 'FND-0142') || findings[0];
+
   // Enhanced findings set matching the Stitch queue design exactly
   const allFindings: ExtendedFinding[] = useMemo(() => [
     {
-      ...mockFindings[0], // FND-0142
+      ...fnd0142, // Live FND-0142 from context/API
       sector: 'Energy / Power',
       primarySignalLabel: 'Exec Gap (GAP-0071)',
       secondarySignalLabel: '+ Negative Space',
@@ -258,7 +261,7 @@ export const FindingsListPage: React.FC = () => {
       caseDocket: 'CASE-0982',
       artifactsCount: 2,
     },
-  ], []);
+  ], [fnd0142]);
 
   // Filter & Search states
   const [selectedStatusTab, setSelectedStatusTab] = useState<string>('ALL');

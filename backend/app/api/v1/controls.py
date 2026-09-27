@@ -10,7 +10,7 @@ from app.schemas.control import (
 )
 from app.services.control_service import ControlService
 
-router = APIRouter(prefix="/governance/controls", tags=["Control Library & Governance"])
+router = APIRouter(tags=["Control Library & Governance"])
 
 
 @router.get("", response_model=List[ControlItemResponse], summary="List Regulatory Control Library")

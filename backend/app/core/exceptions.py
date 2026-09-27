@@ -31,6 +31,16 @@ class NotFoundException(AppException):
         )
 
 
+class BadRequestException(AppException):
+    def __init__(self, message: str = "Bad request", details: Optional[Dict[str, Any]] = None):
+        super().__init__(
+            code="BAD_REQUEST",
+            message=message,
+            status_code=status.HTTP_400_BAD_REQUEST,
+            details=details
+        )
+
+
 class ValidationException(AppException):
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None):
         super().__init__(

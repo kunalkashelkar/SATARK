@@ -8,19 +8,21 @@ import {
   Info, 
   Server, 
   FileSearch,
-  LayoutDashboard
+  LayoutDashboard,
+  AlertCircle
 } from 'lucide-react';
 
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useSupervisory } from '@/context/SupervisoryContext';
-import { UserRole } from '@/types';
 
 export const LoginPage: React.FC = () => {
-  const { isAuthenticated, login } = useSupervisory();
+  const { isAuthenticated, loginWithCredentials } = useSupervisory();
   const [role, setRole] = useState<'supervisor' | 'examiner'>('supervisor');
-  const [userId, setUserId] = useState('NCIIPC-SPV-0814');
-  const [password, setPassword] = useState('••••••••••••••••');
+  const [userId, setUserId] = useState('lead_supervisor');
+  const [password, setPassword] = useState('Supervisor@2026!');
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   // If already authenticated, redirect to overview
@@ -30,21 +32,28 @@ export const LoginPage: React.FC = () => {
 
   const handleRoleChange = (selectedRole: 'supervisor' | 'examiner') => {
     setRole(selectedRole);
+    setErrorMessage(null);
     if (selectedRole === 'supervisor') {
-      setUserId('NCIIPC-SPV-0814');
+      setUserId('lead_supervisor');
+      setPassword('Supervisor@2026!');
     } else {
-      setUserId('NCIIPC-EXM-0242');
+      setUserId('lead_examiner');
+      setPassword('Examiner@2026!');
     }
   };
 
-  const handleSignIn = (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (role === 'supervisor') {
-      login('SUPERVISOR');
-    } else {
-      login('EXAMINER');
+    setErrorMessage(null);
+    setIsSubmitting(true);
+    try {
+      await loginWithCredentials(userId, password);
+      navigate('/overview');
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Authentication failed. Please verify credentials.');
+    } finally {
+      setIsSubmitting(false);
     }
-    navigate('/overview');
   };
 
   return (
@@ -113,6 +122,13 @@ export const LoginPage: React.FC = () => {
               <span className="text-[11px] text-[#7D8590] font-mono">ENCLAVE-AUTH</span>
             </div>
 
+            {errorMessage && (
+              <div className="mb-4 p-3 rounded bg-red-950/40 border border-red-500/40 text-red-200 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
             <form className="space-y-4" onSubmit={handleSignIn}>
               {/* Role Routing Selector */}
               <div className="space-y-1.5">
@@ -124,7 +140,7 @@ export const LoginPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleRoleChange('supervisor')}
-                    className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-[4px] text-[12px] font-medium transition-all ${
+                    className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-[4px] text-[12px] font-medium transition-all cursor-pointer ${
                       role === 'supervisor'
                         ? 'bg-[#171E2B] text-[#58A6FF] border border-[#303E54] shadow-sm font-semibold'
                         : 'text-[#8B949E] hover:text-[#C9D1D9]'
@@ -136,7 +152,7 @@ export const LoginPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleRoleChange('examiner')}
-                    className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-[4px] text-[12px] font-medium transition-all ${
+                    className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-[4px] text-[12px] font-medium transition-all cursor-pointer ${
                       role === 'examiner'
                         ? 'bg-[#171E2B] text-[#58A6FF] border border-[#303E54] shadow-sm font-semibold'
                         : 'text-[#8B949E] hover:text-[#C9D1D9]'
@@ -159,7 +175,7 @@ export const LoginPage: React.FC = () => {
               {/* User ID Field */}
               <div className="space-y-1">
                 <label className="block text-[11px] font-medium uppercase tracking-wider text-[#8B949E]">
-                  User ID / Employee ID
+                  User ID / Username
                 </label>
                 <div className="relative">
                   <input
@@ -192,7 +208,7 @@ export const LoginPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2.5 top-2 text-[#6E7681] hover:text-[#C9D1D9] transition-colors focus:outline-none"
+                    className="absolute right-2.5 top-2 text-[#6E7681] hover:text-[#C9D1D9] transition-colors focus:outline-none cursor-pointer"
                     title="Toggle visibility"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -215,10 +231,13 @@ export const LoginPage: React.FC = () => {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full h-9 rounded-[6px] bg-[#238636] hover:bg-[#2EA043] text-white text-xs font-semibold tracking-wide flex items-center justify-center gap-2 transition-colors border border-[rgba(240,246,252,0.1)] shadow-sm group cursor-pointer"
+                  disabled={isSubmitting}
+                  className="w-full h-9 rounded-[6px] bg-[#238636] hover:bg-[#2EA043] disabled:opacity-50 text-white text-xs font-semibold tracking-wide flex items-center justify-center gap-2 transition-colors border border-[rgba(240,246,252,0.1)] shadow-sm group cursor-pointer"
                 >
                   <span>
-                    {role === 'supervisor' ? 'Sign In as Supervisor (Overview)' : 'Sign In as Examiner (Overview)'}
+                    {isSubmitting
+                      ? 'Authenticating Enclave...'
+                      : role === 'supervisor' ? 'Sign In as Supervisor (Overview)' : 'Sign In as Examiner (Overview)'}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </button>
@@ -254,8 +273,8 @@ export const LoginPage: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-between text-[10px] font-mono text-[#484F58] pt-1">
-                <span>SESSION ID: 7F4A-91C0</span>
-                <span>BUILD: 2026.08.14-REV4</span>
+                <span>ENCLAVE: NCIIPC-70B</span>
+                <span>BUILD: 2026.09.27-PROD</span>
               </div>
             </div>
           </div>

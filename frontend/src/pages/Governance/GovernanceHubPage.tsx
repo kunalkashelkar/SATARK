@@ -9,13 +9,11 @@ import {
   SecurityConfigItem,
   SupervisoryControl,
   SystemComponentVersion,
-  mockSystemUsers,
   mockAdminRoles,
   mockCseAccessRules,
   mockSecurityConfig,
-  mockSupervisoryControls,
-  mockSystemVersions
 } from '@/data/mock/governance';
+import { governanceApi } from '@/api';
 import {
   Search,
   Shield,
@@ -142,9 +140,9 @@ export const GovernanceHubPage: React.FC<GovernanceHubPageProps> = ({ initialTab
   // TAB 2: ADMINISTRATION STATE & SUB-TABS
   // ---------------------------------------------------------------------------
   const [adminSubTab, setAdminSubTab] = useState<'users' | 'roles' | 'access' | 'security'>('users');
-  const [users, setUsers] = useState<SystemUser[]>(mockSystemUsers);
-  const [roles] = useState<AdminRole[]>(mockAdminRoles);
-  const [cseAccessRules] = useState<CseAccessRule[]>(mockCseAccessRules);
+  const [users, setUsers] = useState<SystemUser[]>([]);
+  const [roles, setRoles] = useState<AdminRole[]>(mockAdminRoles);
+  const [cseAccessRules, setCseAccessRules] = useState<CseAccessRule[]>(mockCseAccessRules);
   const [securityConfigs] = useState<SecurityConfigItem[]>(mockSecurityConfig);
 
   const [selectedUser, setSelectedUser] = useState<SystemUser | null>(null);
@@ -153,6 +151,14 @@ export const GovernanceHubPage: React.FC<GovernanceHubPageProps> = ({ initialTab
 
   const [adminUserSearch, setAdminUserSearch] = useState('');
   const [adminUserRoleFilter, setAdminUserRoleFilter] = useState('ALL');
+
+  useEffect(() => {
+    governanceApi.getUsers().then(res => setUsers(res)).catch(() => {});
+    governanceApi.getRoles().then(res => setRoles(res)).catch(() => {});
+    governanceApi.getAccessRules().then(res => setCseAccessRules(res)).catch(() => {});
+    governanceApi.getControls().then(res => setControls(res)).catch(() => {});
+    governanceApi.getSystemVersions().then(res => setVersions(res)).catch(() => {});
+  }, []);
 
   const filteredUsers = useMemo(() => {
     return users.filter(u => {
@@ -174,7 +180,7 @@ export const GovernanceHubPage: React.FC<GovernanceHubPageProps> = ({ initialTab
   // ---------------------------------------------------------------------------
   // TAB 3: CONTROL LIBRARY STATE & FILTERS
   // ---------------------------------------------------------------------------
-  const [controls] = useState<SupervisoryControl[]>(mockSupervisoryControls);
+  const [controls, setControls] = useState<SupervisoryControl[]>([]);
   const [controlSearch, setControlSearch] = useState('');
   const [controlDomainFilter, setControlDomainFilter] = useState('ALL');
   const [controlStatusFilter, setControlStatusFilter] = useState('ALL');
@@ -209,7 +215,7 @@ export const GovernanceHubPage: React.FC<GovernanceHubPageProps> = ({ initialTab
   // ---------------------------------------------------------------------------
   // TAB 4: SYSTEM VERSIONS STATE
   // ---------------------------------------------------------------------------
-  const [versions] = useState<SystemComponentVersion[]>(mockSystemVersions);
+  const [versions, setVersions] = useState<SystemComponentVersion[]>([]);
   const [versionSearch, setVersionSearch] = useState('');
   const [selectedVersion, setSelectedVersion] = useState<SystemComponentVersion | null>(null);
 

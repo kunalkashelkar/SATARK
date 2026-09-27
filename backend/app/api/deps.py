@@ -40,9 +40,25 @@ def require_auth(current_user: User = Depends(get_current_user)) -> User:
 
 def require_role(*allowed_roles: str) -> Callable[[User], User]:
     """Dependency factory enforcing one of the specified roles."""
-    def role_checker(current_user: User = Depends(get_current_user)) -> User:
+    def role_checker(
+        current_user: User = Depends(get_current_user),
+        db: Session = Depends(get_db),
+    ) -> User:
         role_name = current_user.role.name if current_user.role else ""
         if role_name not in allowed_roles:
+            try:
+                from app.services.audit_service import AuditService
+                AuditService.log_event(
+                    db=db,
+                    action="ACCESS_DENIED",
+                    actor_id=current_user.public_id,
+                    entity_type="ROLE_CHECK",
+                    entity_id=role_name,
+                    examiner_badge=current_user.badge,
+                    reason=f"Role '{role_name}' is not authorized. Required: {', '.join(allowed_roles)}",
+                )
+            except Exception:
+                pass
             raise ForbiddenException(
                 f"Role '{role_name}' is not authorized. Required: {', '.join(allowed_roles)}"
             )
@@ -94,6 +110,19 @@ def check_cse_access(cse_id: str, user: User, db: Session) -> CSE:
     ).first()
 
     if not access:
+        try:
+            from app.services.audit_service import AuditService
+            AuditService.log_event(
+                db=db,
+                action="ACCESS_DENIED",
+                actor_id=user.public_id,
+                entity_type="CSE_ACCESS",
+                entity_id=cse.public_id,
+                examiner_badge=user.badge,
+                reason=f"Examiner '{user.username}' is not assigned to Critical Sector Entity '{cse.public_id}'",
+            )
+        except Exception:
+            pass
         raise ForbiddenException(
             f"Examiner '{user.username}' is not assigned to Critical Sector Entity '{cse.public_id}'"
         )

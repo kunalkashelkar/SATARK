@@ -81,15 +81,25 @@ class AuditEvent(Base):
 
     id = Column(GUID, primary_key=True, default=uuid.uuid4)
     event_id = Column(String(64), unique=True, nullable=False, index=True)  # e.g. AUD-9912
+    actor_id = Column(String(64), nullable=True, index=True)  # e.g. USR-001 or NC-8802
     finding_id = Column(GUID, ForeignKey("findings.id", ondelete="SET NULL"), nullable=True, index=True)
+    remediation_id = Column(GUID, ForeignKey("remediations.id", ondelete="SET NULL"), nullable=True, index=True)
+    target_type = Column(String(32), default="FINDING", nullable=False)
+    target_id = Column(String(64), nullable=True)
+    entity_type = Column(String(64), default="FINDING", nullable=False, index=True)
+    entity_id = Column(String(64), nullable=True, index=True)
     user_id = Column(GUID, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
-    examiner_badge = Column(String(128), nullable=False)
-    action = Column(String(64), nullable=False, index=True)  # VALIDATE, QUALIFY, REJECT, OVERRIDE, EVIDENCE_DEMAND
+    examiner_badge = Column(String(128), nullable=True, default="SYSTEM")
+    action = Column(String(64), nullable=False, index=True)  # LOGIN_SUCCESS, ACCESS_DENIED, FINDING_VALIDATED, etc.
+    before = Column(Text, nullable=True)  # JSON before state
+    after = Column(Text, nullable=True)   # JSON after state
     previous_status = Column(String(32), nullable=True)
     new_status = Column(String(32), nullable=True)
     reason = Column(Text, nullable=True)
     notes = Column(Text, nullable=True)
+    request_id = Column(String(64), nullable=True, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
     finding = relationship("Finding", back_populates="audit_events")
+    remediation = relationship("Remediation", back_populates="audit_events")
     user = relationship("User")
