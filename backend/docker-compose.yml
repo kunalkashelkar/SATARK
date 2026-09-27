@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sat-sa-backend
+    ports:
+      - "8001:8001"
+    environment:
+      - APP_NAME=SAT-SA
+      - APP_ENV=production
+      - APP_VERSION=OPS-v4.8
+      - API_HOST=0.0.0.0
+      - API_PORT=8001
+      - DATABASE_URL=postgresql+psycopg://sat_sa:sat_sa_enclave_secret@postgres:5432/sat_sa
+      - DB_SQLITE_FALLBACK_ON_ERROR=false
+      - SECRET_KEY=sat-sa-enclave-secret-key-change-in-production
+      - LOG_LEVEL=INFO
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: sat-sa-postgres
+    environment:
+      - POSTGRES_DB=sat_sa
+      - POSTGRES_USER=sat_sa
+      - POSTGRES_PASSWORD=sat_sa_enclave_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sat_sa -d sat_sa"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
