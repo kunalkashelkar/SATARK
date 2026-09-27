@@ -44,3 +44,10 @@ export type SamplingMethodology =
   | 'ANOMALY_BASED'
   | 'PEER_BASED'
   | 'BASELINE_RANDOM';
+
+export type UserRole =
+  | 'SUPERVISOR'
+  | 'EXAMINER'
+  | 'AUDITOR'
+  | 'ADMINISTRATOR';
+

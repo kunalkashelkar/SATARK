@@ -39,7 +39,84 @@
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Global Spacing and Dimensional Tokens */
+  --sidebar-width: 250px;
+  --sidebar-collapsed-width: 68px;
+  --topbar-height: 56px;
+  --page-max-width: 1600px;
+  --control-height-sm: 32px;
+  --control-height-md: 38px;
+  --control-height-lg: 44px;
 }
+
+:root {
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --sidebar-width: 250px;
+  --topbar-height: 56px;
+}
+
+/* Global Typography Hierarchy adhering strictly to Master Specification */
+.font-headline-lg, .text-headline-lg {
+  font-size: 22px !important;
+  line-height: 1.2 !important;
+  font-weight: 600 !important;
+}
+.font-headline-md, .text-headline-md {
+  font-size: 17px !important;
+  line-height: 1.3 !important;
+  font-weight: 600 !important;
+}
+.font-headline-sm, .text-headline-sm {
+  font-size: 15px !important;
+  line-height: 1.35 !important;
+  font-weight: 600 !important;
+}
+.font-body-md, .text-body-md {
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+  font-weight: 400 !important;
+}
+.font-body-sm, .text-body-sm {
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  font-weight: 400 !important;
+}
+.font-label-caps, .text-label-caps {
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+.font-code-sm, .text-code-sm {
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+}
+.font-kpi-val, .text-kpi-val {
+  font-size: 26px !important;
+  line-height: 1 !important;
+  font-weight: 600 !important;
+  font-family: var(--font-mono) !important;
+}
+
+/* Spacing and Dimension Normalizers */
+.gap-xs { gap: 6px !important; }
+.gap-sm { gap: 10px !important; }
+.gap-md { gap: 16px !important; }
+.p-xs { padding: 8px !important; }
+.p-sm { padding: 12px !important; }
+.p-md { padding: 16px !important; }
+.px-sm { padding-left: 12px !important; padding-right: 12px !important; }
+.py-sm { padding-top: 8px !important; padding-bottom: 8px !important; }
+.px-md { padding-left: 16px !important; padding-right: 16px !important; }
+.py-md { padding-top: 12px !important; padding-bottom: 12px !important; }
+
+/* Control Heights */
+.h-control-sm { height: 32px !important; }
+.h-control-md { height: 38px !important; }
+.h-control-lg { height: 44px !important; }
+
 
 body {
   margin: 0;

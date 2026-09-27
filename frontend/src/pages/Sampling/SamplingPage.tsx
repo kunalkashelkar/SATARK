@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { PageContainer } from '@/components/common';
 
 interface SampleCase {
   id: string;
@@ -267,7 +268,7 @@ export const SamplingPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-full pb-xl space-y-md text-on-surface antialiased">
+    <PageContainer>
       
       {/* TOP HEADER & BREADCRUMB */}
       <div className="flex flex-col gap-sm mb-lg">
@@ -1000,6 +1001,6 @@ export const SamplingPage: React.FC = () => {
         </div>
       )}
 
-    </div>
+    </PageContainer>
   );
 };
