@@ -13,6 +13,13 @@ from app.db.models.sampling import SamplingRun, SamplingItem
 from app.db.models.remediation import Remediation, RemediationFinding
 from app.db.models.verification import VerificationResult, VerificationGate
 from app.db.models.governance import SystemVersion, RuleVersion, ModelVersion, PipelineRun
+from app.db.models.ingestion import (
+    IngestionJob,
+    Asset,
+    DeclaredCapability,
+    ReportedSOCMetric,
+    OperationalCase,
+)
 
 __all__ = [
     "Role",
@@ -46,4 +53,9 @@ __all__ = [
     "RuleVersion",
     "ModelVersion",
     "PipelineRun",
+    "IngestionJob",
+    "Asset",
+    "DeclaredCapability",
+    "ReportedSOCMetric",
+    "OperationalCase",
 ]

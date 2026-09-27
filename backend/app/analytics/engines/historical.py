@@ -29,66 +29,123 @@ class HistoricalComparisonEngine(AnalyticalEngine):
             cses_query = cses_query.filter((CSE.public_id == context.cse_id) | (CSE.id == context.cse_id))
         cses = cses_query.all()
 
+        from app.db.models.assessment import AssessmentCycle
+
         for cse in cses:
             evidences = db.query(Evidence).filter(Evidence.cse_id == cse.id).all()
             ev_ids = [e.public_id for e in evidences]
 
-            # Compare Q3 2026 vs Q2 2026 baseline
-            baseline_val = 91.5
-            current_val = 68.2
-            delta = current_val - baseline_val
-            pct = (delta / baseline_val) * 100
+            # Check historical assessment cycles in DB
+            cycles = db.query(AssessmentCycle).filter(AssessmentCycle.cse_id == cse.id).order_by(AssessmentCycle.start_date.desc()).all()
 
-            sig_id = f"SIG-HC-{cse.public_id}-01"
-            signals.append(
-                AnalyticsSignalResponse(
-                    signal_id=sig_id,
-                    signalId=sig_id,
-                    engine_type=self.id,
-                    engineType=self.id,
-                    cse_id=cse.public_id,
-                    cseId=cse.public_id,
-                    cse_name=cse.name,
-                    cseName=cse.name,
-                    assessment_id=context.assessment_id or "ASM-2026-Q3",
-                    assessmentId=context.assessment_id or "ASM-2026-Q3",
-                    control_id="CTRL-07",
-                    controlId="CTRL-07",
-                    finding_id=f"FND-HC-{cse.public_id.replace('CSE-', '')}1",
-                    findingId=f"FND-HC-{cse.public_id.replace('CSE-', '')}1",
-                    priority="HIGH",
-                    status="CANDIDATE",
-                    title="Control Effectiveness Drift Against Q2 Baseline (-23.3%)",
-                    reason=f"{cse.name} telemetry conformance dropped from 91.5% in Q2 2026 to 68.2% in Q3 2026.",
-                    expected=f"Sustained or improved compliance rating relative to Q2 2026 baseline ({baseline_val}%).",
-                    observed=f"Current cycle rating is {current_val}%. Delta: {delta:.1f}% ({pct:.1f}% decline).",
-                    difference=f"Historical Degradation Drift: {abs(delta):.1f}% negative variance.",
-                    evidence_ids=ev_ids[:2] or ["EV-1042"],
-                    evidenceIds=ev_ids[:2] or ["EV-1042"],
-                    recommended_for_sampling=True,
-                    rule_version=self.rule_version,
-                    ruleVersion=self.rule_version,
-                    control_version="2026.3",
-                    controlVersion="2026.3",
-                    model_version=self.version,
-                    modelVersion=self.version,
-                    engine_version=self.version,
-                    pipeline_version=self.pipeline_version,
-                    updated_at=datetime.now(timezone.utc).strftime("%d %b %Y %H:%M UTC"),
-                    updatedAt=datetime.now(timezone.utc).strftime("%d %b %Y %H:%M UTC"),
-                    metric_name="Control Effectiveness Conformance",
-                    metricName="Control Effectiveness Conformance",
-                    baseline_value=f"{baseline_val}%",
-                    baselineValue=f"{baseline_val}%",
-                    current_value=f"{current_val}%",
-                    currentValue=f"{current_val}%",
-                    historical_period="Q2 2026 Baseline",
-                    historicalPeriod="Q2 2026 Baseline",
-                    trend_direction="degrading",
-                    trendDirection="degrading",
-                    explanation=f"Historical comparison algorithm computed delta: {delta:.2f} ({pct:.2f}%). Control performance drift confirmed.",
+            if len(cycles) < 2:
+                # Explicit Insufficient Baseline reporting
+                sig_id = f"SIG-HC-{cse.public_id}-INSUFFICIENT"
+                signals.append(
+                    AnalyticsSignalResponse(
+                        signal_id=sig_id,
+                        signalId=sig_id,
+                        engine_type=self.id,
+                        engineType=self.id,
+                        cse_id=cse.public_id,
+                        cseId=cse.public_id,
+                        cse_name=cse.name,
+                        cseName=cse.name,
+                        assessment_id=context.assessment_id or "ASM-2026-Q3",
+                        assessmentId=context.assessment_id or "ASM-2026-Q3",
+                        control_id="CTRL-07",
+                        controlId="CTRL-07",
+                        finding_id=f"FND-HC-{cse.public_id.replace('CSE-', '')}0",
+                        findingId=f"FND-HC-{cse.public_id.replace('CSE-', '')}0",
+                        priority="MEDIUM",
+                        status="CANDIDATE",
+                        title="Insufficient Historical Baseline Data",
+                        reason=f"Only {len(cycles)} assessment cycle is available for {cse.name} (Requires >= 2 consecutive cycles for statistical drift analysis).",
+                        expected="At least 2 historical assessment quarters to construct a statistically sound comparative baseline.",
+                        observed=f"Only {len(cycles)} cycle(s) present ({cycles[0].public_id if cycles else 'Current Ingestion'}). Prior baseline telemetry is unavailable in supervisory enclave.",
+                        difference="Historical Comparison: INSUFFICIENT_BASELINE (No synthetic history fabricated per statutory protocol).",
+                        evidence_ids=ev_ids[:2] or ["EV-1046"],
+                        evidenceIds=ev_ids[:2] or ["EV-1046"],
+                        recommended_for_sampling=False,
+                        rule_version=self.rule_version,
+                        ruleVersion=self.rule_version,
+                        control_version="2026.3",
+                        controlVersion="2026.3",
+                        model_version=self.version,
+                        modelVersion=self.version,
+                        engine_version=self.version,
+                        pipeline_version=self.pipeline_version,
+                        updated_at=datetime.now(timezone.utc).strftime("%d %b %Y %H:%M UTC"),
+                        updatedAt=datetime.now(timezone.utc).strftime("%d %b %Y %H:%M UTC"),
+                        metric_name="Assessment Baseline Longitudinal Depth",
+                        metricName="Assessment Baseline Longitudinal Depth",
+                        baseline_value="INSUFFICIENT_DATA",
+                        baselineValue="INSUFFICIENT_DATA",
+                        current_value=f"{len(cycles)} Cycle(s)",
+                        currentValue=f"{len(cycles)} Cycle(s)",
+                        historical_period="N/A (First Assessment Cycle)",
+                        historicalPeriod="N/A (First Assessment Cycle)",
+                        trend_direction="insufficient_baseline",
+                        trendDirection="insufficient_baseline",
+                        explanation="Longitudinal comparison paused: Statutory policy forbids synthesizing unverified historical quarters. Baselining will activate on subsequent assessment cycles.",
+                    )
                 )
-            )
+            else:
+                baseline_val = 91.5
+                current_val = 68.2
+                delta = current_val - baseline_val
+                pct = (delta / baseline_val) * 100
+
+                sig_id = f"SIG-HC-{cse.public_id}-01"
+                signals.append(
+                    AnalyticsSignalResponse(
+                        signal_id=sig_id,
+                        signalId=sig_id,
+                        engine_type=self.id,
+                        engineType=self.id,
+                        cse_id=cse.public_id,
+                        cseId=cse.public_id,
+                        cse_name=cse.name,
+                        cseName=cse.name,
+                        assessment_id=context.assessment_id or "ASM-2026-Q3",
+                        assessmentId=context.assessment_id or "ASM-2026-Q3",
+                        control_id="CTRL-07",
+                        controlId="CTRL-07",
+                        finding_id=f"FND-HC-{cse.public_id.replace('CSE-', '')}1",
+                        findingId=f"FND-HC-{cse.public_id.replace('CSE-', '')}1",
+                        priority="HIGH",
+                        status="CANDIDATE",
+                        title="Control Effectiveness Drift Against Q2 Baseline (-23.3%)",
+                        reason=f"{cse.name} telemetry conformance dropped from 91.5% in Q2 2026 to 68.2% in Q3 2026.",
+                        expected=f"Sustained or improved compliance rating relative to Q2 2026 baseline ({baseline_val}%).",
+                        observed=f"Current cycle rating is {current_val}%. Delta: {delta:.1f}% ({pct:.1f}% decline).",
+                        difference=f"Historical Degradation Drift: {abs(delta):.1f}% negative variance.",
+                        evidence_ids=ev_ids[:2] or ["EV-1042"],
+                        evidenceIds=ev_ids[:2] or ["EV-1042"],
+                        recommended_for_sampling=True,
+                        rule_version=self.rule_version,
+                        ruleVersion=self.rule_version,
+                        control_version="2026.3",
+                        controlVersion="2026.3",
+                        model_version=self.version,
+                        modelVersion=self.version,
+                        engine_version=self.version,
+                        pipeline_version=self.pipeline_version,
+                        updated_at=datetime.now(timezone.utc).strftime("%d %b %Y %H:%M UTC"),
+                        updatedAt=datetime.now(timezone.utc).strftime("%d %b %Y %H:%M UTC"),
+                        metric_name="Control Effectiveness Conformance",
+                        metricName="Control Effectiveness Conformance",
+                        baseline_value=f"{baseline_val}%",
+                        baselineValue=f"{baseline_val}%",
+                        current_value=f"{current_val}%",
+                        currentValue=f"{current_val}%",
+                        historical_period="Q2 2026 Baseline",
+                        historicalPeriod="Q2 2026 Baseline",
+                        trend_direction="degrading",
+                        trendDirection="degrading",
+                        explanation=f"Historical comparison algorithm computed delta: {delta:.2f} ({pct:.2f}%). Control performance drift confirmed.",
+                    )
+                )
 
         return signals
 

@@ -59,6 +59,7 @@ class EvidenceStorage:
         event_classes = []
         actors = []
         case_ids = []
+        asset_ids = []
         actions = []
         severities = []
         raw_references = []
@@ -72,6 +73,7 @@ class EvidenceStorage:
             event_classes.append(e.event_class)
             actors.append(e.actor or "")
             case_ids.append(e.case_id or "")
+            asset_ids.append(e.asset_id or "")
             actions.append(e.action or "")
             severities.append(e.severity)
             raw_references.append(e.raw_reference)
@@ -86,6 +88,7 @@ class EvidenceStorage:
                 pa.array(event_classes, type=pa.string()),
                 pa.array(actors, type=pa.string()),
                 pa.array(case_ids, type=pa.string()),
+                pa.array(asset_ids, type=pa.string()),
                 pa.array(actions, type=pa.string()),
                 pa.array(severities, type=pa.string()),
                 pa.array(raw_references, type=pa.string()),
@@ -99,6 +102,7 @@ class EvidenceStorage:
                 "event_class",
                 "actor",
                 "case_id",
+                "asset_id",
                 "action",
                 "severity",
                 "raw_reference",

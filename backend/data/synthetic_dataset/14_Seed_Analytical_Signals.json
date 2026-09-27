@@ -1,0 +1,73 @@
+{
+  "purpose": "Optional deterministic reference outputs for UI/integration testing; real engines should calculate their own signals.",
+  "signals": [
+    {
+      "signal_id": "SIG-2004",
+      "engine": "execution-gap",
+      "cse_id": "CSE-014",
+      "control_id": "CTRL-07",
+      "priority": "HIGH",
+      "score": 0.91,
+      "title": "Declared continuous monitoring capability not fully supported by observed SLA performance",
+      "status": "ACTIVE",
+      "evidence_ids": [
+        "EV-1042",
+        "EV-1043"
+      ]
+    },
+    {
+      "signal_id": "SIG-2005",
+      "engine": "negative-space",
+      "cse_id": "CSE-014",
+      "control_id": "CTRL-12",
+      "priority": "HIGH",
+      "score": 0.94,
+      "title": "Critical alert escalation activity absent within required window",
+      "status": "ACTIVE",
+      "evidence_ids": [
+        "EV-1044"
+      ]
+    },
+    {
+      "signal_id": "SIG-2006",
+      "engine": "coverage",
+      "cse_id": "CSE-014",
+      "control_id": "CTRL-18",
+      "priority": "MEDIUM",
+      "score": 0.68,
+      "title": "Telemetry coverage requires review for critical OT segments",
+      "status": "ACTIVE",
+      "evidence_ids": [
+        "EV-1045"
+      ]
+    },
+    {
+      "signal_id": "SIG-2007",
+      "engine": "process",
+      "cse_id": "CSE-014",
+      "control_id": "CTRL-12",
+      "priority": "HIGH",
+      "score": 0.82,
+      "title": "Observed case sequence deviates from expected escalation process",
+      "status": "ACTIVE",
+      "evidence_ids": [
+        "EV-1043",
+        "EV-1044"
+      ]
+    },
+    {
+      "signal_id": "SIG-2008",
+      "engine": "metric-integrity",
+      "cse_id": "CSE-014",
+      "control_id": "CTRL-07",
+      "priority": "HIGH",
+      "score": 0.89,
+      "title": "Reported SLA metric differs from raw event-derived calculation",
+      "status": "ACTIVE",
+      "evidence_ids": [
+        "EV-1046",
+        "EV-1042"
+      ]
+    }
+  ]
+}

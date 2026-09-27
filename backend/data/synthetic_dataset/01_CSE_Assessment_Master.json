@@ -1,0 +1,10 @@
+{
+  "cse_id": "CSE-014",
+  "cse_name": "Western Grid Operations - Synthetic Entity",
+  "sector": "Energy",
+  "tier": "TIER-1",
+  "assessment_cycle_id": "AC-2026-Q3-014",
+  "assessment_period_start": "2026-09-15T00:00:00Z",
+  "assessment_period_end": "2026-09-27T23:59:59Z",
+  "classification": "SYNTHETIC"
+}

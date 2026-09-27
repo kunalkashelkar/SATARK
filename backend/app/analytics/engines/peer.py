@@ -33,14 +33,13 @@ class PeerBenchmarkingEngine(AnalyticalEngine):
             evidences = db.query(Evidence).filter(Evidence.cse_id == cse.id).all()
             ev_ids = [e.public_id for e in evidences]
 
-            # Anonymized cohort calculation: Sector (Power / Energy / Telecom) + Tier (TIER-1)
-            # Must NEVER leak peer entity names or codes
-            cohort_name = f"Anonymized {cse.tier} {cse.sector} Cohort (N=8)"
-            cohort_median_score = 84.5
-            observed_score = float(cse.observed_capability) / max(1, cse.claimed_capability) * 100.0
+            # Query real peer entities in same sector or tier
+            peers = db.query(CSE).filter(CSE.id != cse.id, (CSE.sector == cse.sector) | (CSE.tier == cse.tier)).all()
+            cohort_size = len(peers)
 
-            if observed_score < cohort_median_score:
-                sig_id = f"SIG-PB-{cse.public_id}-01"
+            if cohort_size < 3:
+                # Explicit Insufficient Cohort state
+                sig_id = f"SIG-PB-{cse.public_id}-INSUFFICIENT-COHORT"
                 signals.append(
                     AnalyticsSignalResponse(
                         signal_id=sig_id,
@@ -55,18 +54,18 @@ class PeerBenchmarkingEngine(AnalyticalEngine):
                         assessmentId=context.assessment_id or "ASM-2026-Q3",
                         control_id="CTRL-07",
                         controlId="CTRL-07",
-                        finding_id=f"FND-PB-{cse.public_id.replace('CSE-', '')}1",
-                        findingId=f"FND-PB-{cse.public_id.replace('CSE-', '')}1",
-                        priority="HIGH" if (cohort_median_score - observed_score) > 15 else "MEDIUM",
+                        finding_id=f"FND-PB-{cse.public_id.replace('CSE-', '')}0",
+                        findingId=f"FND-PB-{cse.public_id.replace('CSE-', '')}0",
+                        priority="MEDIUM",
                         status="CANDIDATE",
-                        title=f"Sub-Median Conformance in {cohort_name}",
-                        reason=f"{cse.name} scored {observed_score:.1f}%, trailing the authorized peer cohort benchmark median of {cohort_median_score:.1f}%.",
-                        expected=f"Performance within interquartile range (IQR) of {cohort_name} (Median: {cohort_median_score:.1f}%).",
-                        observed=f"Observed performance score: {observed_score:.1f}% (25th percentile boundary).",
-                        difference=f"Peer Cohort Deficit: {cohort_median_score - observed_score:.1f}% below authorized peer median.",
-                        evidence_ids=ev_ids[:2] or ["EV-1042"],
-                        evidenceIds=ev_ids[:2] or ["EV-1042"],
-                        recommended_for_sampling=True,
+                        title=f"Insufficient Peer Cohort Population ({cse.sector} / {cse.tier})",
+                        reason=f"Only {cohort_size} peer entity exists in sector '{cse.sector}'. Statutory benchmarking requires minimum N=3 peer entities to prevent statistical leakage and ensure confidentiality.",
+                        expected=f"Peer cohort population N >= 3 within anonymized {cse.tier} {cse.sector} stratum.",
+                        observed=f"Available cohort size: N={cohort_size}. Peer comparison suspended to avoid deductive identification.",
+                        difference="Peer Benchmarking: INSUFFICIENT_COHORT_POPULATION (No peer scores fabricated).",
+                        evidence_ids=ev_ids[:2] or ["EV-1046"],
+                        evidenceIds=ev_ids[:2] or ["EV-1046"],
+                        recommended_for_sampling=False,
                         rule_version=self.rule_version,
                         ruleVersion=self.rule_version,
                         control_version="2026.3",
@@ -77,15 +76,69 @@ class PeerBenchmarkingEngine(AnalyticalEngine):
                         pipeline_version=self.pipeline_version,
                         updated_at=datetime.now(timezone.utc).strftime("%d %b %Y %H:%M UTC"),
                         updatedAt=datetime.now(timezone.utc).strftime("%d %b %Y %H:%M UTC"),
-                        metric_name="Supervisory Control Readiness",
-                        metricName="Supervisory Control Readiness",
-                        current_value=f"{observed_score:.1f}%",
-                        currentValue=f"{observed_score:.1f}%",
-                        peer_cohort_value=f"{cohort_median_score:.1f}%",
-                        peerCohortValue=f"{cohort_median_score:.1f}%",
-                        explanation=f"Peer comparison across {cohort_name}. All peer identities scrubbed and aggregated to protect statutory confidentiality.",
+                        metric_name="Anonymized Peer Quartile",
+                        metricName="Anonymized Peer Quartile",
+                        current_value=f"{(cse.observed_capability / max(1, cse.claimed_capability)) * 100:.1f}%",
+                        currentValue=f"{(cse.observed_capability / max(1, cse.claimed_capability)) * 100:.1f}%",
+                        peer_cohort_value="INSUFFICIENT_PEERS",
+                        peerCohortValue="INSUFFICIENT_PEERS",
+                        explanation=f"Peer cohort analysis for {cse.name}: Validated peers in stratum: {cohort_size} (Threshold: 3). Pursuant to non-leakage constraints, peer benchmarking is flagged as insufficient cohort.",
                     )
                 )
+            else:
+                cohort_name = f"Anonymized {cse.tier} {cse.sector} Cohort (N={cohort_size})"
+                peer_scores = [float(p.observed_capability) / max(1, p.claimed_capability) * 100.0 for p in peers]
+                import statistics
+                cohort_median_score = statistics.median(peer_scores)
+                observed_score = float(cse.observed_capability) / max(1, cse.claimed_capability) * 100.0
+
+                if observed_score < cohort_median_score:
+                    sig_id = f"SIG-PB-{cse.public_id}-01"
+                    signals.append(
+                        AnalyticsSignalResponse(
+                            signal_id=sig_id,
+                            signalId=sig_id,
+                            engine_type=self.id,
+                            engineType=self.id,
+                            cse_id=cse.public_id,
+                            cseId=cse.public_id,
+                            cse_name=cse.name,
+                            cseName=cse.name,
+                            assessment_id=context.assessment_id or "ASM-2026-Q3",
+                            assessmentId=context.assessment_id or "ASM-2026-Q3",
+                            control_id="CTRL-07",
+                            controlId="CTRL-07",
+                            finding_id=f"FND-PB-{cse.public_id.replace('CSE-', '')}1",
+                            findingId=f"FND-PB-{cse.public_id.replace('CSE-', '')}1",
+                            priority="HIGH" if (cohort_median_score - observed_score) > 15 else "MEDIUM",
+                            status="CANDIDATE",
+                            title=f"Sub-Median Conformance in {cohort_name}",
+                            reason=f"{cse.name} scored {observed_score:.1f}%, trailing the authorized peer cohort benchmark median of {cohort_median_score:.1f}%.",
+                            expected=f"Performance within interquartile range (IQR) of {cohort_name} (Median: {cohort_median_score:.1f}%).",
+                            observed=f"Observed performance score: {observed_score:.1f}% (Below cohort median).",
+                            difference=f"Peer Cohort Deficit: {cohort_median_score - observed_score:.1f}% below authorized peer median.",
+                            evidence_ids=ev_ids[:2] or ["EV-1042"],
+                            evidenceIds=ev_ids[:2] or ["EV-1042"],
+                            recommended_for_sampling=True,
+                            rule_version=self.rule_version,
+                            ruleVersion=self.rule_version,
+                            control_version="2026.3",
+                            controlVersion="2026.3",
+                            model_version=self.version,
+                            modelVersion=self.version,
+                            engine_version=self.version,
+                            pipeline_version=self.pipeline_version,
+                            updated_at=datetime.now(timezone.utc).strftime("%d %b %Y %H:%M UTC"),
+                            updatedAt=datetime.now(timezone.utc).strftime("%d %b %Y %H:%M UTC"),
+                            metric_name="Supervisory Control Readiness",
+                            metricName="Supervisory Control Readiness",
+                            current_value=f"{observed_score:.1f}%",
+                            currentValue=f"{observed_score:.1f}%",
+                            peer_cohort_value=f"{cohort_median_score:.1f}%",
+                            peerCohortValue=f"{cohort_median_score:.1f}%",
+                            explanation=f"Peer comparison across {cohort_name}. All peer identities scrubbed and aggregated to protect statutory confidentiality.",
+                        )
+                    )
 
         return signals
 

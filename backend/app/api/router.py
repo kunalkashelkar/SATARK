@@ -13,6 +13,7 @@ from app.api.v1.remediation import router as remediation_router
 from app.api.v1.verification import router as verification_router
 from app.api.v1.governance import router as governance_router
 from app.api.v1.graph import router as graph_router
+from app.api.v1.ingestion import router as ingestion_router
 
 api_router = APIRouter()
 
@@ -32,3 +33,4 @@ api_router.include_router(remediation_router)
 api_router.include_router(verification_router)
 api_router.include_router(governance_router)
 api_router.include_router(graph_router)
+api_router.include_router(ingestion_router)

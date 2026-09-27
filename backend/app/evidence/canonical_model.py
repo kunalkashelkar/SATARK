@@ -17,6 +17,7 @@ class CanonicalEvent(BaseModel):
     )
     actor: Optional[str] = Field(None, description="Analyst, operator, or service account involved")
     case_id: Optional[str] = Field(None, description="Correlated ticket or incident reference (e.g. CASE-992)")
+    asset_id: Optional[str] = Field(None, description="Monitored asset identifier (e.g. ASSET-HMI-21)")
     action: Optional[str] = Field(None, description="Operational action performed (e.g. TRIAGE, ESCALATE, BLOCK, LOGIN)")
     severity: str = Field(default="MEDIUM", description="Severity classification: CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL")
     raw_reference: str = Field(..., description="Original raw source identifier for end-to-end provenance")

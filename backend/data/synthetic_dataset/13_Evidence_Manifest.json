@@ -1,0 +1,86 @@
+{
+  "dataset": "SAT-SA Synthetic SOC Evidence",
+  "classification": "SYNTHETIC - NOT REAL CSE DATA",
+  "records": [
+    {
+      "evidence_id": "EV-1042",
+      "cse_id": "CSE-014",
+      "control_id": "CTRL-07",
+      "category": "SIEM_ALERT",
+      "state": "PRESENT",
+      "validation_status": "VALID",
+      "source_system": "SIEM",
+      "source_reference": "ALR-7002",
+      "artifact_file": "02_SIEM_Alerts.csv",
+      "provenance": {
+        "collector_id": "COL-SIEM-02",
+        "transmission_token": "TX-SYN-7002",
+        "received_at": "2026-09-16T11:15:10Z"
+      }
+    },
+    {
+      "evidence_id": "EV-1043",
+      "cse_id": "CSE-014",
+      "control_id": "CTRL-07",
+      "category": "CASE_TIMELINE",
+      "state": "PRESENT",
+      "validation_status": "VALID",
+      "source_system": "Case Management",
+      "source_reference": "CASE-3002",
+      "artifact_file": "03_Case_Events.csv",
+      "provenance": {
+        "collector_id": "COL-CASE-01",
+        "transmission_token": "TX-SYN-3002",
+        "received_at": "2026-09-16T13:06:00Z"
+      }
+    },
+    {
+      "evidence_id": "EV-1044",
+      "cse_id": "CSE-014",
+      "control_id": "CTRL-12",
+      "category": "ESCALATION_RECORD",
+      "state": "PRESENT",
+      "validation_status": "VALID",
+      "source_system": "Ticketing",
+      "source_reference": "TKT-8003",
+      "artifact_file": "06_Ticketing_Records.csv",
+      "provenance": {
+        "collector_id": "COL-TKT-01",
+        "transmission_token": "TX-SYN-8003",
+        "received_at": "2026-09-25T20:41:00Z"
+      }
+    },
+    {
+      "evidence_id": "EV-1045",
+      "cse_id": "CSE-014",
+      "control_id": "CTRL-18",
+      "category": "NETWORK_TELEMETRY",
+      "state": "PRESENT",
+      "validation_status": "VALID",
+      "source_system": "Network Gateway",
+      "source_reference": "SEGMENT-OT-04",
+      "artifact_file": "05_Network_Gateway_Telemetry.csv",
+      "provenance": {
+        "collector_id": "COL-GW-03",
+        "transmission_token": "TX-SYN-GW04",
+        "received_at": "2026-09-26T07:46:00Z"
+      }
+    },
+    {
+      "evidence_id": "EV-1046",
+      "cse_id": "CSE-014",
+      "control_id": "CTRL-07",
+      "category": "REPORTED_METRIC",
+      "state": "PRESENT",
+      "validation_status": "VALID",
+      "source_system": "SOC Metrics",
+      "source_reference": "MET-003",
+      "artifact_file": "08_Reported_SOC_Metrics.csv",
+      "provenance": {
+        "collector_id": "COL-MET-01",
+        "transmission_token": "TX-SYN-MET03",
+        "received_at": "2026-09-27T06:00:00Z"
+      }
+    }
+  ]
+}

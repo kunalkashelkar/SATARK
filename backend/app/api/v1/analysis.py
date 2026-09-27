@@ -171,6 +171,8 @@ def get_engine_state(
     cse_id: Optional[str] = Query(None, description="Target CSE (e.g. CSE-014)"),
     priority: Optional[str] = Query(None, description="Filter priority (CRITICAL, HIGH, MEDIUM, LOW)"),
     status_filter: Optional[str] = Query(None, alias="status", description="Filter signal status"),
+    start_date: Optional[str] = Query(None, description="Start date filter (YYYY-MM-DD)"),
+    end_date: Optional[str] = Query(None, description="End date filter (YYYY-MM-DD)"),
     search: Optional[str] = Query(None, description="Search signal title, reason, or finding"),
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=200),
@@ -194,6 +196,10 @@ def get_engine_state(
         filtered = [s for s in filtered if s.priority.upper() == priority.upper()]
     if status_filter and status_filter.upper() != "ALL":
         filtered = [s for s in filtered if s.status.upper() == status_filter.upper()]
+    if start_date:
+        filtered = [s for s in filtered if s.updated_at >= start_date]
+    if end_date:
+        filtered = [s for s in filtered if s.updated_at <= end_date]
     if search:
         q = search.lower()
         filtered = [

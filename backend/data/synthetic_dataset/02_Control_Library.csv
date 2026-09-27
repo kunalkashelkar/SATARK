@@ -1,0 +1,4 @@
+control_id,control_code,title,severity,expected_outcome,expected_evidence
+CTRL-07,SOC.MON.07,Continuous Security Monitoring,HIGH,High-severity alerts are triaged within 15 minutes.,SIEM alert telemetry; triage timestamp; case record
+CTRL-12,SOC.ESC.12,Incident Escalation,HIGH,Critical incidents are escalated within 30 minutes.,Escalation event; incident-authority acknowledgement
+CTRL-18,SOC.LOG.18,Security Log Coverage,MEDIUM,Critical infrastructure segments provide continuous telemetry.,Gateway logs; EDR telemetry; SIEM ingestion health

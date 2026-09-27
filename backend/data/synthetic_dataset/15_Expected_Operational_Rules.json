@@ -1,0 +1,29 @@
+{
+  "rules_version": "RULE-2026.3-SYN",
+  "rules": [
+    {
+      "rule_id": "RULE-001",
+      "control_id": "CTRL-07",
+      "condition": "HIGH alert must be triaged within 15 minutes",
+      "severity_if_breached": "HIGH"
+    },
+    {
+      "rule_id": "RULE-002",
+      "control_id": "CTRL-12",
+      "condition": "CRITICAL incident must be escalated within 30 minutes",
+      "severity_if_breached": "HIGH"
+    },
+    {
+      "rule_id": "RULE-003",
+      "control_id": "CTRL-18",
+      "condition": "Critical OT segments should have continuous telemetry",
+      "severity_if_breached": "MEDIUM"
+    },
+    {
+      "rule_id": "RULE-004",
+      "control_id": "CTRL-07",
+      "condition": "Reported SLA metrics should reconcile with raw event-derived values",
+      "severity_if_breached": "HIGH"
+    }
+  ]
+}

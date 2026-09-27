@@ -1,0 +1,5 @@
+metric_id,cse_id,period,metric,reported_value,unit,source
+MET-001,CSE-014,2026-Q3,MTTD,12.4,minutes,SOC dashboard
+MET-002,CSE-014,2026-Q3,MTTR,46.0,minutes,SOC dashboard
+MET-003,CSE-014,2026-Q3,HIGH_ALERT_TRIAGE_SLA_COMPLIANCE,96.0,percent,monthly supervisory report
+MET-004,CSE-014,2026-Q3,CRITICAL_ESCALATION_SLA_COMPLIANCE,98.0,percent,monthly supervisory report

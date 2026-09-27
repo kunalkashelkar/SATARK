@@ -1,0 +1,4 @@
+capability_id,cse_id,control_id,capability,status,source_document
+CAP-001,CSE-014,CTRL-07,24x7 high-severity alert monitoring,DECLARED,Operations Handbook v5.2
+CAP-002,CSE-014,CTRL-12,Critical incident escalation within 30 minutes,DECLARED,Incident SOP v4.1
+CAP-003,CSE-014,CTRL-18,Continuous telemetry on critical OT segments,DECLARED,Monitoring Architecture v3.8
