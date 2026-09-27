@@ -109,6 +109,57 @@ export const mockRemediations: RemediationMandate[] = [
     ]
   },
   {
+    id: 'REM-0026',
+    findingId: 'FND-0109',
+    cseId: 'CSE-008',
+    cseName: 'ReserveBank Interconnect',
+    controlRef: 'CTRL-09 v2.1',
+    mandateTitle: 'HSM Partition Key Rotation and Witness Sign-off',
+    actionSummary: 'Implement automated HSM key derivation cycle and dual-officer zeroization attestation.',
+    owner: 'RBI Crypto Operations Unit',
+    priority: 'HIGH',
+    dueDate: '25 Sep 2026',
+    daysRemaining: 0,
+    evidenceProgress: '1/3',
+    status: 'REOPENED',
+    reopenReason: 'Master Key Derivation logs omitted and witness signature missing during HSM zeroization audit.',
+    artifacts: [
+      { id: 'EVD-401', name: 'HSM Partition Health Report', hash: 'e01a88b4491910ef7719ab2940212f718820129bc625801c4e9124a9829f0e1d', status: 'PRESENT_VERIFIED' },
+      { id: 'EVD-402', name: 'Master Key Derivation Log', hash: 'PENDING_UPLOAD_HASH', status: 'MISSING_MANDATORY' },
+      { id: 'EVD-403', name: 'Zeroization Procedure Test Trace', hash: 'PENDING_UPLOAD_HASH', status: 'MISSING_MANDATORY' }
+    ],
+    milestones: [
+      { date: '05 Sep 2026', title: 'Remediation Dispatched', actor: 'NC-4190 (Examiner)', detail: 'Initial mandate issued.', completed: true },
+      { date: '18 Sep 2026', title: 'Initial Evidence Ingested', actor: 'RBI Officer', detail: 'Single partition report uploaded.', completed: true },
+      { date: '25 Sep 2026', title: 'Verification Gate Failed — Reopened', actor: 'NC-4190 (Examiner)', detail: 'Derivation logs omitted. Mandate formally reopened.', completed: true }
+    ]
+  },
+  {
+    id: 'REM-0029',
+    findingId: 'FND-0118',
+    cseId: 'CSE-021',
+    cseName: 'TelcoGrid Telecom',
+    controlRef: 'CTRL-04 v3.0',
+    mandateTitle: 'Critical Telecom Gateway MFA Bypass Remediation',
+    actionSummary: 'Enforce mandatory hardware token challenge on all core IMS interconnect router administration portals.',
+    owner: 'TelcoGrid Security Engineering',
+    priority: 'CRITICAL',
+    dueDate: '15 Sep 2026',
+    daysRemaining: 0,
+    evidenceProgress: '3/3',
+    status: 'CLOSED',
+    artifacts: [
+      { id: 'EVD-512', name: 'PAM Cluster Policy Diff v4.1', hash: '4f9910ae4481c002882910fa7281bc22718820129bc625801c4e9124a9829f0e', status: 'PRESENT_VERIFIED' },
+      { id: 'EVD-513', name: 'RADIUS Authentication Audit Trail', hash: '09ab1209cc54291129b71f92e7d3a82fbc625801c4e9124a9829f0e1d5267389', status: 'PRESENT_VERIFIED' },
+      { id: 'EVD-514', name: 'Hardware Token Seed Attestation', hash: '881a4bca990013ef82f91734bc129b71f92e7d3a82fbc625801c4e9124a9829f', status: 'PRESENT_VERIFIED' }
+    ],
+    milestones: [
+      { date: '15 Aug 2026', title: 'MFA Bypass Discovered', actor: 'NC-8802 (Lead Examiner)', detail: 'Gateway console exposed.', completed: true },
+      { date: '01 Sep 2026', title: 'Hardware Tokens Deployed', actor: 'TelcoGrid Lead', detail: 'FIDO2 physical keys provisioned.', completed: true },
+      { date: '18 Sep 2026', title: 'Statutorily Verified & Closed', actor: 'NC-8802 (Lead Examiner)', detail: 'FIPS enclave lock engaged.', completed: true }
+    ]
+  },
+  {
     id: 'REM-0024',
     findingId: 'FND-0098',
     cseId: 'CSE-011',
@@ -194,7 +245,7 @@ export const mockVerifications: VerificationRecord[] = [
     ],
     submittedArtifacts: [
       { id: 'EVD-742', name: 'INV-338 Triage Runbook Audit Export', hash: '7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069', verified: true },
-      { id: 'EVD-761', name: 'Containment Firewall Push Logs (SCADA Gateway)', hash: 'c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2', verified: true },
+      { id: 'EVD-761', name: 'Containment Firewall Push Logs (SCADA Boundary)', hash: 'c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2', verified: true },
       { id: 'ESC-221', name: 'Tier-2 Escalation Dispatch Telemetry Packet', hash: 'NOT_SUBMITTED', verified: false }
     ],
     supervisoryRationale: 'Awaiting mandatory telemetry ESC-221 from NorthGrid. Statutory closure gate remains locked. Reopening loop active if deadline expires without submission.'
@@ -229,5 +280,132 @@ export const mockVerifications: VerificationRecord[] = [
       { id: 'EVD-883', name: 'Dual-Custody Policy Enforcement Export', hash: '82f91734bc129b71f92e7d3a82fbc625801c4e9124a9829f0e1d5267389188bc', verified: true }
     ],
     supervisoryRationale: 'Evidence complete. Verification checklist 4/5 gates verified. Ready for formal examiner closure sign-off.'
+  },
+  {
+    id: 'VRF-0029',
+    mandateId: 'REM-0029',
+    findingId: 'FND-0118',
+    cseId: 'CSE-021',
+    cseName: 'TelcoGrid Telecom',
+    controlId: 'CTRL-04 v3.0',
+    cycle: 'Q3 2026',
+    leadExaminer: 'NC-8802 (Lead Examiner)',
+    statutoryStandard: 'Critical Telecom Gateway MFA Mandate Sec 8.1',
+    submittedAt: '15 Sep 2026 09:10 IST',
+    evaluatedAt: '18 Sep 2026 14:00 IST',
+    verificationVerdict: 'VERIFIED_SEALED',
+    confidenceScore: 98,
+    evidenceCompleteness: 100,
+    merkleRootHash: '0x71a099bf4431e08966bca82910fa7281bc22718820129bc625801c4e9124a982',
+    remedialSummary: 'MFA token bypass closure on core IMS interconnect router clusters.',
+    gateChecklist: [
+      { id: 'gate-1', label: 'PAM Policy v4.1 Cryptographically Signed', verified: true, required: true },
+      { id: 'gate-2', label: 'RADIUS Challenge-Response Audit Trail Ingested', verified: true, required: true },
+      { id: 'gate-3', label: 'Hardware Token Seed Attestation Received', verified: true, required: true },
+      { id: 'gate-4', label: 'Lead Examiner Sign-off Executed & Sealed', verified: true, required: true }
+    ],
+    submittedArtifacts: [
+      { id: 'EVD-512', name: 'PAM Cluster Policy Diff v4.1', hash: '4f9910ae4481c002882910fa7281bc22718820129bc625801c4e9124a9829f0e', verified: true },
+      { id: 'EVD-513', name: 'RADIUS Authentication Audit Trail', hash: '09ab1209cc54291129b71f92e7d3a82fbc625801c4e9124a9829f0e1d5267389', verified: true },
+      { id: 'EVD-514', name: 'Hardware Token Seed Attestation', hash: '881a4bca990013ef82f91734bc129b71f92e7d3a82fbc625801c4e9124a9829f', verified: true }
+    ],
+    supervisoryRationale: 'Full statutory compliance verified. Immutable enclave lock engaged on 18 Sep 2026.'
+  },
+  {
+    id: 'VRF-0026',
+    mandateId: 'REM-0026',
+    findingId: 'FND-0109',
+    cseId: 'CSE-008',
+    cseName: 'ReserveBank Interconnect',
+    controlId: 'CTRL-09 v2.1',
+    cycle: 'Q3 2026',
+    leadExaminer: 'NC-4190 (Examiner)',
+    statutoryStandard: 'Financial Sector HSM Key Rotation Mandate Sec 14',
+    submittedAt: '05 Sep 2026 11:00 IST',
+    evaluatedAt: '08 Sep 2026 15:45 IST',
+    verificationVerdict: 'DEFICIENT_REOPENED',
+    confidenceScore: 32,
+    evidenceCompleteness: 33,
+    merkleRootHash: '0x1109aef884439001e01a88b4491910ef7719ab2940212f718820129bc625801c',
+    remedialSummary: 'HSM partition key rotation cycle proof.',
+    gateChecklist: [
+      { id: 'gate-1', label: 'Partition Health Report Ingested', verified: true, required: true },
+      { id: 'gate-2', label: 'Master Key Derivation Cycle Verified', verified: false, required: true, note: 'Rejected: Derivation logs omitted' },
+      { id: 'gate-3', label: 'Zeroization Procedure Test Trace', verified: false, required: true, note: 'Rejected: Missing witness signature' }
+    ],
+    submittedArtifacts: [
+      { id: 'EVD-401', name: 'HSM Partition Health Report', hash: 'e01a88b4491910ef7719ab2940212f718820129bc625801c4e9124a9829f0e1d', verified: true },
+      { id: 'EVD-402', name: 'Master Key Derivation Log', hash: 'OMITTED_DEFICIENT', verified: false }
+    ],
+    supervisoryRationale: 'Deficient proof submitted. Mandate reverted to REOPENED with immediate regulatory warning issued.'
+  }
+];
+
+export interface RemediationRegression {
+  id: string; // e.g. REG-0014
+  findingId: string; // e.g. FND-0128
+  remediationId: string; // e.g. REM-0031
+  verificationId?: string; // e.g. VRF-0022
+  cseId: string;
+  cseName: string;
+  controlId: string;
+  priority: Priority;
+  reason: string;
+  signalType: string;
+  status: 'ACTIVE_REGRESSION' | 'UNDER_REMEDIAL_ACTION' | 'RESOLVED';
+  reopenedDate: string;
+  newEvidenceRecord: string;
+  originalFindingSummary: string;
+  historyTimeline: Array<{
+    date: string;
+    title: string;
+    actor: string;
+    detail: string;
+  }>;
+}
+
+export const mockRegressions: RemediationRegression[] = [
+  {
+    id: 'REG-0014',
+    findingId: 'FND-0128',
+    remediationId: 'REM-0031',
+    verificationId: 'VRF-0022',
+    cseId: 'CSE-014',
+    cseName: 'NorthGrid Energy',
+    controlId: 'CTRL-09 v3.0',
+    priority: 'HIGH',
+    reason: 'Repeated Execution Gap — Firewall Patch Expiration Recurrence',
+    signalType: 'HISTORICAL_RECURRENCE',
+    status: 'ACTIVE_REGRESSION',
+    reopenedDate: '24 Sep 2026',
+    newEvidenceRecord: 'EVD-642 (Nessus OT Infrastructure Report)',
+    originalFindingSummary: 'Control CTRL-09 (Firewall Patch Verification) was verified in Q2 2025, but re-breached in Q3 2026 after temporary manual patch exception expired without automated deployment pipeline.',
+    historyTimeline: [
+      { date: '15 Jan 2025', title: 'Original Finding Identified', actor: 'SYS:SAT-HISTORICAL', detail: 'Patch delay detected on relay firewalls.' },
+      { date: '20 Feb 2025', title: 'Remediation Mandate Closed', actor: 'NC-8802 (Lead Examiner)', detail: 'Temporary exception verified with physical airgap.' },
+      { date: '14 Aug 2026', title: 'Temporary Exception Expired', actor: 'SYS:SAT-BEHAVIOUR', detail: 'Exception window passed without statutory automation.' },
+      { date: '24 Sep 2026', title: 'Regression Flagged & Reopened', actor: 'Supervisory Enclave', detail: 'Signal HISTORICAL_RECURRENCE triggered. Remediation reopened in workspace.' }
+    ]
+  },
+  {
+    id: 'REG-0008',
+    findingId: 'FND-0109',
+    remediationId: 'REM-0026',
+    verificationId: 'VRF-0026',
+    cseId: 'CSE-008',
+    cseName: 'ReserveBank Interconnect',
+    controlId: 'CTRL-09 v2.1',
+    priority: 'CRITICAL',
+    reason: 'Verification Failed — Master Key Derivation Logs Omitted',
+    signalType: 'EXECUTION_GAP',
+    status: 'ACTIVE_REGRESSION',
+    reopenedDate: '08 Sep 2026',
+    newEvidenceRecord: 'EVD-401 (HSM Health Report Missing Witness Signature)',
+    originalFindingSummary: 'Mandatory cryptographic witness signatures for HSM partition zeroization and derivation keys were missing from the submitted verification bundle.',
+    historyTimeline: [
+      { date: '05 Sep 2026', title: 'Remediation Submitted by CSE', actor: 'RBI Crypto Team', detail: 'Uploaded partition report without derivation logs.' },
+      { date: '08 Sep 2026', title: 'Verification Gate Failed', actor: 'NC-4190 (Examiner)', detail: 'Gate 2 & 3 failed verification check. Telemetry incomplete.' },
+      { date: '08 Sep 2026', title: 'Mandate Formally Reopened', actor: 'NC-4190 (Examiner)', detail: 'Status set to REOPENED. Corrective loop active.' }
+    ]
   }
 ];

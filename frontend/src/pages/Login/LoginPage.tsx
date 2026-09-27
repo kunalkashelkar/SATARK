@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
   Shield, 
   Lock, 
@@ -12,12 +11,22 @@ import {
   LayoutDashboard
 } from 'lucide-react';
 
+import { Navigate, useNavigate } from 'react-router-dom';
+import { useSupervisory } from '@/context/SupervisoryContext';
+import { UserRole } from '@/types';
+
 export const LoginPage: React.FC = () => {
+  const { isAuthenticated, login } = useSupervisory();
   const [role, setRole] = useState<'supervisor' | 'examiner'>('supervisor');
   const [userId, setUserId] = useState('NCIIPC-SPV-0814');
   const [password, setPassword] = useState('••••••••••••••••');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  // If already authenticated, redirect to overview
+  if (isAuthenticated) {
+    return <Navigate to="/overview" replace />;
+  }
 
   const handleRoleChange = (selectedRole: 'supervisor' | 'examiner') => {
     setRole(selectedRole);
@@ -31,10 +40,11 @@ export const LoginPage: React.FC = () => {
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
     if (role === 'supervisor') {
-      navigate('/overview');
+      login('SUPERVISOR');
     } else {
-      navigate('/assessment/findings/FND-2041');
+      login('EXAMINER');
     }
+    navigate('/overview');
   };
 
   return (
@@ -114,9 +124,9 @@ export const LoginPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleRoleChange('supervisor')}
-                    className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-[4px] text-xs font-medium transition-all ${
+                    className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-[4px] text-[12px] font-medium transition-all ${
                       role === 'supervisor'
-                        ? 'bg-[#171E2B] text-[#58A6FF] border border-[#303E54] shadow-sm'
+                        ? 'bg-[#171E2B] text-[#58A6FF] border border-[#303E54] shadow-sm font-semibold'
                         : 'text-[#8B949E] hover:text-[#C9D1D9]'
                     }`}
                   >
@@ -126,9 +136,9 @@ export const LoginPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleRoleChange('examiner')}
-                    className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-[4px] text-xs font-medium transition-all ${
+                    className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-[4px] text-[12px] font-medium transition-all ${
                       role === 'examiner'
-                        ? 'bg-[#171E2B] text-[#58A6FF] border border-[#303E54] shadow-sm'
+                        ? 'bg-[#171E2B] text-[#58A6FF] border border-[#303E54] shadow-sm font-semibold'
                         : 'text-[#8B949E] hover:text-[#C9D1D9]'
                     }`}
                   >
@@ -136,12 +146,12 @@ export const LoginPage: React.FC = () => {
                     <span>Examiner</span>
                   </button>
                 </div>
-                <div className="text-[11px] text-[#6E7681] pt-0.5 flex items-center gap-1.5">
+                <div className="text-[11px] text-[#6E7681] pt-0.5 flex items-center gap-1.5 font-mono">
                   <Info className="w-3 h-3 text-[#58A6FF] shrink-0" />
-                  <span>
+                  <span className="truncate">
                     {role === 'supervisor'
-                      ? 'Accessing Cross-CSE Portfolio, Priority Queue & Sampling Engine'
-                      : 'Accessing Examiner Workspace, Reasoning Chains & Evidence Drill-down'}
+                      ? 'Supervisor: Cross-CSE Overview, Assessments & Sampling'
+                      : 'Examiner: Review Queue, Expected vs Observed & Adjudication'}
                   </span>
                 </div>
               </div>
@@ -208,7 +218,7 @@ export const LoginPage: React.FC = () => {
                   className="w-full h-9 rounded-[6px] bg-[#238636] hover:bg-[#2EA043] text-white text-xs font-semibold tracking-wide flex items-center justify-center gap-2 transition-colors border border-[rgba(240,246,252,0.1)] shadow-sm group cursor-pointer"
                 >
                   <span>
-                    {role === 'supervisor' ? 'Sign In to Supervisory Dashboard' : 'Sign In to Examiner Workspace'}
+                    {role === 'supervisor' ? 'Sign In as Supervisor (Overview)' : 'Sign In as Examiner (Overview)'}
                   </span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </button>

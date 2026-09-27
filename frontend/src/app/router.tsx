@@ -11,15 +11,10 @@ import { EvidenceExplorerPage } from '@/pages/EvidenceExplorer/EvidenceExplorerP
 import { RemediationPage } from '@/pages/Remediation/RemediationPage';
 import { GovernanceHubPage } from '@/pages/Governance/GovernanceHubPage';
 import { AnalysisHubPage } from '@/pages/Analysis/AnalysisHubPage';
+import { EngineDetailPage } from '@/pages/Analysis/EngineDetailPage';
 
 import { SupervisoryEvidenceGraphPage } from '@/pages/Graph/SupervisoryEvidenceGraphPage';
 import { SamplingPage } from '@/pages/Sampling/SamplingPage';
-
-// Wrapper for parameterized subtabs in Analysis
-const AnalysisSubTabRoute: React.FC = () => {
-  const { subTab } = useParams<{ subTab: string }>();
-  return <AnalysisHubPage initialTab={subTab as any} />;
-};
 
 export const AppRouter: React.FC = () => {
   return (
@@ -29,20 +24,32 @@ export const AppRouter: React.FC = () => {
 
         {/* Protected App Shell */}
         <Route element={<AppShell />}>
-          <Route path="/" element={<Navigate to="/overview" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/overview" element={<DashboardOverviewPage />} />
 
-          {/* 1. Assessments Routes */}
+          {/* 1. Supervision & CSE Assessments Routes (PART 3) */}
+          <Route path="/supervision" element={<Navigate to="/supervision/cses" replace />} />
+          <Route path="/supervision/cses" element={<CSEAssessmentsListPage />} />
+          <Route path="/supervision/cses/:cseId" element={<CSEDetailPage />} />
+          <Route path="/supervision/cses/:cseId/assessments/:assessmentId" element={<CSEDetailPage />} />
+          <Route path="/supervision/cses/:cseId/execution-gap" element={<EngineDetailPage forcedSlug="execution-gap" />} />
+          <Route path="/supervision/cses/:cseId/negative-space" element={<EngineDetailPage forcedSlug="negative-space" />} />
+          <Route path="/supervision/cses/:cseId/process" element={<EngineDetailPage forcedSlug="process" />} />
+          <Route path="/supervision/cses/:cseId/history" element={<EngineDetailPage forcedSlug="historical" />} />
+          <Route path="/supervision/cses/:cseId/peer" element={<EngineDetailPage forcedSlug="peer" />} />
           <Route path="/assessments" element={<CSEAssessmentsListPage />} />
           <Route path="/assessments/:cseId" element={<CSEDetailPage />} />
 
-          {/* 2. Review Queue & Examiner Workspace Routes */}
+          {/* 2. Review Queue & Examiner Workspace Routes (PART 2 & 3) */}
           <Route path="/review" element={<ReviewQueuePage />} />
+          <Route path="/review/findings" element={<ReviewQueuePage />} />
+          <Route path="/review/findings/:findingId" element={<FindingDetailPage />} />
           <Route path="/review/:findingId" element={<FindingDetailPage />} />
+          <Route path="/examiner/findings/:findingId" element={<FindingDetailPage />} />
           <Route path="/findings" element={<ReviewQueuePage />} />
           <Route path="/findings/:findingId" element={<FindingDetailPage />} />
 
-          {/* 3. Supervisory Evidence Graph (Attack-Surface to Supervisory Graph) */}
+          {/* 3. Supervisory Evidence Graph */}
           <Route path="/graph" element={<SupervisoryEvidenceGraphPage />} />
           <Route path="/evidence-graph" element={<SupervisoryEvidenceGraphPage />} />
 
@@ -53,54 +60,71 @@ export const AppRouter: React.FC = () => {
           {/* 5. Sampling Routes */}
           <Route path="/sampling" element={<SamplingPage />} />
 
-          {/* 6. Remediation Routes */}
+          {/* 6. Remediation Workspace (Lifecycle Stages: Open, Verification, Regression) */}
           <Route path="/remediation" element={<RemediationPage />} />
+          <Route path="/remediation/open" element={<RemediationPage defaultStage="open" />} />
+          <Route path="/remediation/verification" element={<RemediationPage defaultStage="verification" />} />
+          <Route path="/remediation/regression" element={<RemediationPage defaultStage="regression" />} />
           <Route path="/remediation/:remediationId" element={<RemediationPage />} />
 
-          {/* 7. Governance Routes */}
+          {/* Verification redirects to unified Remediation workspace */}
+          <Route path="/verification" element={<Navigate to="/remediation?stage=verification" replace />} />
+          <Route path="/verification/:verificationId" element={<Navigate to="/remediation?stage=verification" replace />} />
+
+          {/* 7. Governance Workspace Routes (Audit, Administration, Controls, Versions) */}
           <Route path="/governance" element={<GovernanceHubPage />} />
           <Route path="/governance/audit" element={<GovernanceHubPage initialTab="audit" />} />
-          <Route path="/governance/admin" element={<GovernanceHubPage initialTab="admin" />} />
-          <Route path="/governance/administration" element={<GovernanceHubPage initialTab="admin" />} />
-          <Route path="/audit" element={<Navigate to="/governance/audit" replace />} />
-          <Route path="/administration" element={<Navigate to="/governance/admin" replace />} />
+          <Route path="/governance/admin" element={<GovernanceHubPage initialTab="administration" />} />
+          <Route path="/governance/administration" element={<GovernanceHubPage initialTab="administration" />} />
+          <Route path="/governance/controls" element={<GovernanceHubPage initialTab="controls" />} />
+          <Route path="/governance/versions" element={<GovernanceHubPage initialTab="versions" />} />
+          <Route path="/audit" element={<Navigate to="/governance?tab=audit" replace />} />
+          <Route path="/administration" element={<Navigate to="/governance?tab=administration" replace />} />
 
-          {/* 8. Grouped Analysis Hub Routes */}
+          {/* 8. Authoritative Analysis Hub & 10 Nested Engine Routes */}
           <Route path="/analysis" element={<AnalysisHubPage />} />
-          <Route path="/analysis/:subTab" element={<AnalysisSubTabRoute />} />
+          <Route path="/analysis/execution-gap" element={<EngineDetailPage forcedSlug="execution-gap" />} />
+          <Route path="/analysis/negative-space" element={<EngineDetailPage forcedSlug="negative-space" />} />
+          <Route path="/analysis/coverage" element={<EngineDetailPage forcedSlug="coverage" />} />
+          <Route path="/analysis/process" element={<EngineDetailPage forcedSlug="process" />} />
+          <Route path="/analysis/investigation-quality" element={<EngineDetailPage forcedSlug="investigation-quality" />} />
+          <Route path="/analysis/behavioural" element={<EngineDetailPage forcedSlug="behavioural" />} />
+          <Route path="/analysis/historical" element={<EngineDetailPage forcedSlug="historical" />} />
+          <Route path="/analysis/peer" element={<EngineDetailPage forcedSlug="peer" />} />
+          <Route path="/analysis/consistency" element={<EngineDetailPage forcedSlug="consistency" />} />
+          <Route path="/analysis/metric-integrity" element={<EngineDetailPage forcedSlug="metric-integrity" />} />
+          <Route path="/analysis/:engineSlug" element={<EngineDetailPage />} />
 
           {/* Legacy / Alternate Path Aliases */}
-          <Route path="/supervision/cses" element={<Navigate to="/assessments" replace />} />
-          <Route path="/supervision/cses/:cseId" element={<CSEDetailPage />} />
-          <Route path="/supervision/cse-assessments" element={<Navigate to="/assessments" replace />} />
+          <Route path="/supervision/cse-assessments" element={<Navigate to="/supervision/cses" replace />} />
           <Route path="/supervision/cse-assessments/:cseId" element={<CSEDetailPage />} />
           <Route path="/supervision/priority" element={<Navigate to="/review" replace />} />
-          <Route path="/supervision/sampling" element={<Navigate to="/review" replace />} />
+          <Route path="/supervision/sampling" element={<Navigate to="/sampling" replace />} />
           <Route path="/assessment/findings" element={<Navigate to="/review" replace />} />
           <Route path="/assessment/findings/:findingId" element={<FindingDetailPage />} />
           <Route path="/assessment/evidence" element={<Navigate to="/evidence" replace />} />
           <Route path="/assessment/remediation" element={<Navigate to="/remediation" replace />} />
-          <Route path="/assessment/verification" element={<Navigate to="/remediation" replace />} />
-          <Route path="/verification" element={<Navigate to="/remediation" replace />} />
+          <Route path="/assessment/verification" element={<Navigate to="/verification" replace />} />
 
-          {/* Legacy Analytics Direct Routes -> mapped to Analysis Hub */}
-          <Route path="/analytics/execution-gaps" element={<AnalysisHubPage initialTab="execution-gap" />} />
-          <Route path="/analytics/negative-space" element={<AnalysisHubPage initialTab="negative-space" />} />
-          <Route path="/analytics/process" element={<AnalysisHubPage initialTab="process" />} />
-          <Route path="/analytics/process-analysis" element={<AnalysisHubPage initialTab="process" />} />
-          <Route path="/analytics/evidence-quality" element={<AnalysisHubPage initialTab="evidence-quality" />} />
-          <Route path="/analytics/behavioural-analysis" element={<AnalysisHubPage initialTab="behaviour" />} />
-          <Route path="/analytics/behavioural" element={<AnalysisHubPage initialTab="behaviour" />} />
-          <Route path="/analytics/coverage" element={<AnalysisHubPage initialTab="coverage" />} />
-          <Route path="/analytics/coverage-analysis" element={<AnalysisHubPage initialTab="coverage" />} />
-          <Route path="/analytics/consistency" element={<AnalysisHubPage initialTab="consistency" />} />
-          <Route path="/analytics/consistency-analysis" element={<AnalysisHubPage initialTab="consistency" />} />
-          <Route path="/analytics/historical-intelligence" element={<AnalysisHubPage initialTab="historical" />} />
-          <Route path="/intelligence/historical" element={<AnalysisHubPage initialTab="historical" />} />
-          <Route path="/analytics/peer-comparison" element={<AnalysisHubPage initialTab="peer" />} />
-          <Route path="/intelligence/peer" element={<AnalysisHubPage initialTab="peer" />} />
-          <Route path="/intelligence/signal-discovery" element={<AnalysisHubPage initialTab="execution-gap" />} />
-          <Route path="/analytics/signal-discovery" element={<AnalysisHubPage initialTab="execution-gap" />} />
+          {/* Legacy Analytics Direct Routes -> mapped to nested /analysis routes */}
+          <Route path="/analytics/execution-gaps" element={<Navigate to="/analysis/execution-gap" replace />} />
+          <Route path="/analytics/negative-space" element={<Navigate to="/analysis/negative-space" replace />} />
+          <Route path="/analytics/process" element={<Navigate to="/analysis/process" replace />} />
+          <Route path="/analytics/capability" element={<Navigate to="/analysis/metric-integrity" replace />} />
+          <Route path="/analytics/process-analysis" element={<Navigate to="/analysis/process" replace />} />
+          <Route path="/analytics/evidence-quality" element={<Navigate to="/analysis/investigation-quality" replace />} />
+          <Route path="/analytics/behavioural-analysis" element={<Navigate to="/analysis/behavioural" replace />} />
+          <Route path="/analytics/behavioural" element={<Navigate to="/analysis/behavioural" replace />} />
+          <Route path="/analytics/coverage" element={<Navigate to="/analysis/coverage" replace />} />
+          <Route path="/analytics/coverage-analysis" element={<Navigate to="/analysis/coverage" replace />} />
+          <Route path="/analytics/consistency" element={<Navigate to="/analysis/consistency" replace />} />
+          <Route path="/analytics/consistency-analysis" element={<Navigate to="/analysis/consistency" replace />} />
+          <Route path="/analytics/historical-intelligence" element={<Navigate to="/analysis/historical" replace />} />
+          <Route path="/intelligence/historical" element={<Navigate to="/analysis/historical" replace />} />
+          <Route path="/analytics/peer-comparison" element={<Navigate to="/analysis/peer" replace />} />
+          <Route path="/intelligence/peer" element={<Navigate to="/analysis/peer" replace />} />
+          <Route path="/intelligence/signal-discovery" element={<Navigate to="/analysis/execution-gap" replace />} />
+          <Route path="/analytics/signal-discovery" element={<Navigate to="/analysis/execution-gap" replace />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/overview" replace />} />

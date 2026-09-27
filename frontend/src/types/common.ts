@@ -47,7 +47,5 @@ export type SamplingMethodology =
 
 export type UserRole =
   | 'SUPERVISOR'
-  | 'EXAMINER'
-  | 'AUDITOR'
-  | 'ADMINISTRATOR';
+  | 'EXAMINER';
 

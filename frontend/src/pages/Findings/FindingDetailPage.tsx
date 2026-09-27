@@ -33,10 +33,12 @@ import {
 
 export const FindingDetailPage: React.FC = () => {
   const { findingId } = useParams<{ findingId: string }>();
-  const { findings, evidence, updateFindingDecision, requestEvidenceDemand } = useSupervisory();
+  const { findings, evidence, remediations, verifications, updateFindingDecision, requestEvidenceDemand } = useSupervisory();
 
   const id = findingId || 'FND-0142';
   const finding = findings.find(f => f.id.toLowerCase() === id.toLowerCase()) || findings[0];
+  const relatedRemediation = remediations.find(r => r.findingId.toLowerCase() === finding.id.toLowerCase());
+  const relatedVerification = verifications.find(v => v.findingId.toLowerCase() === finding.id.toLowerCase());
 
   // Local state for decision form and bottom tabs
   const [decisionNotes, setDecisionNotes] = useState(finding.decisionNotes || '');
@@ -165,6 +167,51 @@ export const FindingDetailPage: React.FC = () => {
                   <div className="text-[11px] text-[#8c90a0] leading-snug">{sig.description}</div>
                 </div>
               ))}
+            </div>
+          </Card>
+
+          {/* Remediation & Verification State (Items 13 & 14) */}
+          <Card dense className="space-y-2">
+            <div className="flex items-center justify-between pb-1.5 border-b border-[#262a31]/60">
+              <h3 className="text-[12px] font-semibold text-[#dfe2eb] uppercase tracking-wider font-mono">
+                Remediation Lifecycle
+              </h3>
+              <span className="text-[10px] font-mono text-[#8c90a0]">GATE ENFORCED</span>
+            </div>
+
+            <div className="space-y-2 text-[12px]">
+              <div className="p-2 rounded bg-[#14181f] border border-[#262a31] space-y-1">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-[#8c90a0] font-mono">Mandate Status:</span>
+                  <span className="font-mono font-bold text-amber-300">
+                    {relatedRemediation ? relatedRemediation.status : 'AWAITING ADJUDICATION'}
+                  </span>
+                </div>
+                {relatedRemediation && (
+                  <div className="text-[11px] text-[#afc6ff] font-mono flex items-center justify-between pt-0.5">
+                    <span>{relatedRemediation.id}</span>
+                    <Link to="/remediation" className="hover:underline text-[10px]">Inspect Mandate →</Link>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-2 rounded bg-[#14181f] border border-[#262a31] space-y-1">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-[#8c90a0] font-mono">Verification Gate:</span>
+                  <span className="font-mono font-bold text-[#10b981]">
+                    {relatedVerification ? relatedVerification.verificationVerdict.replace(/_/g, ' ') : 'NOT_INITIATED'}
+                  </span>
+                </div>
+                {relatedVerification && (
+                  <div className="text-[11px] text-[#10b981] font-mono flex items-center justify-between pt-0.5">
+                    <span>{relatedVerification.id}</span>
+                    <Link to="/verification" className="hover:underline text-[10px]">Verification Gate →</Link>
+                  </div>
+                )}
+              </div>
+              <div className="text-[10px] text-[#64748b] font-mono">
+                Principle: SUBMITTED ≠ VERIFIED (Formal supervisory seal mandatory prior to closure)
+              </div>
             </div>
           </Card>
         </div>
@@ -333,7 +380,7 @@ export const FindingDetailPage: React.FC = () => {
                 size="md"
                 className="w-full justify-between bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
                 iconRight={<Check className="w-3.5 h-3.5" />}
-                onClick={() => setModalAction('VALIDATE' as any)}
+                onClick={() => setModalAction('VALIDATED')}
               >
                 Validate Finding
               </Button>

@@ -8,7 +8,7 @@ export const Topbar: React.FC<{ isCollapsed?: boolean; onToggleCollapse?: () => 
   isCollapsed = false,
   onToggleCollapse
 }) => {
-  const { userRole, setUserRole, cses, activeCseId, setActiveCseId, metrics } = useSupervisory();
+  const { userRole, setUserRole, logout, cses, activeCseId, setActiveCseId, metrics } = useSupervisory();
   const location = useLocation();
   const navigate = useNavigate();
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
@@ -223,10 +223,7 @@ export const Topbar: React.FC<{ isCollapsed?: boolean; onToggleCollapse?: () => 
           >
             <div className="flex flex-col text-right">
               <span className="text-[11px] font-semibold text-[#f1f5f9] leading-tight">
-                {userRole === 'SUPERVISOR' && 'Supervisor'}
-                {userRole === 'EXAMINER' && 'Lead Examiner'}
-                {userRole === 'AUDITOR' && 'Statutory Auditor'}
-                {userRole === 'ADMINISTRATOR' && 'Enclave Admin'}
+                {userRole === 'SUPERVISOR' ? 'Supervisor' : 'Lead Examiner'}
               </span>
               <span className="text-[9px] text-[#10b981] leading-tight font-mono uppercase tracking-wider">
                 {userRole}
@@ -243,7 +240,7 @@ export const Topbar: React.FC<{ isCollapsed?: boolean; onToggleCollapse?: () => 
               <div className="px-2 py-1 text-[10px] font-mono uppercase text-[#64748b] border-b border-[#212c3d] mb-1">
                 Select Persona Role
               </div>
-              {(['SUPERVISOR', 'EXAMINER', 'AUDITOR', 'ADMINISTRATOR'] as UserRole[]).map((r) => (
+              {(['SUPERVISOR', 'EXAMINER'] as UserRole[]).map((r) => (
                 <button
                   key={r}
                   type="button"
@@ -259,6 +256,21 @@ export const Topbar: React.FC<{ isCollapsed?: boolean; onToggleCollapse?: () => 
                   {userRole === r && <Check className="w-3 h-3 text-[#60a5fa]" />}
                 </button>
               ))}
+
+              <div className="pt-1 mt-1 border-t border-[#212c3d]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    logout();
+                    setRoleDropdownOpen(false);
+                    navigate('/login');
+                  }}
+                  className="w-full flex items-center justify-between px-2.5 py-1.5 rounded text-left transition-colors font-mono text-[11px] text-rose-400 hover:bg-rose-500/10 cursor-pointer"
+                >
+                  <span>Sign Out</span>
+                  <span className="material-symbols-outlined text-[14px]">logout</span>
+                </button>
+              </div>
             </div>
           )}
         </div>

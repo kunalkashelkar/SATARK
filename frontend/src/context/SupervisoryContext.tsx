@@ -2,21 +2,27 @@ import React, { createContext, useContext, useState, useMemo, ReactNode } from '
 import { mockCSEs } from '@/data/mock/cses';
 import { mockFindings } from '@/data/mock/findings';
 import { mockEvidenceList, MockEvidenceRecord } from '@/data/mock/evidence';
-import { mockRemediations, mockVerifications, RemediationMandate, VerificationRecord } from '@/data/mock/remediation';
+import { mockRemediations, mockVerifications, mockRegressions, RemediationMandate, VerificationRecord, RemediationRegression } from '@/data/mock/remediation';
 import { mockSamples } from '@/data/mock/samples';
 import { mockAuditTrail, AuditTrailItem } from '@/data/mock/audit';
-import { CSEAssessment, Finding, FindingStatus, RecommendedSample, UserRole, Priority } from '@/types';
+import { mockSubmissions } from '@/data/mock/submissions';
+import { CSEAssessment, Finding, FindingStatus, RecommendedSample, UserRole, Priority, CSESubmission } from '@/types';
 
 interface SupervisoryContextType {
   cses: CSEAssessment[];
   findings: Finding[];
   evidence: MockEvidenceRecord[];
+  submissions: CSESubmission[];
   remediations: RemediationMandate[];
   verifications: VerificationRecord[];
+  regressions: RemediationRegression[];
   samples: RecommendedSample[];
   auditTrail: AuditTrailItem[];
   userRole: UserRole;
   setUserRole: (role: UserRole) => void;
+  isAuthenticated: boolean;
+  login: (role: UserRole) => void;
+  logout: () => void;
   
   // Active selection
   activeFindingId: string;
@@ -33,7 +39,9 @@ interface SupervisoryContextType {
   submitRemediationArtifact: (mandateId: string, artifactId: string, hash: string) => void;
   verifyGate: (verificationId: string, gateId: string, verified: boolean) => void;
   sealVerification: (verificationId: string) => void;
+  reopenVerification: (verificationId: string, reason: string) => void;
   toggleSampleSelection: (sampleId: string) => void;
+  addSubmissionAndEvidence: (payload: { submission: CSESubmission; evidence: MockEvidenceRecord }) => void;
 
   // Derived Metrics for Overview & Dashboards
   metrics: {
@@ -52,14 +60,99 @@ export const SupervisoryProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [cses, setCses] = useState<CSEAssessment[]>(mockCSEs);
   const [findings, setFindings] = useState<Finding[]>(mockFindings);
   const [evidence, setEvidence] = useState<MockEvidenceRecord[]>(mockEvidenceList);
+  const [submissions, setSubmissions] = useState<CSESubmission[]>(mockSubmissions);
   const [remediations, setRemediations] = useState<RemediationMandate[]>(mockRemediations);
   const [verifications, setVerifications] = useState<VerificationRecord[]>(mockVerifications);
+  const [regressions, setRegressions] = useState<RemediationRegression[]>(mockRegressions);
   const [samples, setSamples] = useState<RecommendedSample[]>(mockSamples);
   const [auditTrail, setAuditTrail] = useState<AuditTrailItem[]>(mockAuditTrail);
-  const [userRole, setUserRole] = useState<UserRole>('SUPERVISOR');
+  const [userRole, setUserRole] = useState<UserRole>(() => {
+    return (sessionStorage.getItem('sat_role') as UserRole) || 'SUPERVISOR';
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem('sat_auth') === 'true';
+  });
+  
+  const login = (role: UserRole) => {
+    setUserRole(role);
+    setIsAuthenticated(true);
+    sessionStorage.setItem('sat_auth', 'true');
+    sessionStorage.setItem('sat_role', role);
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('sat_auth');
+    sessionStorage.removeItem('sat_role');
+  };
   
   const [activeFindingId, setActiveFindingId] = useState<string>('FND-0142');
   const [activeCseId, setActiveCseId] = useState<string>('CSE-014');
+
+  // Add evidence submission and update CSE readiness
+  const addSubmissionAndEvidence = ({ submission, evidence: newEvidence }: { submission: CSESubmission; evidence: MockEvidenceRecord }) => {
+    const formattedDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+    // 1. Add submission
+    setSubmissions(prev => [submission, ...prev]);
+
+    // 2. Add or update evidence record
+    setEvidence(prev => {
+      // If this corresponds to an expected missing item (e.g. ESC-221), mark it as PRESENT
+      const hasMissingPlaceholder = prev.some(e => e.cseId === submission.cseId && e.recordType === newEvidence.recordType && e.status === 'NOT_SUBMITTED');
+      if (hasMissingPlaceholder) {
+        return prev.map(e => {
+          if (e.cseId === submission.cseId && e.recordType === newEvidence.recordType && e.status === 'NOT_SUBMITTED') {
+            return {
+              ...e,
+              status: 'PRESENT',
+              hash: newEvidence.hash,
+              integrity: 'VERIFIED (SHA-256)',
+              title: newEvidence.title,
+              source: newEvidence.source,
+              timestampDate: 'Today',
+              timestampTime: 'Just Now',
+              gapNote: 'Statutory submission received & verified via FIPS digest'
+            };
+          }
+          return e;
+        });
+      }
+      return [newEvidence, ...prev];
+    });
+
+    // 3. Recalculate and increase CSE readiness
+    setCses(prev => prev.map(c => {
+      if (c.cseId === submission.cseId) {
+        const newReadiness = Math.min(100, c.evidenceReadiness + 7);
+        const readinessCategory = newReadiness >= 90 ? 'Robust' : newReadiness >= 80 ? 'Acceptable' : 'Deficient';
+        return {
+          ...c,
+          evidenceReadiness: newReadiness,
+          readinessCategory,
+          lastSubmission: `${submission.submittedAt} (${submission.submissionId})`
+        };
+      }
+      return c;
+    }));
+
+    // 4. Log immutable audit trail entry
+    setAuditTrail(prev => [{
+      id: `AUD-2026-${Math.floor(100000 + Math.random() * 900000)}`,
+      timestamp: formattedDate,
+      actor: `${submission.cseId} Evidence Liaison`,
+      actorDetail: 'Air-Gapped Ingestion Gateway',
+      actorRole: 'Submitting Officer',
+      actorType: 'HUMAN',
+      action: 'Ingested Evidence Dossier',
+      targetObject: submission.submissionId,
+      previousState: 'PENDING_SUBMISSION',
+      newState: 'MAPPED',
+      result: 'SUCCESS',
+      reason: `Ingested ${submission.fileName} (${submission.fileType}, ${submission.fileSize}). SHA-256 Digest calculated & validated against OCSF schema.`,
+      linkedObject: submission.cseId
+    }, ...prev]);
+  };
 
   // Update finding decision (Validate, Qualify, Reject, Override, etc.)
   const updateFindingDecision = (
@@ -264,11 +357,95 @@ export const SupervisoryProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   };
 
+  // Reopen verification when deficient proof or regression occurs
+  const reopenVerification = (verificationId: string, reason: string) => {
+    const formattedDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const target = verifications.find(v => v.id === verificationId);
+
+    setVerifications(prev => prev.map(v => {
+      if (v.id === verificationId) {
+        return {
+          ...v,
+          verificationVerdict: 'DEFICIENT_REOPENED',
+          evaluatedAt: `${formattedDate} IST`,
+          supervisoryRationale: reason || 'Deficient proof submitted. Mandate reverted to REOPENED with regulatory inquiry issued.'
+        };
+      }
+      return v;
+    }));
+
+    if (target) {
+      setRemediations(prev => prev.map(r => 
+        r.id === target.mandateId ? { ...r, status: 'REOPENED', reopenReason: reason } : r
+      ));
+
+      setFindings(prev => prev.map(f => 
+        f.id.toLowerCase() === target.findingId.toLowerCase() ? { ...f, status: 'UNDER_REVIEW' } : f
+      ));
+
+      // Also record or update regression entry
+      setRegressions(prev => {
+        const existing = prev.find(reg => reg.verificationId === verificationId || reg.remediationId === target.mandateId);
+        if (existing) {
+          return prev.map(reg => reg.id === existing.id ? { ...reg, status: 'ACTIVE_REGRESSION', reason } : reg);
+        }
+        return [
+          {
+            id: `REG-00${Math.floor(10 + Math.random() * 90)}`,
+            findingId: target.findingId,
+            remediationId: target.mandateId,
+            verificationId,
+            cseId: target.cseId,
+            cseName: target.cseName,
+            controlId: target.controlId,
+            priority: 'HIGH',
+            reason: reason || 'Failed Verification Gates — Telemetry Deficient',
+            signalType: 'EXECUTION_GAP',
+            status: 'ACTIVE_REGRESSION',
+            reopenedDate: formattedDate,
+            newEvidenceRecord: 'Awaiting Re-submission Telemetry',
+            originalFindingSummary: target.remedialSummary,
+            historyTimeline: [
+              { date: target.submittedAt, title: 'Verification Submitted', actor: 'CSE Liaison', detail: 'Initial artifact package.' },
+              { date: `${formattedDate} IST`, title: 'Verification Gate Failed', actor: 'NC-8802 (Lead Examiner)', detail: reason || 'Deficient verification submission.' },
+              { date: `${formattedDate} IST`, title: 'Mandate Formally Reopened', actor: 'NC-8802 (Lead Examiner)', detail: 'Status set to REOPENED. Corrective loop active.' }
+            ]
+          },
+          ...prev
+        ];
+      });
+
+      setAuditTrail(prev => [{
+        id: `AUD-2026-${Math.floor(100000 + Math.random() * 900000)}`,
+        timestamp: formattedDate,
+        actor: 'NC-8802 (Lead Examiner)',
+        actorDetail: 'NCIIPC Supervisory Directorate',
+        actorRole: 'Lead Examiner',
+        actorType: 'HUMAN',
+        action: 'Verification Deficient — Mandate Reopened',
+        targetObject: verificationId,
+        previousState: target.verificationVerdict,
+        newState: 'DEFICIENT_REOPENED',
+        result: 'SUCCESS',
+        reason: reason || 'Mandatory gates deficient; corrective loop reopened.',
+        linkedObject: target.mandateId
+      }, ...prev]);
+    }
+  };
+
   // Toggle sample selection
   const toggleSampleSelection = (sampleId: string) => {
-    setSamples(prev => prev.map(s => 
-      s.id === sampleId ? { ...s, selected: !s.selected } : s
-    ));
+    setSamples(prev => prev.map(s => {
+      if (s.id === sampleId) {
+        const nextSelected = !s.selected;
+        return {
+          ...s,
+          selected: nextSelected,
+          status: nextSelected ? 'SELECTED' : 'RECOMMENDED'
+        };
+      }
+      return s;
+    }));
   };
 
   // Derived metrics calculated dynamically
@@ -305,12 +482,17 @@ export const SupervisoryProvider: React.FC<{ children: ReactNode }> = ({ childre
         cses,
         findings,
         evidence,
+        submissions,
         remediations,
         verifications,
+        regressions,
         samples,
         auditTrail,
         userRole,
         setUserRole,
+        isAuthenticated,
+        login,
+        logout,
         activeFindingId,
         setActiveFindingId,
         activeCseId,
@@ -320,7 +502,9 @@ export const SupervisoryProvider: React.FC<{ children: ReactNode }> = ({ childre
         submitRemediationArtifact,
         verifyGate,
         sealVerification,
+        reopenVerification,
         toggleSampleSelection,
+        addSubmissionAndEvidence,
         metrics
       }}
     >

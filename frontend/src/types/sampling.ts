@@ -12,4 +12,9 @@ export interface RecommendedSample {
   evidenceStrength: 'HIGH' | 'MEDIUM' | 'LOW';
   selected: boolean;
   controlId: string;
+  status?: 'RECOMMENDED' | 'SELECTED' | 'IN_REVIEW' | 'REVIEWED';
+  assessmentPeriod?: string;
+  evidenceStatus?: 'PRESENT' | 'NOT_SUBMITTED' | 'PARTIAL' | 'UNKNOWN';
+  relatedFindingId?: string;
+  recommendedAt?: string;
 }

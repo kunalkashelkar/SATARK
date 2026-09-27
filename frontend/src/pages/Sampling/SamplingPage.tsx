@@ -1,62 +1,57 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { PageContainer } from '@/components/common';
-
-interface SampleCase {
-  id: string;
-  cseId: string;
-  cseName: string;
-  sector: string;
-  primaryVector: string;
-  contributingSignals: string[];
-  priority: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
-  evidenceStrength: 'Strong' | 'Moderate' | 'Weak';
-  evidenceList: string;
-  method: 'Risk-Based' | 'Evidence-Based' | 'Anomaly-Based' | 'Coverage-Based' | 'Recurrence-Based' | 'Baseline';
-}
-
-interface QueuedExamination {
-  caseId: string;
-  targetCse: string;
-  trigger: string;
-  assignedGroup: string;
-  status: string;
-}
+import React, { useState, useMemo } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useSupervisory } from '@/context/SupervisoryContext';
+import { RecommendedSample, Priority, SamplingMethodology } from '@/types';
+import { 
+  Search, 
+  RotateCcw, 
+  ArrowRight, 
+  AlertTriangle,
+  Clock, 
+  FileText, 
+  CheckCircle2, 
+  Building2,
+  ExternalLink,
+  ChevronRight,
+  Eye,
+  Check,
+  Layers,
+  Sparkles,
+  Info,
+  X
+} from 'lucide-react';
+import {
+  PageContainer,
+  PageHeader,
+  Card,
+  KpiCard,
+  Input,
+  Select,
+  StatusBadge,
+  PriorityBadge,
+  Button,
+  Drawer
+} from '@/components/common';
 
 export const SamplingPage: React.FC = () => {
-  // Screen Filters
-  const [selectedPeriod, setSelectedPeriod] = useState<string>('Q3-2026');
-  const [selectedCse, setSelectedCse] = useState<string>('CSE-014');
-  const [activeMethodWeight, setActiveMethodWeight] = useState<string>('ALL');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [priorityFilter, setPriorityFilter] = useState<string>('ALL');
-  const [methodFilter, setMethodFilter] = useState<string>('ALL');
+  const { samples, cses, toggleSampleSelection, setActiveFindingId, setActiveCseId } = useSupervisory();
+  const navigate = useNavigate();
 
-  // Multi-selection checkboxes
-  const [selectedCaseIds, setSelectedCaseIds] = useState<string[]>([]);
-  
-  // Focused case in right inspector drawer
-  const [focusedCaseId, setFocusedCaseId] = useState<string>('CASE-1042');
+  // Search & Filter State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCse, setSelectedCse] = useState('ALL');
+  const [selectedPeriod, setSelectedPeriod] = useState('ALL');
+  const [selectedMethod, setSelectedMethod] = useState<string>('ALL');
+  const [selectedPriority, setSelectedPriority] = useState('ALL');
+  const [selectedStatus, setSelectedStatus] = useState('ALL');
+  const [selectedEvidence, setSelectedEvidence] = useState('ALL');
 
-  // Examination set queue
-  const [examinationQueue, setExaminationQueue] = useState<QueuedExamination[]>([
-    {
-      caseId: 'CASE-1042',
-      targetCse: 'CSE-014 (Energy)',
-      trigger: "Execution Gap GAP-0071 / Recurrence Q3 '26",
-      assignedGroup: 'Examiner 07 (Air-gap Unit)',
-      status: 'Ready for Examination'
-    },
-    {
-      caseId: 'CASE-1037',
-      targetCse: 'CSE-014 (Energy)',
-      trigger: 'Negative Space NS-0038 / Closure evidence missing',
-      assignedGroup: 'Examiner 02 (Energy Grid Spec)',
-      status: 'Ready for Examination'
-    }
-  ]);
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
-  // Toast
+  // Drawer & Toast State
+  const [inspectedSample, setInspectedSample] = useState<RecommendedSample | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -64,722 +59,589 @@ export const SamplingPage: React.FC = () => {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const sampleCases: SampleCase[] = [
-    {
-      id: 'CASE-1042',
-      cseId: 'CSE-014',
-      cseName: 'NorthGrid Transmission',
-      sector: 'Energy / Transmission',
-      primaryVector: 'Repeated execution gap with missing escalation telemetry to NCIIPC',
-      contributingSignals: ['GAP-0071 Escalation', 'NS-0041 Esc Telemetry'],
-      priority: 'CRITICAL',
-      evidenceStrength: 'Strong',
-      evidenceList: 'EVD-742, EVD-761',
-      method: 'Risk-Based'
-    },
-    {
-      id: 'CASE-1037',
-      cseId: 'CSE-014',
-      cseName: 'NorthGrid Transmission',
-      sector: 'Energy / Transmission',
-      primaryVector: 'Missing investigation closure evidence & response validation docket',
-      contributingSignals: ['NS-0038 Closure Doc'],
-      priority: 'HIGH',
-      evidenceStrength: 'Moderate',
-      evidenceList: 'EVD-688',
-      method: 'Evidence-Based'
-    },
-    {
-      id: 'CASE-1021',
-      cseId: 'CSE-014',
-      cseName: 'NorthGrid Transmission',
-      sector: 'Energy / Transmission',
-      primaryVector: 'Non-conforming investigation step skip before containment execution',
-      contributingSignals: ['PD-0031 Step Bypass'],
-      priority: 'HIGH',
-      evidenceStrength: 'Strong',
-      evidenceList: 'EVD-594, EVD-601',
-      method: 'Anomaly-Based'
-    },
-    {
-      id: 'CASE-1008',
-      cseId: 'CSE-014',
-      cseName: 'NorthGrid Transmission',
-      sector: 'Energy / Transmission',
-      primaryVector: 'Unverified privileged bastion log submission with mismatched checksum',
-      contributingSignals: ['NS-0031 Bastion Hash'],
-      priority: 'MEDIUM',
-      evidenceStrength: 'Moderate',
-      evidenceList: 'EVD-512',
-      method: 'Risk-Based'
-    },
-    {
-      id: 'CASE-0987',
-      cseId: 'CSE-007',
-      cseName: 'State Bank of Bharat',
-      sector: 'Banking / Core',
-      primaryVector: 'Telemetry gap on perimeter authentication switch during critical patching',
-      contributingSignals: ['CTRL-04 Perimeter Gap'],
-      priority: 'HIGH',
-      evidenceStrength: 'Moderate',
-      evidenceList: 'EVD-441',
-      method: 'Coverage-Based'
-    },
-    {
-      id: 'CASE-0912',
-      cseId: 'CSE-021',
-      cseName: 'Vanguard Telecom',
-      sector: 'Telecom / Backbone',
-      primaryVector: 'Root escalation failure reappearing post-Q1 remediation sign-off',
-      contributingSignals: ['Hist. Recurrence (3x)'],
-      priority: 'HIGH',
-      evidenceStrength: 'Strong',
-      evidenceList: 'EVD-311, EVD-320',
-      method: 'Recurrence-Based'
-    },
-    {
-      id: 'CASE-0844',
-      cseId: 'CSE-011',
-      cseName: 'TransRail Intermodal',
-      sector: 'Transport / Rail',
-      primaryVector: 'Extended containment lag (>4.2 hrs) without supervisor sign-off recorded',
-      contributingSignals: ['PD-0019 Delay'],
-      priority: 'MEDIUM',
-      evidenceStrength: 'Moderate',
-      evidenceList: 'EVD-214',
-      method: 'Risk-Based'
-    },
-    {
-      id: 'CASE-0792',
-      cseId: 'CSE-003',
-      cseName: 'Apex Lifesciences',
-      sector: 'Healthcare / Hospital',
-      primaryVector: 'Discrepancy between SIEM ingest timestamp and analyst manual docket',
-      contributingSignals: ['CNS-0012 Inconsistency'],
-      priority: 'MEDIUM',
-      evidenceStrength: 'Weak',
-      evidenceList: 'EVD-188',
-      method: 'Evidence-Based'
-    },
-    {
-      id: 'CASE-1052',
-      cseId: 'CSE-018',
-      cseName: 'HydroGrid Generation',
-      sector: 'Energy / Hydro',
-      primaryVector: 'Neutral control baseline validation check without flag triggers',
-      contributingSignals: ['Control Group Ref'],
-      priority: 'LOW',
-      evidenceStrength: 'Strong',
-      evidenceList: 'EVD-802, EVD-805',
-      method: 'Baseline'
-    }
-  ];
-
-  const filteredCases = sampleCases.filter(c => {
-    if (selectedCse !== 'ALL' && c.cseId !== selectedCse) return false;
-    if (priorityFilter !== 'ALL' && c.priority !== priorityFilter) return false;
-    if (methodFilter !== 'ALL' && c.method !== methodFilter) return false;
-    if (activeMethodWeight !== 'ALL' && c.method !== activeMethodWeight) return false;
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchId = c.id.toLowerCase().includes(q);
-      const matchCse = c.cseId.toLowerCase().includes(q);
-      const matchSector = c.sector.toLowerCase().includes(q);
-      const matchDesc = c.primaryVector.toLowerCase().includes(q);
-      if (!matchId && !matchCse && !matchSector && !matchDesc) return false;
-    }
-    return true;
-  });
-
-  const activeFocus = sampleCases.find(c => c.id === focusedCaseId) || sampleCases[0];
-
-  const handleToggleSelectAll = () => {
-    if (selectedCaseIds.length === filteredCases.length) {
-      setSelectedCaseIds([]);
-    } else {
-      setSelectedCaseIds(filteredCases.map(c => c.id));
+  // Helper: map methodology to human readable label
+  const getMethodLabel = (method: SamplingMethodology | string): string => {
+    switch (method) {
+      case 'RISK_BASED': return 'Risk-Based';
+      case 'EVIDENCE_BASED': return 'Evidence-Based';
+      case 'COVERAGE_BASED': return 'Coverage-Based';
+      case 'RECURRENCE_BASED': return 'Recurrence-Based';
+      case 'ANOMALY_BASED': return 'Anomaly-Based';
+      case 'PEER_BASED': return 'Peer-Based';
+      case 'BASELINE_RANDOM': return 'Baseline / Random';
+      default: return method;
     }
   };
 
-  const handleToggleCase = (id: string) => {
-    setSelectedCaseIds(prev => 
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-    );
-  };
-
-  const handleSelectTopFive = () => {
-    const top5 = sampleCases
-      .filter(c => c.priority === 'CRITICAL' || c.priority === 'HIGH')
-      .slice(0, 5)
-      .map(c => c.id);
-    setSelectedCaseIds(top5);
-    showToast('Selected top 5 high-priority supervisory candidates.');
-  };
-
-  const handleAddBatchToQueue = () => {
-    if (selectedCaseIds.length === 0) {
-      showToast('Please select at least one case to add to the examination set.');
-      return;
+  // Helper: map methodology to operational description
+  const getMethodDescription = (method: SamplingMethodology | string): string => {
+    switch (method) {
+      case 'RISK_BASED': 
+        return 'Priority for supervisory review due to high-urgency control discrepancies and execution breaches.';
+      case 'EVIDENCE_BASED': 
+        return 'Selected because evidence exhibits anomalies, conflicting hashes, or missing mandatory telemetry.';
+      case 'COVERAGE_BASED': 
+        return 'Selected to verify supervisory coverage of controls not recently examined in prior cycles.';
+      case 'RECURRENCE_BASED': 
+        return 'Selected due to repetitive control variances persisting across consecutive quarterly assessment cycles.';
+      case 'ANOMALY_BASED': 
+        return 'Selected because operational activity deviates significantly from established process duration benchmarks.';
+      case 'PEER_BASED': 
+        return 'Selected due to significant operational duration variance compared against the critical sector peer cohort.';
+      case 'BASELINE_RANDOM': 
+        return 'Normative control sample randomly drawn to provide a neutral operational baseline.';
+      default: return '';
     }
-    const newItems: QueuedExamination[] = [];
-    selectedCaseIds.forEach(id => {
-      if (!examinationQueue.some(q => q.caseId === id)) {
-        const c = sampleCases.find(item => item.id === id);
-        if (c) {
-          newItems.push({
-            caseId: c.id,
-            targetCse: `${c.cseId} (${c.sector.split('/')[0].trim()})`,
-            trigger: c.primaryVector,
-            assignedGroup: 'Examiner 07 (Air-gap Unit)',
-            status: 'Ready for Examination'
-          });
-        }
+  };
+
+  // Helper: map evidence strength to visual tier
+  const getEvidenceTier = (sample: RecommendedSample): 'Strong' | 'Moderate' | 'Partial' | 'Missing' => {
+    if (sample.evidenceStatus === 'NOT_SUBMITTED') return 'Missing';
+    if (sample.evidenceStrength === 'HIGH') return 'Strong';
+    if (sample.evidenceStrength === 'MEDIUM') return 'Moderate';
+    return 'Partial';
+  };
+
+  // Reset Filters
+  const resetFilters = () => {
+    setSearchTerm('');
+    setSelectedCse('ALL');
+    setSelectedPeriod('ALL');
+    setSelectedMethod('ALL');
+    setSelectedPriority('ALL');
+    setSelectedStatus('ALL');
+    setSelectedEvidence('ALL');
+    setCurrentPage(1);
+  };
+
+  // 1. Dynamic 4 Top Summary Cards (Derived from centralized samples data)
+  const summaryCounts = useMemo(() => {
+    const totalSamples = samples.length;
+    const highPriority = samples.filter(s => s.priority === 'CRITICAL' || s.priority === 'HIGH').length;
+    const evidenceBased = samples.filter(s => s.methodology === 'EVIDENCE_BASED').length;
+    const recurringOrAnomaly = samples.filter(s => s.methodology === 'RECURRENCE_BASED' || s.methodology === 'ANOMALY_BASED').length;
+
+    return {
+      totalSamples,
+      highPriority,
+      evidenceBased,
+      recurringOrAnomaly
+    };
+  }, [samples]);
+
+  // Method Distribution breakdown for horizontal pills
+  const methodCounts = useMemo(() => {
+    return {
+      RISK_BASED: samples.filter(s => s.methodology === 'RISK_BASED').length,
+      EVIDENCE_BASED: samples.filter(s => s.methodology === 'EVIDENCE_BASED').length,
+      COVERAGE_BASED: samples.filter(s => s.methodology === 'COVERAGE_BASED').length,
+      RECURRENCE_BASED: samples.filter(s => s.methodology === 'RECURRENCE_BASED').length,
+      ANOMALY_BASED: samples.filter(s => s.methodology === 'ANOMALY_BASED').length,
+      PEER_BASED: samples.filter(s => s.methodology === 'PEER_BASED').length,
+      BASELINE_RANDOM: samples.filter(s => s.methodology === 'BASELINE_RANDOM').length,
+    };
+  }, [samples]);
+
+  // 2. Multi-criteria Filter Logic
+  const filteredSamples = useMemo(() => {
+    return samples.filter((s) => {
+      // Search across Sample ID, Case ID, CSE ID, CSE Name, Control ID, Reason, Signals
+      if (searchTerm) {
+        const q = searchTerm.toLowerCase();
+        const matches = 
+          s.id.toLowerCase().includes(q) ||
+          s.caseId.toLowerCase().includes(q) ||
+          s.cseId.toLowerCase().includes(q) ||
+          s.cseName.toLowerCase().includes(q) ||
+          s.controlId.toLowerCase().includes(q) ||
+          s.samplingReason.toLowerCase().includes(q) ||
+          s.signals.some(sig => sig.toLowerCase().includes(q));
+        if (!matches) return false;
       }
+
+      // CSE Filter
+      if (selectedCse !== 'ALL' && s.cseId.toLowerCase() !== selectedCse.toLowerCase()) return false;
+
+      // Period Filter
+      if (selectedPeriod !== 'ALL' && s.assessmentPeriod && s.assessmentPeriod !== selectedPeriod) return false;
+
+      // Method Filter
+      if (selectedMethod !== 'ALL' && s.methodology !== selectedMethod) return false;
+
+      // Priority Filter
+      if (selectedPriority !== 'ALL' && s.priority !== selectedPriority) return false;
+
+      // Status Filter
+      if (selectedStatus !== 'ALL') {
+        const currentStatus = s.status || (s.selected ? 'SELECTED' : 'RECOMMENDED');
+        if (currentStatus !== selectedStatus) return false;
+      }
+
+      // Evidence Filter
+      if (selectedEvidence !== 'ALL') {
+        const tier = getEvidenceTier(s);
+        if (selectedEvidence.toUpperCase() !== tier.toUpperCase()) return false;
+      }
+
+      return true;
+    }).sort((a, b) => {
+      // Default Sort: Priority descending, then ID
+      const priorityOrder: Record<Priority, number> = {
+        CRITICAL: 4,
+        HIGH: 3,
+        MEDIUM: 2,
+        LOW: 1
+      };
+      const pDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
+      if (pDiff !== 0) return pDiff;
+      return a.id.localeCompare(b.id);
     });
-    setExaminationQueue([...examinationQueue, ...newItems]);
-    setSelectedCaseIds([]);
-    showToast(`Added ${newItems.length} cases to active supervisory examination queue.`);
+  }, [samples, searchTerm, selectedCse, selectedPeriod, selectedMethod, selectedPriority, selectedStatus, selectedEvidence]);
+
+  // Pagination Slice
+  const totalPages = Math.ceil(filteredSamples.length / pageSize) || 1;
+  const paginatedSamples = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredSamples.slice(start, start + pageSize);
+  }, [filteredSamples, currentPage]);
+
+  const handleSelectSample = (sample: RecommendedSample, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    toggleSampleSelection(sample.id);
+    const nextState = !sample.selected;
+    showToast(`${sample.id} (${sample.caseId}) ${nextState ? 'marked as SELECTED for examination' : 'returned to RECOMMENDED pool'}.`);
   };
 
-  const handleAddSingleToQueue = (caseId: string) => {
-    if (!examinationQueue.some(q => q.caseId === caseId)) {
-      const c = sampleCases.find(item => item.id === caseId);
-      if (c) {
-        setExaminationQueue([
-          ...examinationQueue,
-          {
-            caseId: c.id,
-            targetCse: `${c.cseId} (${c.sector.split('/')[0].trim()})`,
-            trigger: c.primaryVector,
-            assignedGroup: 'Examiner 07 (Air-gap Unit)',
-            status: 'Ready for Examination'
-          }
-        ]);
-        showToast(`Case ${caseId} added to active supervisory queue.`);
-      }
-    } else {
-      showToast(`Case ${caseId} is already in the examination set.`);
-    }
-  };
-
-  const handleRemoveQueue = (caseId: string) => {
-    setExaminationQueue(prev => prev.filter(q => q.caseId !== caseId));
-    showToast(`Case ${caseId} removed from examination queue.`);
+  const handleOpenFinding = (findingId: string) => {
+    setActiveFindingId(findingId);
+    navigate(`/review/${findingId}`);
   };
 
   return (
     <PageContainer>
-      
-      {/* TOP HEADER & BREADCRUMB */}
-      <div className="flex flex-col gap-sm mb-lg">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-xs font-code-sm text-code-sm text-on-surface-variant">
-            <span className="text-primary font-semibold">SAT-SA</span>
-            <span>/</span>
-            <span className="text-on-surface-variant">Supervision</span>
-            <span>/</span>
-            <span className="text-on-surface font-medium">Recommended Samples</span>
+      {/* ========================================================================= */}
+      {/* 1. PAGE HEADER (Section 5)                                                */}
+      {/* ========================================================================= */}
+      <PageHeader
+        title="Supervisory Sampling"
+        description="Recommended cases for focused supervisory examination."
+        badge={
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-mono text-[#93c5fd] bg-[#182335] px-2.5 py-0.5 rounded border border-[#263750] font-medium">
+              Cycle: Q3 2026 Active Assessment
+            </span>
+            <span className="text-[11px] font-mono text-[#7bdb80] bg-[#7bdb80]/10 px-2.5 py-0.5 rounded border border-[#7bdb80]/30 font-medium">
+              Risk & Evidence Prioritization Active
+            </span>
           </div>
-          <div className="flex items-center gap-xs text-outline font-code-sm text-code-sm">
-            <span className="material-symbols-outlined text-[14px] text-secondary">memory</span>
-            <span>ENGINE RUNTIME: BUILD 4.9.22-AIRGAP</span>
-          </div>
-        </div>
-
-        {/* Title and Toolbar row */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-md pt-xs">
-          <div>
-            <div className="flex items-center gap-sm">
-              <h1 className="font-headline-lg text-headline-lg text-on-surface tracking-tight font-bold">
-                Supervisory Sampling Engine
-              </h1>
-              <span className="px-sm py-[2px] rounded bg-primary-container text-on-primary-container font-label-caps text-label-caps uppercase tracking-wider font-semibold">
-                Live Pipeline
-              </span>
-            </div>
-            <p className="font-body-md text-body-md text-on-surface-variant max-w-3xl mt-xs">
-              Evidence-driven case selection engine for focused supervisory examination. Identifies high-leverage examination targets from operational dossiers across critical sector entities.
-            </p>
-          </div>
-
-          {/* Action buttons & Selector controls */}
-          <div className="flex flex-wrap items-center gap-xs">
-            <div className="bg-surface-container px-sm py-xs rounded flex items-center gap-xs border border-[#30363d]/40">
-              <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Period:</span>
-              <select 
-                className="bg-transparent font-code-sm text-code-sm text-on-surface focus:outline-none cursor-pointer"
-                value={selectedPeriod}
-                onChange={(e) => setSelectedPeriod(e.target.value)}
-              >
-                <option value="Q3-2026">Q3 2026</option>
-                <option value="Q2-2026">Q2 2026</option>
-                <option value="Q1-2026">Q1 2026</option>
-              </select>
-            </div>
-
-            <div className="bg-surface-container px-sm py-xs rounded flex items-center gap-xs border border-[#30363d]/40">
-              <span className="font-label-caps text-label-caps text-on-surface-variant uppercase">Target CSE:</span>
-              <select 
-                className="bg-transparent font-code-sm text-code-sm text-primary font-medium focus:outline-none cursor-pointer"
+        }
+        actions={
+          <div className="flex items-center gap-2">
+            {/* Quick CSE Filter */}
+            <div className="flex items-center gap-1.5 bg-[#111622] border border-[#212c3d] rounded-md px-2.5 py-1">
+              <Building2 className="w-3.5 h-3.5 text-[#64748b]" />
+              <select
                 value={selectedCse}
-                onChange={(e) => setSelectedCse(e.target.value)}
+                onChange={(e) => {
+                  setSelectedCse(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="bg-transparent text-[11px] font-mono text-[#cbd5e1] focus:outline-none cursor-pointer"
               >
-                <option value="ALL">All Monitored CSEs (6)</option>
-                <option value="CSE-014">CSE-014 (NorthGrid Energy)</option>
-                <option value="CSE-007">CSE-007 (Apex Banking)</option>
-                <option value="CSE-021">CSE-021 (Vanguard Telecom)</option>
-                <option value="CSE-011">CSE-011 (TransRail Intermodal)</option>
-                <option value="CSE-003">CSE-003 (Apex Lifesciences)</option>
-                <option value="CSE-018">CSE-018 (HydroGrid Generation)</option>
+                <option value="ALL" className="bg-[#111622] text-[#f1f5f9]">All CSEs Portfolio</option>
+                {cses.map(c => (
+                  <option key={c.cseId} value={c.cseId} className="bg-[#111622] text-[#f1f5f9]">
+                    {c.cseId} — {c.cseName.split(' ')[0]}
+                  </option>
+                ))}
               </select>
             </div>
 
-            <button 
-              className="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm text-body-sm transition-colors cursor-pointer border border-[#30363d]/40"
-              onClick={() => showToast('Sampling weights recalculated against latest telemetry batches.')}
+            <Button
+              variant="outline"
+              size="sm"
+              icon={<RotateCcw className="w-3 h-3 text-[#8c90a0]" />}
+              onClick={resetFilters}
+              className="text-[11px] font-mono"
             >
-              <span className="material-symbols-outlined text-[16px] text-primary">autorenew</span>
-              <span>Recalculate Samples</span>
-            </button>
+              Reset Filters
+            </Button>
+          </div>
+        }
+      />
 
-            <button 
-              className="flex items-center gap-xs px-md py-xs rounded bg-primary text-on-primary hover:bg-primary/90 font-body-sm text-body-sm font-semibold transition-colors shadow-sm cursor-pointer"
-              onClick={() => showToast('Exporting Official Supervisory Sampling Order (PDF)...')}
-            >
-              <span className="material-symbols-outlined text-[16px]">file_download</span>
-              <span>Export Mandate (PDF)</span>
-            </button>
+      {/* Dismissible Feedback Banner */}
+      {toastMessage && (
+        <div className="p-3 mb-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-[12px] font-mono text-emerald-300 animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>{toastMessage}</span>
           </div>
+          <button onClick={() => setToastMessage(null)} className="text-emerald-400 hover:text-emerald-200">
+            <X className="w-4 h-4" />
+          </button>
         </div>
+      )}
 
-        {/* Statutory supervisory banner */}
-        <div className="mt-xs p-sm bg-surface-container-low rounded flex items-start gap-sm border border-[#30363d]/60">
-          <span className="material-symbols-outlined text-tertiary text-[20px] shrink-0 mt-[1px]">shield_with_heart</span>
-          <div className="flex-1">
-            <span className="font-code-sm text-code-sm text-tertiary font-bold tracking-wide">
-              STATUTORY SUPERVISORY PROTOCOL // NCIIPC DIRECTIVE 2026-B:
-            </span>
-            <span className="font-body-sm text-body-sm text-on-surface-variant ml-xs">
-              Sampling recommendations prioritize operational cases for human examiner scrutiny based on observed evidentiary signals and non-reporting anomalies. Selection does not constitute an automatic regulatory sanction or confirmed operational breach.
-            </span>
-          </div>
-          <div className="shrink-0 flex items-center gap-xs font-code-sm text-code-sm text-secondary">
-            <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-            <span>MANDATE ACTIVE</span>
-          </div>
-        </div>
+      {/* ========================================================================= */}
+      {/* 2. TOP SUMMARY (Section 7: Exactly 4 Compact KPI Cards Matching Overview) */}
+      {/* ========================================================================= */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-4 min-w-0">
+        <KpiCard
+          title="Recommended Samples"
+          value={summaryCounts.totalSamples}
+          subtitle="Target Supervisory Selection"
+          semantic="blue"
+          icon={Layers}
+          onClick={() => setSelectedMethod('ALL')}
+        />
+        <KpiCard
+          title="High Priority"
+          value={summaryCounts.highPriority}
+          subtitle="SLA <24h Focus Cases"
+          semantic="red"
+          alert={true}
+          icon={AlertTriangle}
+          onClick={() => setSelectedPriority('HIGH')}
+        />
+        <KpiCard
+          title="Evidence-Based"
+          value={summaryCounts.evidenceBased}
+          subtitle="Telemetry Gaps & Anomalies"
+          semantic="amber"
+          icon={FileText}
+          onClick={() => setSelectedMethod('EVIDENCE_BASED')}
+        />
+        <KpiCard
+          title="Recurring / Anomaly"
+          value={summaryCounts.recurringOrAnomaly}
+          subtitle="Multi-cycle Regressions & Spikes"
+          semantic="green"
+          icon={Clock}
+          onClick={() => setSelectedMethod('RECURRENCE_BASED')}
+        />
       </div>
 
-      {/* SUMMARY METRICS STRIP */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-sm mb-lg">
-        {/* Card 1 */}
-        <div className="p-md rounded bg-surface-container-low flex flex-col justify-between border border-[#30363d]/60">
-          <div className="flex items-center justify-between mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Cases Analysed</span>
-            <span className="material-symbols-outlined text-outline text-[18px]">inventory_2</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md font-bold text-on-surface">100</span>
-            <span className="font-code-sm text-code-sm text-on-surface-variant">dossiers</span>
-          </div>
-          <div className="mt-xs pt-xs font-code-sm text-code-sm text-on-surface-variant flex items-center justify-between border-t border-[#30363d]/40">
-            <span>CSE-014 scope:</span>
-            <span className="text-primary font-semibold">12 cases</span>
-          </div>
-        </div>
-
-        {/* Card 2 */}
-        <div className="p-md rounded bg-surface-container-low flex flex-col justify-between border border-[#30363d]/60">
-          <div className="flex items-center justify-between mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Recommended</span>
-            <span className="material-symbols-outlined text-primary text-[18px]">fact_check</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md font-bold text-primary">20</span>
-            <span className="font-code-sm text-code-sm text-secondary font-medium">20.0% ratio</span>
-          </div>
-          <div className="mt-xs pt-xs font-code-sm text-code-sm text-on-surface-variant flex items-center justify-between border-t border-[#30363d]/40">
-            <span>CSE-014 scope:</span>
-            <span className="text-primary font-semibold">4 cases</span>
-          </div>
-        </div>
-
-        {/* Card 3 */}
-        <div className="p-md rounded bg-surface-container-low flex flex-col justify-between border border-[#30363d]/60">
-          <div className="flex items-center justify-between mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-error font-semibold">High / Critical</span>
-            <span className="material-symbols-outlined text-error text-[18px]">priority_high</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md font-bold text-error">8</span>
-            <span className="font-code-sm text-code-sm text-error/80">urgent queue</span>
-          </div>
-          <div className="mt-xs pt-xs font-code-sm text-code-sm text-on-surface-variant flex items-center justify-between border-t border-[#30363d]/40">
-            <span>CSE-014 Critical:</span>
-            <span className="text-error font-semibold">2 cases</span>
-          </div>
-        </div>
-
-        {/* Card 4 */}
-        <div className="p-md rounded bg-surface-container-low flex flex-col justify-between border border-[#30363d]/60">
-          <div className="flex items-center justify-between mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Evidence-Based</span>
-            <span className="material-symbols-outlined text-secondary text-[18px]">contract_edit</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md font-bold text-secondary">12</span>
-            <span className="font-code-sm text-code-sm text-on-surface-variant">neg space/gap</span>
-          </div>
-          <div className="mt-xs pt-xs font-code-sm text-code-sm text-on-surface-variant flex items-center justify-between border-t border-[#30363d]/40">
-            <span>Telemetry gaps:</span>
-            <span className="text-secondary font-semibold">7 triggers</span>
-          </div>
-        </div>
-
-        {/* Card 5 */}
-        <div className="p-md rounded bg-surface-container-low flex flex-col justify-between border border-[#30363d]/60">
-          <div className="flex items-center justify-between mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-tertiary font-semibold">Recurring Candidates</span>
-            <span className="material-symbols-outlined text-tertiary text-[18px]">history</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md font-bold text-tertiary">5</span>
-            <span className="font-code-sm text-code-sm text-tertiary-fixed-dim">persistence</span>
-          </div>
-          <div className="mt-xs pt-xs font-code-sm text-code-sm text-on-surface-variant flex items-center justify-between border-t border-[#30363d]/40">
-            <span>Multi-quarter:</span>
-            <span className="text-on-surface font-semibold">Q2 '25 - Q3 '26</span>
-          </div>
-        </div>
-
-        {/* Card 6 */}
-        <div className="p-md rounded bg-surface-container-low flex flex-col justify-between border border-[#30363d]/60">
-          <div className="flex items-center justify-between mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-on-surface-variant font-semibold">Selected for Review</span>
-            <span className="material-symbols-outlined text-primary text-[18px]">assignment_turned_in</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md font-bold text-primary">
-              {selectedCaseIds.length}
-            </span>
-            <span className="font-code-sm text-code-sm text-on-surface-variant">/ 20 queued</span>
-          </div>
-          <div className="mt-xs pt-xs font-code-sm text-code-sm text-on-surface-variant flex items-center justify-between border-t border-[#30363d]/40">
-            <span>Target Quota:</span>
-            <span className="text-on-surface font-semibold">5 cases</span>
-          </div>
-        </div>
-      </div>
-
-      {/* SAMPLING METHODOLOGY SELECTOR & HORIZONTAL ENGINE PIPELINE */}
-      <div className="p-md rounded bg-surface-container mb-lg flex flex-col gap-md border border-[#30363d]/60">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-sm">
-          <div className="flex items-center gap-xs">
-            <span className="material-symbols-outlined text-[18px] text-primary">tune</span>
-            <span className="font-label-caps text-label-caps uppercase font-bold text-on-surface tracking-wider">
-              Active Methodology Weights:
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-xs">
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm font-semibold flex items-center gap-xs transition-colors ${
-                activeMethodWeight === 'ALL' ? 'bg-primary-container text-on-primary-container' : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'
-              }`}
-              onClick={() => setActiveMethodWeight('ALL')}
-            >
-              <span>All Categories</span>
-              <span className="px-1 rounded bg-surface-container-lowest text-primary text-[10px]">20</span>
-            </button>
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm flex items-center gap-xs transition-colors ${
-                activeMethodWeight === 'Risk-Based' ? 'bg-primary-container text-on-primary-container font-semibold' : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'
-              }`}
-              onClick={() => setActiveMethodWeight('Risk-Based')}
-            >
-              <span>Risk-Based</span>
-              <span className="px-1 rounded bg-surface-container-lowest text-primary text-[10px]">8</span>
-            </button>
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm flex items-center gap-xs transition-colors ${
-                activeMethodWeight === 'Evidence-Based' ? 'bg-primary-container text-on-primary-container font-semibold' : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'
-              }`}
-              onClick={() => setActiveMethodWeight('Evidence-Based')}
-            >
-              <span>Evidence-Based</span>
-              <span className="px-1 rounded bg-surface-container-lowest text-on-surface-variant text-[10px]">4</span>
-            </button>
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm flex items-center gap-xs transition-colors ${
-                activeMethodWeight === 'Coverage-Based' ? 'bg-primary-container text-on-primary-container font-semibold' : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'
-              }`}
-              onClick={() => setActiveMethodWeight('Coverage-Based')}
-            >
-              <span>Coverage-Based</span>
-              <span className="px-1 rounded bg-surface-container-lowest text-on-surface-variant text-[10px]">3</span>
-            </button>
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm flex items-center gap-xs transition-colors ${
-                activeMethodWeight === 'Recurrence-Based' ? 'bg-primary-container text-on-primary-container font-semibold' : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'
-              }`}
-              onClick={() => setActiveMethodWeight('Recurrence-Based')}
-            >
-              <span>Recurrence-Based</span>
-              <span className="px-1 rounded bg-surface-container-lowest text-on-surface-variant text-[10px]">2</span>
-            </button>
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm flex items-center gap-xs transition-colors ${
-                activeMethodWeight === 'Anomaly-Based' ? 'bg-primary-container text-on-primary-container font-semibold' : 'bg-surface-container-high text-on-surface-variant hover:text-on-surface'
-              }`}
-              onClick={() => setActiveMethodWeight('Anomaly-Based')}
-            >
-              <span>Anomaly-Based</span>
-              <span className="px-1 rounded bg-surface-container-lowest text-on-surface-variant text-[10px]">1</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Visual Centerpiece: Sampling Pipeline Flow Diagram */}
-        <div className="p-sm rounded bg-surface-container-lowest overflow-x-auto border border-[#30363d]/40">
-          <div className="min-w-[900px] flex items-center justify-between gap-xs py-xs text-center font-code-sm text-code-sm">
-            <div className="flex-1 p-sm rounded bg-surface-container flex flex-col items-center">
-              <span className="text-outline text-[10px] tracking-wider uppercase font-semibold">STAGE 01</span>
-              <span className="text-on-surface font-bold mt-[2px]">Population Dossiers</span>
-              <div className="flex items-center gap-xs mt-xs text-on-surface-variant">
-                <span className="material-symbols-outlined text-[16px] text-primary">folder_open</span>
-                <span className="text-primary font-bold">100 Cases</span>
-              </div>
-              <span className="text-[10px] text-outline mt-xs">6 Supervised CSEs</span>
-            </div>
-            <span className="material-symbols-outlined text-outline text-[16px]">trending_flat</span>
-
-            <div className="flex-1 p-sm rounded bg-surface-container flex flex-col items-center">
-              <span className="text-outline text-[10px] tracking-wider uppercase font-semibold">STAGE 02</span>
-              <span className="text-on-surface font-bold mt-[2px]">Telemetry Ingest</span>
-              <div className="flex items-center gap-xs mt-xs text-on-surface-variant">
-                <span className="material-symbols-outlined text-[16px] text-secondary">input</span>
-                <span className="text-secondary font-bold">184 Evidence Files</span>
-              </div>
-              <span className="text-[10px] text-outline mt-xs">Hash Verified / Logs</span>
-            </div>
-            <span className="material-symbols-outlined text-outline text-[16px]">trending_flat</span>
-
-            <div className="flex-1 p-sm rounded bg-surface-container flex flex-col items-center">
-              <span className="text-outline text-[10px] tracking-wider uppercase font-semibold">STAGE 03</span>
-              <span className="text-on-surface font-bold mt-[2px]">Signal Fusion</span>
-              <div className="flex items-center gap-xs mt-xs text-tertiary">
-                <span className="material-symbols-outlined text-[16px]">hub</span>
-                <span className="font-bold">Gaps + Neg Space</span>
-              </div>
-              <span className="text-[10px] text-outline mt-xs">Recurrence Correlated</span>
-            </div>
-            <span className="material-symbols-outlined text-outline text-[16px]">trending_flat</span>
-
-            <div className="flex-1 p-sm rounded bg-surface-container flex flex-col items-center">
-              <span className="text-outline text-[10px] tracking-wider uppercase font-semibold">STAGE 04</span>
-              <span className="text-on-surface font-bold mt-[2px]">Multi-Vector Weights</span>
-              <div className="flex items-center gap-xs mt-xs text-on-surface">
-                <span className="material-symbols-outlined text-[16px] text-primary">scale</span>
-                <span className="font-bold">Risk Scoring</span>
-              </div>
-              <span className="text-[10px] text-outline mt-xs">Algorithmic Rank</span>
-            </div>
-            <span className="material-symbols-outlined text-outline text-[16px]">trending_flat</span>
-
-            <div className="flex-1 p-sm rounded bg-surface-container-high flex flex-col items-center border border-secondary/40">
-              <span className="text-secondary text-[10px] tracking-wider uppercase font-bold">STAGE 05</span>
-              <span className="text-on-surface font-bold mt-[2px]">Target Sample</span>
-              <div className="flex items-center gap-xs mt-xs text-secondary">
-                <span className="material-symbols-outlined text-[16px]">fact_check</span>
-                <span className="font-bold">20 Candidates</span>
-              </div>
-              <span className="text-[10px] text-on-surface-variant mt-xs">Ranked by Leverage</span>
-            </div>
-            <span className="material-symbols-outlined text-outline text-[16px]">trending_flat</span>
-
-            <div className="flex-1 p-sm rounded bg-surface-container flex flex-col items-center">
-              <span className="text-outline text-[10px] tracking-wider uppercase font-semibold">STAGE 06</span>
-              <span className="text-on-surface font-bold mt-[2px]">Supervisor Order</span>
-              <div className="flex items-center gap-xs mt-xs text-primary">
-                <span className="material-symbols-outlined text-[16px]">assignment_ind</span>
-                <span className="font-bold">{examinationQueue.length} Queued</span>
-              </div>
-              <span className="text-[10px] text-outline mt-xs">Air-Gap Examiner Set</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* SPLIT VIEW: RECOMMENDED SAMPLE TABLE & INTERACTIVE INSPECTION DRAWER */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-md mb-lg items-start">
+      {/* ========================================================================= */}
+      {/* 3. METHODOLOGY BREAKDOWN & FILTER BAR (Sections 10, 11, 17)                */}
+      {/* ========================================================================= */}
+      <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-3 mb-4">
         
-        {/* LEFT PANEL: RECOMMENDED SAMPLES TABLE (8 COLS) */}
-        <div className="lg:col-span-8 flex flex-col gap-sm">
-          {/* Search & Filters toolbar */}
-          <div className="p-sm rounded bg-surface-container flex flex-col md:flex-row items-stretch md:items-center justify-between gap-sm border border-[#30363d]/60">
-            <div className="flex-1 relative flex items-center">
-              <span className="material-symbols-outlined absolute left-sm text-outline text-[18px]">search</span>
-              <input 
-                type="text"
-                className="w-full bg-surface-container-lowest text-on-surface font-body-sm text-body-sm pl-9 pr-sm py-xs rounded focus:outline-none focus:ring-1 focus:ring-primary border border-[#30363d]/40"
-                placeholder="Search Case ID, CSE, Signal (e.g. CASE-1042, GAP-0071, Energy)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center gap-xs">
-              <select 
-                className="bg-surface-container-high px-sm py-xs rounded font-code-sm text-code-sm text-on-surface focus:outline-none cursor-pointer border border-[#30363d]/40"
-                value={priorityFilter}
-                onChange={(e) => setPriorityFilter(e.target.value)}
-              >
-                <option value="ALL">All Priorities</option>
-                <option value="CRITICAL">Critical Only</option>
-                <option value="HIGH">High Only</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="LOW">Low / Baseline</option>
-              </select>
-              <select 
-                className="bg-surface-container-high px-sm py-xs rounded font-code-sm text-code-sm text-on-surface focus:outline-none cursor-pointer border border-[#30363d]/40"
-                value={methodFilter}
-                onChange={(e) => setMethodFilter(e.target.value)}
-              >
-                <option value="ALL">All Methods</option>
-                <option value="Risk-Based">Risk-Based</option>
-                <option value="Evidence-Based">Evidence-Based</option>
-                <option value="Anomaly-Based">Anomaly-Based</option>
-                <option value="Coverage-Based">Coverage-Based</option>
-                <option value="Recurrence-Based">Recurrence-Based</option>
-                <option value="Baseline">Baseline Group</option>
-              </select>
-            </div>
+        {/* Methodologies Pill Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-[#212c3d] text-[11px] font-mono">
+          <div className="flex items-center gap-1.5 text-[#94a3b8] uppercase">
+            <Sparkles className="w-3.5 h-3.5 text-[#60a5fa]" />
+            <span>Sampling Methodologies:</span>
           </div>
 
-          {/* Batch Action Bar */}
-          <div className="p-xs px-sm rounded bg-surface-container-low flex items-center justify-between border border-[#30363d]/40">
-            <div className="flex items-center gap-sm">
-              <span className="font-code-sm text-code-sm text-on-surface-variant font-medium">
-                Active Selections: <strong className="text-primary font-bold">{selectedCaseIds.length}</strong> cases
-              </span>
-              <span className="text-outline-variant">|</span>
-              <button 
-                className="font-code-sm text-code-sm text-primary hover:underline cursor-pointer"
-                onClick={handleSelectTopFive}
+          <div className="flex flex-wrap items-center gap-1.5">
+            {[
+              { id: 'ALL', label: 'All Methods', count: summaryCounts.totalSamples },
+              { id: 'RISK_BASED', label: 'Risk-Based', count: methodCounts.RISK_BASED },
+              { id: 'EVIDENCE_BASED', label: 'Evidence-Based', count: methodCounts.EVIDENCE_BASED },
+              { id: 'COVERAGE_BASED', label: 'Coverage-Based', count: methodCounts.COVERAGE_BASED },
+              { id: 'RECURRENCE_BASED', label: 'Recurrence-Based', count: methodCounts.RECURRENCE_BASED },
+              { id: 'ANOMALY_BASED', label: 'Anomaly-Based', count: methodCounts.ANOMALY_BASED },
+              { id: 'PEER_BASED', label: 'Peer-Based', count: methodCounts.PEER_BASED },
+              { id: 'BASELINE_RANDOM', label: 'Baseline', count: methodCounts.BASELINE_RANDOM },
+            ].map((m) => (
+              <button
+                key={m.id}
+                onClick={() => {
+                  setSelectedMethod(m.id);
+                  setCurrentPage(1);
+                }}
+                className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors flex items-center gap-1 ${
+                  selectedMethod === m.id
+                    ? 'bg-[#1d4ed8] text-white font-bold'
+                    : 'bg-[#161e29] text-[#94a3b8] hover:text-[#f1f5f9] border border-[#212c3d]'
+                }`}
               >
-                + Select Top 5 High Priority
+                <span>{m.label}</span>
+                <span className={`px-1 rounded text-[9px] ${selectedMethod === m.id ? 'bg-black/30 text-white' : 'bg-[#111622] text-[#64748b]'}`}>
+                  {m.count}
+                </span>
               </button>
-              <span className="text-outline-variant">|</span>
-              <button 
-                className="font-code-sm text-code-sm text-on-surface-variant hover:text-on-surface cursor-pointer"
-                onClick={() => setSelectedCaseIds([])}
-              >
-                Clear Selection
-              </button>
-            </div>
-            <button 
-              className="px-sm py-[4px] rounded bg-primary text-on-primary font-body-sm text-body-sm font-semibold flex items-center gap-xs hover:bg-primary/90 transition-colors cursor-pointer"
-              onClick={handleAddBatchToQueue}
-            >
-              <span className="material-symbols-outlined text-[16px]">playlist_add</span>
-              <span>Add to Examination Set</span>
-            </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Filter Inputs Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
+          {/* Search Input */}
+          <div className="lg:col-span-2">
+            <Input
+              icon={<Search className="w-4 h-4 text-[#64748b]" />}
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Search Sample ID, Case, CSE, Reason..."
+              sizeVariant="sm"
+            />
           </div>
 
-          {/* Data Table */}
-          <div className="rounded bg-surface-container-lowest overflow-x-auto shadow-sm border border-[#30363d]/60">
-            <table className="w-full text-left font-body-sm text-body-sm border-collapse">
-              <thead>
-                <tr className="bg-surface-container-high font-label-caps text-label-caps uppercase text-on-surface-variant">
-                  <th className="p-sm w-10 text-center">
-                    <input 
-                      type="checkbox"
-                      className="rounded bg-surface-container text-primary cursor-pointer"
-                      checked={selectedCaseIds.length > 0 && selectedCaseIds.length === filteredCases.length}
-                      onChange={handleToggleSelectAll}
-                    />
-                  </th>
-                  <th className="p-sm">Case ID</th>
-                  <th className="p-sm">CSE &amp; Sector</th>
-                  <th className="p-sm">Primary Selection Vector</th>
-                  <th className="p-sm">Contributing Signals</th>
-                  <th className="p-sm">Priority</th>
-                  <th className="p-sm">Evidence</th>
-                  <th className="p-sm">Method</th>
-                  <th className="p-sm text-right">Inspect</th>
+          {/* CSE Selector */}
+          <Select
+            sizeVariant="sm"
+            value={selectedCse}
+            onChange={(e) => {
+              setSelectedCse(e.target.value);
+              setCurrentPage(1);
+            }}
+            options={[
+              { value: 'ALL', label: 'All CSEs' },
+              ...cses.map(c => ({ value: c.cseId, label: `${c.cseId} — ${c.cseName}` }))
+            ]}
+          />
+
+          {/* Priority Selector */}
+          <Select
+            sizeVariant="sm"
+            value={selectedPriority}
+            onChange={(e) => {
+              setSelectedPriority(e.target.value);
+              setCurrentPage(1);
+            }}
+            options={[
+              { value: 'ALL', label: 'All Priorities' },
+              { value: 'CRITICAL', label: 'Critical' },
+              { value: 'HIGH', label: 'High' },
+              { value: 'MEDIUM', label: 'Medium' },
+              { value: 'LOW', label: 'Low' }
+            ]}
+          />
+
+          {/* Evidence Selector */}
+          <Select
+            sizeVariant="sm"
+            value={selectedEvidence}
+            onChange={(e) => {
+              setSelectedEvidence(e.target.value);
+              setCurrentPage(1);
+            }}
+            options={[
+              { value: 'ALL', label: 'All Evidence' },
+              { value: 'STRONG', label: 'Strong Evidence' },
+              { value: 'MODERATE', label: 'Moderate Evidence' },
+              { value: 'PARTIAL', label: 'Partial Evidence' },
+              { value: 'MISSING', label: 'Missing Evidence' }
+            ]}
+          />
+
+          {/* Status Selector */}
+          <Select
+            sizeVariant="sm"
+            value={selectedStatus}
+            onChange={(e) => {
+              setSelectedStatus(e.target.value);
+              setCurrentPage(1);
+            }}
+            options={[
+              { value: 'ALL', label: 'All Statuses' },
+              { value: 'RECOMMENDED', label: 'Recommended' },
+              { value: 'SELECTED', label: 'Selected' },
+              { value: 'IN_REVIEW', label: 'In Review' },
+              { value: 'REVIEWED', label: 'Reviewed' }
+            ]}
+          />
+        </div>
+
+        {/* Results Counter */}
+        <div className="flex items-center justify-between text-[11px] font-mono text-[#8c90a0] pt-1">
+          <div>
+            Filtered Samples: <strong className="text-[#f1f5f9]">{filteredSamples.length}</strong> of {samples.length}
+          </div>
+          <div>
+            Selected for Examination: <strong className="text-[#10b981]">{samples.filter(s => s.selected).length}</strong>
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 4. MAIN SAMPLING TABLE (Sections 8, 9, 12, 13, 14, 15, 16, 20)           */}
+      {/* ========================================================================= */}
+      <Card className="p-0 overflow-hidden">
+        {filteredSamples.length > 0 ? (
+          <div className="overflow-x-auto min-w-0">
+            <table className="w-full text-left text-[12px] text-[#dfe2eb]">
+              <thead className="bg-[#111722] text-[#8c90a0] font-mono uppercase text-[10px] border-b border-[#212c3d]">
+                <tr>
+                  <th className="py-3 px-3.5 w-10 text-center">Sel</th>
+                  <th className="py-3 px-3.5">Sample / Case</th>
+                  <th className="py-3 px-3.5">CSE / Sector</th>
+                  <th className="py-3 px-3.5">Methodology</th>
+                  <th className="py-3 px-3.5">Primary Sampling Reason</th>
+                  <th className="py-3 px-3.5">Supporting Signals</th>
+                  <th className="py-3 px-3.5">Priority</th>
+                  <th className="py-3 px-3.5">Evidence</th>
+                  <th className="py-3 px-3.5">Status</th>
+                  <th className="py-3 px-3.5 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="font-code-sm text-code-sm divide-y divide-[#30363d]/30 text-on-surface">
-                {filteredCases.map(c => {
-                  const isFocused = c.id === focusedCaseId;
-                  const isChecked = selectedCaseIds.includes(c.id);
+              <tbody className="divide-y divide-[#212c3d]/60 bg-[#0e131b]">
+                {paginatedSamples.map((sample) => {
+                  const evTier = getEvidenceTier(sample);
+                  const isSelected = sample.selected;
+
                   return (
                     <tr 
-                      key={c.id}
-                      className={`hover:bg-surface-container transition-colors cursor-pointer ${
-                        isFocused ? 'bg-surface-container/80 border-l-2 border-primary' : ''
+                      key={sample.id} 
+                      className={`hover:bg-[#111722] transition-colors group cursor-pointer ${
+                        isSelected ? 'bg-[#182335]/30' : ''
                       }`}
-                      onClick={() => setFocusedCaseId(c.id)}
+                      onClick={() => setInspectedSample(sample)}
                     >
-                      <td className="p-sm text-center" onClick={(e) => e.stopPropagation()}>
-                        <input 
-                          type="checkbox"
-                          className="rounded bg-surface-container cursor-pointer"
-                          checked={isChecked}
-                          onChange={() => handleToggleCase(c.id)}
-                        />
+                      {/* Checkbox Column */}
+                      <td 
+                        className="py-3 px-3 text-center whitespace-nowrap"
+                        onClick={(e) => handleSelectSample(sample, e)}
+                      >
+                        <button
+                          type="button"
+                          className={`w-4 h-4 rounded flex items-center justify-center transition-colors border ${
+                            isSelected 
+                              ? 'bg-[#10b981] border-[#10b981] text-black font-bold' 
+                              : 'bg-[#111622] border-[#3b414d] text-transparent hover:border-[#60a5fa]'
+                          }`}
+                        >
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </button>
                       </td>
-                      <td className="p-sm font-bold text-primary flex items-center gap-xs">
-                        <span>{c.id}</span>
-                        {c.priority === 'CRITICAL' && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
-                        )}
+
+                      {/* 1. Sample & Case ID */}
+                      <td className="py-3 px-3.5 whitespace-nowrap">
+                        <div className="font-mono font-bold text-[#60a5fa] group-hover:underline">
+                          {sample.id}
+                        </div>
+                        <div className="text-[10px] text-[#64748b] font-mono mt-0.5">
+                          {sample.caseId} · {sample.controlId}
+                        </div>
                       </td>
-                      <td className="p-sm">
-                        <div className="text-on-surface font-semibold">{c.cseId}</div>
-                        <div className="text-[10px] text-outline uppercase font-label-caps">{c.sector}</div>
+
+                      {/* 2. CSE */}
+                      <td 
+                        className="py-3 px-3.5 whitespace-nowrap"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveCseId(sample.cseId);
+                          navigate(`/supervision/cses/${sample.cseId}`);
+                        }}
+                      >
+                        <div className="font-semibold text-[#f1f5f9] hover:text-[#60a5fa] flex items-center gap-1">
+                          <span>{sample.cseId}</span>
+                          <ExternalLink className="w-3 h-3 text-[#64748b]" />
+                        </div>
+                        <div className="text-[10px] text-[#8c90a0] truncate max-w-[130px]">
+                          {sample.cseName}
+                        </div>
                       </td>
-                      <td className="p-sm font-body-sm text-body-sm text-on-surface max-w-[190px]">
-                        <span className="line-clamp-2">{c.primaryVector}</span>
+
+                      {/* 3. Methodology */}
+                      <td className="py-3 px-3.5 whitespace-nowrap">
+                        <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-semibold bg-[#182335] text-[#93c5fd] border border-[#263750]">
+                          {getMethodLabel(sample.methodology)}
+                        </span>
                       </td>
-                      <td className="p-sm">
-                        <div className="flex flex-col gap-[2px]">
-                          {c.contributingSignals.map((sig, idx) => (
-                            <span key={idx} className="px-xs py-[2px] rounded bg-surface-container-high text-[10px] w-fit font-medium">
+
+                      {/* 4. Reason */}
+                      <td className="py-3 px-3.5 max-w-[280px]">
+                        <p className="text-[11px] text-[#cbd5e1] leading-snug line-clamp-2">
+                          {sample.samplingReason}
+                        </p>
+                      </td>
+
+                      {/* 5. Supporting Signals */}
+                      <td className="py-3 px-3.5 max-w-[180px]">
+                        <div className="flex flex-wrap gap-1">
+                          {sample.signals.slice(0, 2).map((sig, idx) => (
+                            <span 
+                              key={idx} 
+                              className="px-1.5 py-0.2 rounded font-mono text-[9px] bg-[#161e29] text-[#ffb693] border border-[#212c3d] truncate max-w-[120px]"
+                            >
                               {sig}
                             </span>
                           ))}
+                          {sample.signals.length > 2 && (
+                            <span className="px-1 rounded font-mono text-[9px] bg-[#161e29] text-[#8c90a0]">
+                              +{sample.signals.length - 2}
+                            </span>
+                          )}
                         </div>
                       </td>
-                      <td className="p-sm">
-                        {c.priority === 'CRITICAL' && (
-                          <span className="px-sm py-[2px] rounded bg-error text-on-error font-label-caps text-label-caps font-bold">CRITICAL</span>
-                        )}
-                        {c.priority === 'HIGH' && (
-                          <span className="px-sm py-[2px] rounded bg-error-container text-on-error-container font-label-caps text-label-caps font-bold">HIGH</span>
-                        )}
-                        {c.priority === 'MEDIUM' && (
-                          <span className="px-sm py-[2px] rounded bg-surface-container-high text-tertiary font-label-caps text-label-caps font-semibold">MEDIUM</span>
-                        )}
-                        {c.priority === 'LOW' && (
-                          <span className="px-sm py-[2px] rounded bg-surface-container-high text-secondary font-label-caps text-label-caps font-semibold">LOW</span>
-                        )}
+
+                      {/* 6. Priority */}
+                      <td className="py-3 px-3.5 whitespace-nowrap">
+                        <PriorityBadge priority={sample.priority} />
                       </td>
-                      <td className="p-sm">
-                        <span className={c.evidenceStrength === 'Strong' ? 'text-secondary font-semibold' : 'text-on-surface font-medium'}>
-                          {c.evidenceStrength}
+
+                      {/* 7. Evidence */}
+                      <td className="py-3 px-3.5 whitespace-nowrap">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold border ${
+                          evTier === 'Strong'
+                            ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
+                            : evTier === 'Moderate'
+                            ? 'bg-blue-500/10 text-blue-300 border-blue-500/30'
+                            : evTier === 'Partial'
+                            ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                            : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
+                        }`}>
+                          {evTier}
                         </span>
-                        <div className="text-[10px] text-outline">{c.evidenceList}</div>
                       </td>
-                      <td className="p-sm text-on-surface-variant font-label-caps text-label-caps">{c.method}</td>
-                      <td className="p-sm text-right">
-                        <button 
-                          className="px-sm py-[2px] rounded bg-surface-container-high hover:bg-primary hover:text-on-primary text-primary transition-colors text-xs font-semibold cursor-pointer"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setFocusedCaseId(c.id);
-                          }}
-                        >
-                          Focus
-                        </button>
+
+                      {/* 8. Status */}
+                      <td className="py-3 px-3.5 whitespace-nowrap">
+                        <StatusBadge status={sample.status || (isSelected ? 'SELECTED' : 'RECOMMENDED')} />
+                      </td>
+
+                      {/* 9. Action */}
+                      <td 
+                        className="py-3 px-3.5 text-right whitespace-nowrap"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="flex items-center justify-end gap-1.5">
+                          {/* Selection Button */}
+                          <button
+                            type="button"
+                            onClick={(e) => handleSelectSample(sample, e)}
+                            className={`px-2 py-1 rounded text-[10px] font-mono font-semibold transition-colors border ${
+                              isSelected 
+                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30' 
+                                : 'bg-[#161e29] text-[#cbd5e1] border-[#212c3d] hover:bg-[#212c3d]'
+                            }`}
+                          >
+                            {isSelected ? 'Selected' : 'Select'}
+                          </button>
+
+                          {/* Quick Inspect Drawer Button */}
+                          <button
+                            type="button"
+                            onClick={() => setInspectedSample(sample)}
+                            className="p-1.5 rounded bg-[#161e29] border border-[#212c3d] text-[#8c90a0] hover:text-[#f1f5f9] transition-colors"
+                            title="Inspect Sample Context"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+
+                          {/* Review Finding Button */}
+                          <Button
+                            size="sm"
+                            variant="primary"
+                            iconRight={<ArrowRight className="w-3 h-3" />}
+                            onClick={() => {
+                              if (sample.relatedFindingId) {
+                                handleOpenFinding(sample.relatedFindingId);
+                              } else {
+                                navigate(`/review?cseId=${sample.cseId}`);
+                              }
+                            }}
+                            className="text-[10px] font-mono py-1 px-2 bg-[#1d4ed8] hover:bg-[#2563eb]"
+                          >
+                            Review →
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -787,220 +649,202 @@ export const SamplingPage: React.FC = () => {
               </tbody>
             </table>
           </div>
-        </div>
-
-        {/* RIGHT PANEL: ACTIVE INSPECTION DRAWER (4 COLS) */}
-        <div className="lg:col-span-4 flex flex-col gap-sm">
-          <div className="p-md rounded bg-surface-container shadow-md flex flex-col gap-md border border-[#30363d]/60">
-            {/* Drawer Header */}
-            <div className="flex flex-col gap-xs pb-sm bg-surface-container-high p-sm rounded border border-[#30363d]/40">
-              <div className="flex items-center justify-between">
-                <span className="font-code-sm text-code-sm text-outline font-semibold">CASE INSPECTION DOSSIER</span>
-                <span className={`px-sm py-[2px] rounded font-label-caps text-label-caps font-bold ${
-                  activeFocus.priority === 'CRITICAL' ? 'bg-error text-on-error' : 'bg-error-container text-on-error-container'
-                }`}>
-                  {activeFocus.priority} PRIORITY
-                </span>
-              </div>
-              <div className="flex items-baseline justify-between mt-xs">
-                <div className="font-headline-sm text-headline-sm font-bold text-primary">{activeFocus.id}</div>
-                <span className="font-code-sm text-code-sm text-secondary font-semibold">Method: {activeFocus.method}</span>
-              </div>
-              <div className="font-body-sm text-body-sm text-on-surface font-medium flex items-center justify-between">
-                <span>{activeFocus.cseName}</span>
-                <span className="font-code-sm text-code-sm text-on-surface-variant">{activeFocus.cseId} ({activeFocus.sector.split('/')[0].trim()})</span>
-              </div>
-            </div>
-
-            {/* Explainability Engine: Why Selected */}
-            <div className="flex flex-col gap-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-label-caps text-label-caps uppercase text-primary font-bold tracking-wider">Explainability Engine</span>
-                <span className="font-code-sm text-code-sm text-secondary">Confidence: 94.8%</span>
-              </div>
-              <div className="p-sm rounded bg-surface-container-low flex flex-col gap-xs border border-[#30363d]/40">
-                <div className="flex items-center gap-xs text-error font-code-sm text-code-sm font-bold">
-                  <span className="material-symbols-outlined text-[16px]">priority_high</span>
-                  <span>Primary Signal: Execution Gap (GAP-0071)</span>
-                </div>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">
-                  Statutory 6-hour escalation step was completely bypassed during active ICS telecommunication alert triage.
-                </p>
-              </div>
-              <div className="p-sm rounded bg-surface-container-low flex flex-col gap-xs border border-[#30363d]/40">
-                <div className="flex items-center gap-xs text-tertiary font-code-sm text-code-sm font-bold">
-                  <span className="material-symbols-outlined text-[16px]">radar</span>
-                  <span>Negative Space: NS-0041</span>
-                </div>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">
-                  Expected telemetry artefact <code className="font-code-sm text-code-sm text-primary">ESC-221</code> (NCIIPC statutory dispatch record) was never generated or lodged.
-                </p>
-              </div>
-              <div className="p-sm rounded bg-surface-container-low flex flex-col gap-xs border border-[#30363d]/40">
-                <div className="flex items-center gap-xs text-on-surface font-code-sm text-code-sm font-bold">
-                  <span className="material-symbols-outlined text-[16px] text-tertiary">history_toggle_off</span>
-                  <span>Historical Recurrence: Persistence Factor</span>
-                </div>
-                <p className="font-body-sm text-body-sm text-on-surface-variant">
-                  Identical escalation omission previously observed in Q2 2025 and Q4 2025 audits for substation control nodes.
-                </p>
-              </div>
-            </div>
-
-            {/* Associated Evidence Docket */}
-            <div className="flex flex-col gap-xs">
-              <span className="font-label-caps text-label-caps uppercase text-on-surface-variant font-bold tracking-wider">Associated Evidence Docket</span>
-              <div className="p-sm rounded bg-surface-container-lowest font-code-sm text-code-sm flex flex-col gap-[6px] border border-[#30363d]/40">
-                <div className="flex items-center justify-between">
-                  <span className="text-outline">Alert Trigger:</span>
-                  <span className="text-on-surface font-semibold">ALR-8821 (SCADA telemetry drop)</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-outline">Investigation Ticket:</span>
-                  <span className="text-primary font-semibold">INV-338 (Present)</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-outline">Evidence Hashes:</span>
-                  <span className="text-secondary">EVD-742, EVD-761 (SHA-256 match)</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-outline">Escalation Receipt:</span>
-                  <span className="text-error font-bold">ESC-221 (MISSING - Negative Space)</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Recommended Examiner Protocols */}
-            <div className="flex flex-col gap-xs">
-              <span className="font-label-caps text-label-caps uppercase text-primary font-bold tracking-wider">Recommended Examiner Protocols</span>
-              <ol className="list-decimal list-inside font-body-sm text-body-sm text-on-surface space-y-xs">
-                <li>Reconstruct analyst investigation timeline between <span className="font-code-sm text-code-sm text-secondary">09:14 UTC</span> and <span className="font-code-sm text-code-sm text-secondary">10:18 UTC</span>.</li>
-                <li>Issue formal statutory evidence demand for <span className="font-code-sm text-code-sm text-primary">ESC-221</span> cryptographically timestamped gateway logs.</li>
-                <li>Reconcile against open regulatory finding <Link to="/findings/FND-0142" className="text-primary underline font-code-sm text-code-sm">FND-0142</Link>.</li>
-              </ol>
-            </div>
-
-            {/* Human Decision Controls */}
-            <div className="flex flex-col gap-xs pt-xs">
-              <button 
-                className="w-full py-xs px-sm rounded bg-primary text-on-primary hover:bg-primary/90 font-body-sm text-body-sm font-semibold flex items-center justify-center gap-xs transition-colors shadow-sm cursor-pointer"
-                onClick={() => handleAddSingleToQueue(activeFocus.id)}
+        ) : (
+          /* Empty State (Section 46) */
+          <div className="p-8 text-center space-y-2.5">
+            <CheckCircle2 className="w-8 h-8 text-[#10b981] mx-auto" />
+            <h3 className="text-[14px] font-bold text-[#f1f5f9]">
+              No recommended samples for the selected filters.
+            </h3>
+            <p className="text-[11px] text-[#8c90a0] max-w-sm mx-auto font-mono">
+              Adjust your search keywords, sampling methodology, priority, or entity filter to view candidates.
+            </p>
+            <div className="pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetFilters}
+                className="text-[11px] font-mono"
               >
-                <span className="material-symbols-outlined text-[16px]">add_task</span>
-                <span>+ Add {activeFocus.id} to Examination Set</span>
-              </button>
-              <div className="grid grid-cols-2 gap-xs">
-                <Link 
-                  to="/findings/FND-0142" 
-                  className="py-xs px-sm rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm text-body-sm text-center flex items-center justify-center gap-xs transition-colors border border-[#30363d]/40"
-                >
-                  <span className="material-symbols-outlined text-[16px] text-tertiary">open_in_new</span>
-                  <span>Open FND-0142</span>
-                </Link>
-                <Link 
-                  to="/evidence" 
-                  className="py-xs px-sm rounded bg-surface-container-high hover:bg-surface-bright text-on-surface font-body-sm text-body-sm text-center flex items-center justify-center gap-xs transition-colors border border-[#30363d]/40"
-                >
-                  <span className="material-symbols-outlined text-[16px] text-secondary">folder_special</span>
-                  <span>View Dossier</span>
-                </Link>
-              </div>
-              <button 
-                className="w-full py-xs px-sm rounded bg-surface-container-low hover:bg-surface-container-high text-outline hover:text-on-surface font-code-sm text-code-sm flex items-center justify-center gap-xs transition-colors cursor-pointer border border-[#30363d]/40"
-                onClick={() => showToast(`Flagged operational exemption caveat for ${activeFocus.id}.`)}
-              >
-                <span className="material-symbols-outlined text-[14px]">flag</span>
-                <span>Flag Operational Exemption</span>
-              </button>
+                Reset All Filters
+              </Button>
             </div>
           </div>
-        </div>
+        )}
 
-      </div>
-
-      {/* ACTIVE EXAMINATION SET (Supervisory Queue Builder) */}
-      <div className="p-md rounded bg-surface-container mb-lg flex flex-col gap-md border border-[#30363d]/60">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-sm">
-          <div className="flex items-center gap-sm">
-            <div className="w-7 h-7 rounded bg-primary-container flex items-center justify-center">
-              <span className="material-symbols-outlined text-[18px] text-on-primary-container">rule</span>
-            </div>
+        {/* Pagination Bar */}
+        {filteredSamples.length > 0 && (
+          <div className="p-3 bg-[#111722] border-t border-[#212c3d] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-[#8c90a0]">
             <div>
-              <h2 className="font-headline-sm text-headline-sm font-bold text-on-surface">Active Supervisory Examination Set</h2>
-              <p className="font-body-sm text-body-sm text-on-surface-variant">
-                Examiner dispatch order queue ready for statutory subpoena or targeted on-site verification.
+              Showing {Math.min((currentPage - 1) * pageSize + 1, filteredSamples.length)}–
+              {Math.min(currentPage * pageSize, filteredSamples.length)} of {filteredSamples.length} recommended samples
+            </div>
+            <div className="flex items-center gap-1.5 self-end sm:self-auto">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={currentPage <= 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                className="text-[10px] py-0.5 px-2"
+              >
+                Previous
+              </Button>
+              <span className="px-2 text-[#cbd5e1]">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={currentPage >= totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                className="text-[10px] py-0.5 px-2"
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
+      </Card>
+
+      {/* ========================================================================= */}
+      {/* 5. SAMPLE DETAIL DRAWER (Section 21)                                      */}
+      {/* ========================================================================= */}
+      <Drawer
+        isOpen={Boolean(inspectedSample)}
+        onClose={() => setInspectedSample(null)}
+        title={inspectedSample ? `${inspectedSample.id} (${inspectedSample.caseId})` : ''}
+        subtitle="Supervisory Sampling Rationale & Case Inspector"
+        width="md"
+      >
+        {inspectedSample && (
+          <div className="space-y-4 text-[12px]">
+            {/* Header Badges */}
+            <div className="flex flex-wrap items-center gap-2">
+              <PriorityBadge priority={inspectedSample.priority} />
+              <StatusBadge status={inspectedSample.status || (inspectedSample.selected ? 'SELECTED' : 'RECOMMENDED')} />
+              <span className="px-2 py-0.5 rounded bg-[#182335] text-[#93c5fd] font-mono text-[10px] border border-[#263750] uppercase font-bold">
+                {getMethodLabel(inspectedSample.methodology)}
+              </span>
+              <span className="px-2 py-0.5 rounded bg-[#161e29] text-[#cbd5e1] font-mono text-[10px] border border-[#212c3d]">
+                Control: {inspectedSample.controlId}
+              </span>
+            </div>
+
+            {/* Why Selected? Section (Section 12 & 35) */}
+            <div className="p-3.5 rounded bg-[#0e131b] border border-[#212c3d] space-y-1.5">
+              <div className="text-[11px] font-mono uppercase text-[#60a5fa] font-bold flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Why Was This Case Selected?</span>
+              </div>
+              <p className="text-[12px] text-[#f1f5f9] leading-relaxed">
+                "{inspectedSample.samplingReason}"
               </p>
+              <div className="text-[11px] text-[#8c90a0] leading-snug pt-1 border-t border-[#212c3d]/60 mt-1">
+                <strong>Method Rationale: </strong>
+                {getMethodDescription(inspectedSample.methodology)}
+              </div>
+            </div>
+
+            {/* Supporting Signals (Section 13) */}
+            <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] space-y-2">
+              <div className="text-[10px] font-mono uppercase text-[#64748b]">Supporting Supervisory Signals:</div>
+              <div className="flex flex-wrap gap-1.5">
+                {inspectedSample.signals.map((sig, idx) => (
+                  <span
+                    key={idx}
+                    className="px-2 py-0.5 rounded font-mono text-[11px] bg-[#161e29] text-[#ffb693] border border-[#212c3d]"
+                  >
+                    {sig}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Target CSE & Telemetry Details */}
+            <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] space-y-1.5 font-mono text-[11px]">
+              <div className="flex justify-between">
+                <span className="text-[#64748b]">Target Entity:</span>
+                <span className="text-[#f1f5f9] font-bold">{inspectedSample.cseId} — {inspectedSample.cseName}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#64748b]">Evidence Status:</span>
+                <span className="text-[#10b981] font-bold">{getEvidenceTier(inspectedSample)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[#64748b]">Assessment Period:</span>
+                <span className="text-[#cbd5e1]">{inspectedSample.assessmentPeriod || 'Q3 2026'}</span>
+              </div>
+              {inspectedSample.relatedFindingId && (
+                <div className="flex justify-between">
+                  <span className="text-[#64748b]">Related Finding:</span>
+                  <span className="text-[#60a5fa] font-bold">{inspectedSample.relatedFindingId}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="pt-2 flex flex-col gap-2">
+              {inspectedSample.relatedFindingId ? (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  iconRight={<ArrowRight className="w-3.5 h-3.5" />}
+                  onClick={() => {
+                    setInspectedSample(null);
+                    handleOpenFinding(inspectedSample.relatedFindingId!);
+                  }}
+                  className="w-full justify-center bg-[#1d4ed8] hover:bg-[#2563eb]"
+                >
+                  Open in Examiner Workspace
+                </Button>
+              ) : (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  iconRight={<ArrowRight className="w-3.5 h-3.5" />}
+                  onClick={() => {
+                    setInspectedSample(null);
+                    navigate(`/review?cseId=${inspectedSample.cseId}`);
+                  }}
+                  className="w-full justify-center bg-[#1d4ed8] hover:bg-[#2563eb]"
+                >
+                  Inspect CSE Review Queue
+                </Button>
+              )}
+
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setInspectedSample(null);
+                    setActiveCseId(inspectedSample.cseId);
+                    navigate(`/supervision/cses/${inspectedSample.cseId}`);
+                  }}
+                  className="w-full justify-center text-[11px] font-mono"
+                >
+                  View CSE Profile
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    handleSelectSample(inspectedSample);
+                  }}
+                  className={`w-full justify-center text-[11px] font-mono ${
+                    inspectedSample.selected 
+                      ? 'border-rose-500/40 text-rose-300 hover:bg-rose-500/20' 
+                      : 'border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/20'
+                  }`}
+                >
+                  {inspectedSample.selected ? 'Deselect Sample' : 'Select for Exam'}
+                </Button>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-xs">
-            <div className="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-lowest font-code-sm text-code-sm border border-[#30363d]/40">
-              <span className="text-outline">Total Queued:</span>
-              <span className="text-primary font-bold">{examinationQueue.length} cases</span>
-            </div>
-            <button 
-              className="px-md py-xs rounded bg-secondary text-on-secondary hover:bg-secondary/90 font-body-sm text-body-sm font-semibold flex items-center gap-xs transition-colors shadow-sm cursor-pointer"
-              onClick={() => showToast('Formal supervisory examination orders dispatched to assigned examiner teams.')}
-            >
-              <span className="material-symbols-outlined text-[16px]">send</span>
-              <span>Dispatch Examination Order</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Examination Queue Table */}
-        <div className="rounded bg-surface-container-lowest overflow-x-auto border border-[#30363d]/40">
-          <table className="w-full text-left font-body-sm text-body-sm border-collapse">
-            <thead>
-              <tr className="bg-surface-container-high font-label-caps text-label-caps uppercase text-on-surface-variant">
-                <th className="p-sm">Queued Case</th>
-                <th className="p-sm">Target CSE</th>
-                <th className="p-sm">Key Regulatory Trigger</th>
-                <th className="p-sm">Assigned Examiner Group</th>
-                <th className="p-sm">Status</th>
-                <th className="p-sm text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="font-code-sm text-code-sm divide-y divide-[#30363d]/30 text-on-surface">
-              {examinationQueue.map(item => (
-                <tr key={item.caseId} className="hover:bg-surface-container transition-colors">
-                  <td className="p-sm font-bold text-primary">{item.caseId}</td>
-                  <td className="p-sm">{item.targetCse}</td>
-                  <td className="p-sm font-body-sm text-body-sm text-on-surface">{item.trigger}</td>
-                  <td className="p-sm">
-                    <select className="bg-surface-container px-sm py-[2px] rounded text-on-surface font-code-sm text-code-sm focus:outline-none cursor-pointer border border-[#30363d]/40">
-                      <option value="EX-07">Examiner 07 (Air-gap Unit)</option>
-                      <option value="EX-02">Examiner 02 (Energy Grid Spec)</option>
-                      <option value="EX-11">Examiner 11 (Audit Oversight)</option>
-                    </select>
-                  </td>
-                  <td className="p-sm">
-                    <span className="px-sm py-[2px] rounded bg-secondary/20 text-secondary font-label-caps text-label-caps font-semibold">
-                      {item.status}
-                    </span>
-                  </td>
-                  <td className="p-sm text-right">
-                    <button 
-                      className="text-error hover:underline font-code-sm text-code-sm cursor-pointer"
-                      onClick={() => handleRemoveQueue(item.caseId)}
-                    >
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* TOAST NOTIFICATION */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 bg-surface-container-high border border-secondary text-on-surface px-4 py-2.5 rounded shadow-xl font-code-sm text-code-sm flex items-center gap-2 z-50">
-          <span className="material-symbols-outlined text-secondary text-[18px]">task_alt</span>
-          <span>{toastMessage}</span>
-        </div>
-      )}
-
+        )}
+      </Drawer>
     </PageContainer>
   );
 };

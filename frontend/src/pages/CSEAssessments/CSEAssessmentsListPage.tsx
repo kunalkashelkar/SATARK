@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupervisory } from '@/context/SupervisoryContext';
 import { CSEAssessment } from '@/types';
-import { Search, RotateCcw, ArrowRight } from 'lucide-react';
+import { Search, RotateCcw, ArrowRight, Upload, Building2 } from 'lucide-react';
 import {
   PageContainer,
   PageHeader,
@@ -14,6 +14,7 @@ import {
   StatusBadge,
   Button
 } from '@/components/common';
+import { ImportEvidenceModal } from '@/components/evidence/ImportEvidenceModal';
 
 export const CSEAssessmentsListPage: React.FC = () => {
   const { cses, setActiveCseId } = useSupervisory();
@@ -26,6 +27,9 @@ export const CSEAssessmentsListPage: React.FC = () => {
   const [selectedPriority, setSelectedPriority] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [selectedReadiness, setSelectedReadiness] = useState('ALL');
+
+  // Ingestion Modal
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   // Clear filters
   const clearFilters = () => {
@@ -46,11 +50,12 @@ export const CSEAssessmentsListPage: React.FC = () => {
           cse.cseId.toLowerCase().includes(q) ||
           cse.cseName.toLowerCase().includes(q) ||
           cse.sector.toLowerCase().includes(q) ||
+          cse.socType.toLowerCase().includes(q) ||
           cse.primarySignal.toLowerCase().includes(q);
         if (!matches) return false;
       }
 
-      if (selectedSector !== 'ALL' && cse.sector !== selectedSector) return false;
+      if (selectedSector !== 'ALL' && !cse.sector.toLowerCase().includes(selectedSector.toLowerCase())) return false;
       if (selectedPeriod !== 'ALL' && cse.period !== selectedPeriod) return false;
       if (selectedPriority !== 'ALL' && cse.supervisoryPriority !== selectedPriority) return false;
       if (selectedStatus !== 'ALL' && cse.status !== selectedStatus) return false;
@@ -67,7 +72,7 @@ export const CSEAssessmentsListPage: React.FC = () => {
 
   const handleRowClick = (cse: CSEAssessment) => {
     setActiveCseId(cse.cseId);
-    navigate(`/assessments/${cse.cseId}`);
+    navigate(`/supervision/cses/${cse.cseId}`);
   };
 
   const columns: Column<CSEAssessment>[] = [
@@ -86,16 +91,16 @@ export const CSEAssessmentsListPage: React.FC = () => {
             </span>
           </div>
           <span className="text-[11px] text-[#8c90a0] font-mono mt-0.5">
-            Period: {cse.period}
+            {cse.socType} · Period: {cse.period}
           </span>
         </div>
       ),
     },
     {
       header: 'Sector',
-      width: '130px',
+      width: '180px',
       cell: (cse) => (
-        <span className="px-2 py-0.5 rounded text-[11px] font-mono uppercase bg-[#1c2026] text-[#c2c6d6] border border-[#262a31]">
+        <span className="px-2 py-0.5 rounded text-[11px] font-mono uppercase bg-[#1c2026] text-[#c2c6d6] border border-[#262a31] truncate block max-w-[170px]">
           {cse.sector}
         </span>
       ),
@@ -182,6 +187,15 @@ export const CSEAssessmentsListPage: React.FC = () => {
         description="Comprehensive portfolio of Critical Sector Entities under active supervisory assessment."
         actions={
           <div className="flex items-center gap-2">
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<Upload className="w-3.5 h-3.5" />}
+              onClick={() => setIsImportModalOpen(true)}
+              className="bg-[#1f6feb] hover:bg-[#388bfd] text-white font-semibold"
+            >
+              Add / Import CSE Evidence
+            </Button>
             <span className="text-[11px] font-mono text-[#8c90a0] bg-[#181c22] px-3 py-1.5 rounded-md border border-[#262a31]">
               Showing <strong className="text-[#dfe2eb]">{filteredCSEs.length}</strong> of {cses.length} Entities
             </span>
@@ -197,7 +211,7 @@ export const CSEAssessmentsListPage: React.FC = () => {
               icon={<Search className="w-4 h-4" />}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by CSE ID, name, sector..."
+              placeholder="Search by CSE ID, name, sector, SOC type..."
               sizeVariant="sm"
             />
           </div>
@@ -207,11 +221,14 @@ export const CSEAssessmentsListPage: React.FC = () => {
             value={selectedSector}
             onChange={(e) => setSelectedSector(e.target.value)}
             options={[
-              { value: 'ALL', label: 'All Sectors' },
-              { value: 'Energy', label: 'Energy' },
-              { value: 'Banking', label: 'Banking' },
-              { value: 'Telecom', label: 'Telecom' },
-              { value: 'Transport', label: 'Transport' },
+              { value: 'ALL', label: 'All Critical Sectors' },
+              { value: 'Energy', label: 'Energy / Power' },
+              { value: 'Banking', label: 'Banking / Financial Services' },
+              { value: 'Telecom', label: 'Telecommunications' },
+              { value: 'Transport', label: 'Transportation' },
+              { value: 'Government', label: 'Government / Public Sector' },
+              { value: 'Healthcare', label: 'Healthcare' },
+              { value: 'Information Technology', label: 'IT & Digital Infrastructure' },
             ]}
           />
 
@@ -278,7 +295,7 @@ export const CSEAssessmentsListPage: React.FC = () => {
           <button
             type="button"
             onClick={clearFilters}
-            className="flex items-center gap-1 text-[11px] text-[#8c90a0] hover:text-[#dfe2eb] transition-colors self-end sm:self-auto"
+            className="flex items-center gap-1 text-[11px] text-[#8c90a0] hover:text-[#dfe2eb] transition-colors self-end sm:self-auto cursor-pointer"
           >
             <RotateCcw className="w-3 h-3" />
             <span>Reset Filters</span>
@@ -293,6 +310,12 @@ export const CSEAssessmentsListPage: React.FC = () => {
         keyExtractor={(cse) => cse.cseId}
         onRowClick={handleRowClick}
         emptyMessage="No Critical Sector Entities match the current filters."
+      />
+
+      {/* 4. IMPORT EVIDENCE MODAL */}
+      <ImportEvidenceModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
       />
     </PageContainer>
   );
