@@ -51,19 +51,11 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
-# Register CORS Middleware
-# Explicitly support localhost, Vercel production domain, Vercel preview domains, and Render backend
-cors_origins_list = list(settings.CORS_ORIGINS) if isinstance(settings.CORS_ORIGINS, (list, tuple)) else [settings.CORS_ORIGINS]
-if "https://satark-sooty.vercel.app" not in cors_origins_list:
-    cors_origins_list.append("https://satark-sooty.vercel.app")
-if "https://satark-2.onrender.com" not in cors_origins_list:
-    cors_origins_list.append("https://satark-2.onrender.com")
-
+# Register CORS Middleware — allow all origins for cross-origin Vercel→Render deployment
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins_list,
-    allow_origin_regex=r"https://.*\.vercel\.app",
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
