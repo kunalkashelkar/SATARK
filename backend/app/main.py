@@ -12,6 +12,31 @@ from app.api.v1.health import router as root_health_router
 async def lifespan(app: FastAPI):
     logger.info(f"Initializing {settings.APP_NAME} Backend ({settings.APP_VERSION}) on port {settings.API_PORT}...")
     logger.info(f"Enclave ID: {settings.ENCLAVE_ID}, Environment: {settings.APP_ENV}")
+    
+    # Auto-ensure all tables exist in active database (Postgres or SQLite fallback)
+    try:
+        from app.db.session import engine, Base
+        import app.db.models  # noqa
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database schema validated/created successfully.")
+    except Exception as exc:
+        logger.warning(f"Error ensuring database tables: {exc}")
+
+    # Auto-seed demonstration data if requested and users table is empty
+    try:
+        from app.db.session import SessionLocal
+        from app.db.models.user import User
+        db = SessionLocal()
+        user_count = db.query(User).count()
+        if user_count == 0:
+            logger.info("Database empty, running initial demonstration seed...")
+            from scripts.seed_demo_data import seed_database
+            seed_database(db=db)
+            logger.info("Demonstration database seeded successfully.")
+        db.close()
+    except Exception as exc:
+        logger.warning(f"Note on startup seeding check: {exc}")
+
     yield
     logger.info(f"Shutting down {settings.APP_NAME} Backend.")
 

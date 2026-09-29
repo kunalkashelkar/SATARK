@@ -1,9 +1,16 @@
 // Real HTTP API client communicating with FastAPI backend
 // Base URL configured via VITE_API_BASE_URL:
 // - In production: uses VITE_API_BASE_URL or defaults to deployed Render backend
+// Helper to ensure trailing /api/v1 is present
+const formatBaseUrl = (raw?: string): string => {
+  if (!raw) return 'https://satark-2.onrender.com/api/v1';
+  const clean = raw.replace(/\/+$/, '');
+  return clean.endsWith('/api/v1') ? clean : `${clean}/api/v1`;
+};
+
 export const API_BASE_URL = 
-  import.meta.env.VITE_API_BASE_URL !== undefined 
-    ? import.meta.env.VITE_API_BASE_URL 
+  import.meta.env.VITE_API_BASE_URL
+    ? formatBaseUrl(import.meta.env.VITE_API_BASE_URL)
     : (import.meta.env.PROD 
         ? 'https://satark-2.onrender.com/api/v1' 
         : 'http://localhost:8001/api/v1');

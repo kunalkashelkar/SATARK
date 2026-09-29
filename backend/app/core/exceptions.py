@@ -134,8 +134,8 @@ def register_exception_handlers(app: FastAPI) -> None:
                 "success": False,
                 "error": {
                     "code": "INTERNAL_SERVER_ERROR",
-                    "message": "An unexpected enclave internal error occurred",
-                    "details": {}
+                    "message": str(exc) or "An unexpected enclave internal error occurred",
+                    "details": {"error_type": type(exc).__name__}
                 }
             }
         )
