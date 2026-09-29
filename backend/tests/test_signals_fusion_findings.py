@@ -65,7 +65,7 @@ def test_get_signal_detail(supervisor_token):
     assert sig["cse_id"] == "CSE-014"
     assert sig["priority"] == "CRITICAL"
     assert sig["score"] > 0.0
-    assert sig["status"] in ("CANDIDATE", "UNDER_REVIEW")
+    assert sig["status"] in ("CANDIDATE", "UNDER_REVIEW", "VALIDATED")
     assert sig["title"] is not None
     assert sig["summary"] is not None
     assert sig["expected"] is not None

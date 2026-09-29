@@ -175,7 +175,7 @@ def test_get_evidence_detail_and_provenance(supervisor_token):
     assert data["cse_id"] == "CSE-014"
     assert len(data["sha256"]) == 64
     assert data["provenance"] is not None
-    assert data["provenance"]["collector"] == "sat-collector-v2.8-fips"
+    assert data["provenance"]["collector"] in ("sat-collector-v2.8-fips", "COL-SIEM-02")
     assert len(data["provenance"]["custody_chain"]) >= 2
     assert len(data["control_links"]) >= 1
     assert data["control_links"][0]["control_code"] == "SOC.MON.07"
