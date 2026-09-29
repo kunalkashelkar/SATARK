@@ -33,37 +33,97 @@ Operating under statutory regulatory mandates (such as Section 70B of the Inform
 
 ---
 
-## 3. Quick Start (Local Prototype)
+## 3. Deployment & Quick Start
 
-### Prerequisites
-- Python 3.12+
-- Node.js 20+ & npm 10+
-- (Optional) Docker & Docker Compose for containerized stack
+### 3.1 Single-Host Production Deployment (Docker Compose)
+In production deployment, SAT-SA is accessible through a single host endpoint via an internal Nginx reverse proxy. PostgreSQL and internal backend ports are isolated inside the internal container network and never exposed publicly.
 
-### Step 1: Backend Setup & Database Migration
+```
+Browser
+  ↓
+Single SAT-SA Host (http://<host>:8000 or http://<host>:80)
+  ↓
+Nginx Reverse Proxy
+  ├── Frontend Static Assets (React SPA)
+  ├── /health & /ready (Root Health Checks)
+  └── /api/* → FastAPI Backend (:8001)
+                  ↓
+             PostgreSQL (:5432) + Parquet / Canonical Evidence Vault
+```
+
+#### Step-by-Step Production Launch:
+1. **Configure Environment**:
+   ```bash
+   cp .env.example .env
+   ```
+2. **Build and Launch Containerized Stack**:
+   ```bash
+   docker compose up -d --build
+   ```
+   *Note: Containers automatically handle database readiness checks, execute `alembic upgrade head`, and seed the synthetic demonstration dataset.*
+3. **Verify Deployment Health**:
+   ```bash
+   curl -s http://localhost:8000/health
+   curl -s http://localhost:8000/ready
+   ```
+4. **Access the Application**:
+   Navigate your browser to `http://localhost:8000` (or your configured `HOST_PORT`).
+
+#### Common Lifecycle Commands:
+- **View Container Logs**:
+  ```bash
+  docker compose logs -f backend
+  ```
+- **Run Migrations Manually**:
+  ```bash
+  docker compose exec backend alembic upgrade head
+  ```
+- **Re-seed / Reset Synthetic Dataset**:
+  ```bash
+  docker compose exec backend python3 scripts/seed_demo.py --reset --seed --verify
+  ```
+- **Restart Stack**:
+  ```bash
+  docker compose restart
+  ```
+- **Stop Stack (Preserving Data Volumes)**:
+  ```bash
+  docker compose down
+  ```
+- **Backup PostgreSQL Database**:
+  ```bash
+  docker compose exec postgres pg_dump -U sat_sa -d sat_sa > backup_sat_sa_$(date +%Y%m%d).sql
+  ```
+- **Restore PostgreSQL Database**:
+  ```bash
+  docker compose exec -T postgres psql -U sat_sa -d sat_sa < backup_sat_sa.sql
+  ```
+
+---
+
+### 3.2 Standalone Local Development
+For development without Docker containers:
+
+#### Step 1: Backend Setup
 ```bash
 cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Run migrations to head
+# Run migrations and seed synthetic dataset
 alembic upgrade head
+python3 scripts/seed_demo.py --seed --verify
 
-# Ingest and seed synthetic SOC master dataset
-python3 -m app.ingestion.pipeline
-python3 scripts/seed_demo_data.py
-
-# Launch FastAPI backend on port 8001
-uvicorn app.main:app --host 0.0.0.0 --port 8001
+# Launch FastAPI server
+uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
 ```
 
-### Step 2: Frontend Setup
+#### Step 2: Frontend Setup
 ```bash
 cd frontend
 npm install
-npm run build    # Validates type safety and asset compilation
-npm run dev      # Starts Vite dev server on port 5173 / 8000
+npm run dev      # Starts local Vite development server
 ```
 
 ---
@@ -93,17 +153,17 @@ npm run dev      # Starts Vite dev server on port 5173 / 8000
 
 ## 6. Verification & Test Commands
 
-- **Backend Pytest Suite (78 Tests)**:
+- **Backend Pytest Suite (78 Tests - 100% Pass)**:
   ```bash
   cd backend && .venv/bin/pytest -q
   ```
-- **Frontend Type & Bundle Compilation**:
+- **Database Verification Tool**:
+  ```bash
+  cd backend && .venv/bin/python scripts/seed_demo.py --verify
+  ```
+- **Frontend Production Build Verification**:
   ```bash
   cd frontend && npm run build
-  ```
-- **Frontend Code Quality**:
-  ```bash
-  cd frontend && npx oxlint
   ```
 
 ---

@@ -5,15 +5,16 @@ services:
     image: postgres:16-alpine
     container_name: sat-sa-postgres
     environment:
-      - POSTGRES_DB=sat_sa
-      - POSTGRES_USER=sat_sa
-      - POSTGRES_PASSWORD=sat_sa_enclave_secret
-    ports:
-      - "5432:5432"
+      - POSTGRES_DB=${POSTGRES_DB:-sat_sa}
+      - POSTGRES_USER=${POSTGRES_USER:-sat_sa}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-sat_sa_enclave_secret}
+    # Security: PostgreSQL is NOT exposed to public host interfaces; accessible only on internal Docker network
+    expose:
+      - "5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sat_sa -d sat_sa"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sat_sa} -d ${POSTGRES_DB:-sat_sa}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,13 +23,14 @@ services:
   clickhouse:
     image: clickhouse/clickhouse-server:24.3-alpine
     container_name: sat-sa-clickhouse
-    ports:
-      - "8123:8123"
-      - "9000:9000"
+    # Security: ClickHouse internal ports are NOT exposed publicly; accessible only on internal Docker network
+    expose:
+      - "8123"
+      - "9000"
     environment:
-      - CLICKHOUSE_DB=sat_sa
-      - CLICKHOUSE_USER=default
-      - CLICKHOUSE_PASSWORD=
+      - CLICKHOUSE_DB=${CLICKHOUSE_DB:-sat_sa}
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-}
     volumes:
       - clickhouse_data:/var/lib/clickhouse
     healthcheck:
@@ -43,25 +45,37 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: sat-sa-backend
-    ports:
-      - "8001:8001"
+    # Security: Backend port is kept internal; requests flow through Nginx reverse proxy on port 80/443
+    expose:
+      - "8001"
     environment:
-      - APP_NAME=SAT-SA
-      - APP_ENV=production
-      - APP_VERSION=OPS-v4.8
+      - APP_NAME=${APP_NAME:-SAT-SA}
+      - APP_ENV=${APP_ENV:-production}
+      - APP_VERSION=${APP_VERSION:-OPS-v4.8}
       - API_HOST=0.0.0.0
       - API_PORT=8001
-      - DATABASE_URL=postgresql+psycopg://sat_sa:sat_sa_enclave_secret@postgres:5432/sat_sa
+      - DATABASE_URL=postgresql+psycopg://${POSTGRES_USER:-sat_sa}:${POSTGRES_PASSWORD:-sat_sa_enclave_secret}@postgres:5432/${POSTGRES_DB:-sat_sa}
       - CLICKHOUSE_HOST=clickhouse
       - CLICKHOUSE_PORT=8123
       - DB_SQLITE_FALLBACK_ON_ERROR=false
-      - SECRET_KEY=sat-sa-enclave-secret-key-change-in-production
-      - LOG_LEVEL=INFO
+      - SECRET_KEY=${SECRET_KEY:-sat-sa-enclave-secret-key-change-in-production}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - AUTO_MIGRATE=true
+      - AUTO_SEED=true
+    volumes:
+      - evidence_data:/app/data/evidence
+      - canonical_data:/app/data/canonical
+      - parquet_data:/app/data/parquet
     depends_on:
       postgres:
         condition: service_healthy
       clickhouse:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
 
   frontend:
@@ -69,12 +83,22 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: sat-sa-frontend
+    # Single Deployment Host Entry: Port 80 (or 8000 mapped to 80)
     ports:
-      - "8000:80"
+      - "${HOST_PORT:-8000}:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:80/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
 
 volumes:
   postgres_data:
   clickhouse_data:
+  evidence_data:
+  canonical_data:
+  parquet_data:

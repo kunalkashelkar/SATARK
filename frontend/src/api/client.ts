@@ -1,7 +1,11 @@
 // Real HTTP API client communicating with FastAPI backend
-// Base URL configured via VITE_API_BASE_URL (defaults to http://localhost:8001/api/v1)
-
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001/api/v1';
+// Base URL configured via VITE_API_BASE_URL:
+// - In production / deployed reverse proxy: '/api/v1' (same origin)
+// - In local Vite dev server without proxy: 'http://localhost:8001/api/v1'
+export const API_BASE_URL = 
+  import.meta.env.VITE_API_BASE_URL !== undefined 
+    ? import.meta.env.VITE_API_BASE_URL 
+    : (import.meta.env.PROD ? '/api/v1' : 'http://localhost:8001/api/v1');
 
 export interface ApiResponse<T> {
   data: T;
