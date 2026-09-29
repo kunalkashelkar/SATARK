@@ -136,5 +136,34 @@ export const apiClient = {
 
     const json = await res.json();
     return createApiResponse<T>(json, 'OK', res.status);
+  },
+
+  postFormData: async <T>(endpoint: string, formData: FormData): Promise<ApiResponse<T>> => {
+    const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+    const token = getAuthToken();
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    if (!res.ok) {
+      let errDetail = `HTTP ${res.status}: ${res.statusText}`;
+      try {
+        const errJson = await res.json();
+        errDetail = errJson.detail || errJson.message || errDetail;
+      } catch {
+        // ignore
+      }
+      throw new ApiError(errDetail, res.status);
+    }
+
+    const json = await res.json();
+    return createApiResponse<T>(json, 'OK', res.status);
   }
 };

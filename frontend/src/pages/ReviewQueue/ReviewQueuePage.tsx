@@ -13,47 +13,64 @@ import {
   Building2,
   ExternalLink,
   ChevronRight,
-  MoreVertical,
   Send,
   Eye,
   ShieldAlert,
   HelpCircle,
-  X
+  X,
+  Filter,
+  RefreshCw,
+  UserCheck,
+  Calendar,
+  Layers,
+  ChevronDown
 } from 'lucide-react';
 import {
   PageContainer,
-  PageHeader,
-  Card,
   Input,
   Select,
   StatusBadge,
   PriorityBadge,
   Button,
   Drawer,
-  Modal
+  Modal,
+  LoadingState,
+  EmptyState,
+  ErrorState
 } from '@/components/common';
 
 export const ReviewQueuePage: React.FC = () => {
-  const { findings, cses, setActiveFindingId, requestEvidenceDemand } = useSupervisory();
+  const { 
+    findings, 
+    cses, 
+    auditTrail,
+    userRole,
+    setActiveFindingId, 
+    setActiveCseId,
+    requestEvidenceDemand,
+    refreshAllData,
+    isLoading
+  } = useSupervisory();
+
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const isFindingsView = location.pathname.startsWith('/findings');
-
   // Search & Filter State
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCse, setSelectedCse] = useState(searchParams.get('cseId') || 'ALL');
+  const [selectedControl, setSelectedControl] = useState(searchParams.get('controlId') || 'ALL');
   const [selectedSignal, setSelectedSignal] = useState(searchParams.get('signal') || 'ALL');
   const [selectedPriority, setSelectedPriority] = useState(searchParams.get('priority') || 'ALL');
-  const [selectedEvidence, setSelectedEvidence] = useState('ALL');
   const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || 'ACTIVE');
+  const [selectedAssignment, setSelectedAssignment] = useState('ALL');
+  const [selectedPeriod, setSelectedPeriod] = useState('ALL');
 
-  // Pagination State
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  // Pagination & Group Collapsing State
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  // Drawer & Modal State
+  // Drawer & Evidence Demand Modal State
   const [drawerFinding, setDrawerFinding] = useState<Finding | null>(null);
   const [evidenceModalFinding, setEvidenceModalFinding] = useState<Finding | null>(null);
   const [requestedEvidenceText, setRequestedEvidenceText] = useState('Regulatory gateway transmission logs and statutory escalation token.');
@@ -68,6 +85,9 @@ export const ReviewQueuePage: React.FC = () => {
     const cseParam = searchParams.get('cseId');
     if (cseParam) setSelectedCse(cseParam);
 
+    const controlParam = searchParams.get('controlId');
+    if (controlParam) setSelectedControl(controlParam);
+
     const signalParam = searchParams.get('signal');
     if (signalParam) setSelectedSignal(signalParam);
 
@@ -79,40 +99,77 @@ export const ReviewQueuePage: React.FC = () => {
   const resetFilters = () => {
     setSearchTerm('');
     setSelectedCse('ALL');
+    setSelectedControl('ALL');
     setSelectedSignal('ALL');
     setSelectedPriority('ALL');
-    setSelectedEvidence('ALL');
     setSelectedStatus('ACTIVE');
-    setCurrentPage(1);
+    setSelectedAssignment('ALL');
+    setSelectedPeriod('ALL');
     setSearchParams({});
   };
 
-  // Helper: Determine evidence display tier
-  const getEvidenceTier = (f: Finding): 'Strong' | 'Partial' | 'Missing' => {
-    if (f.evidenceStrength === 'HIGH' || f.completeness >= 75) return 'Strong';
-    if (f.evidenceStrength === 'MEDIUM' || (f.completeness >= 40 && f.completeness < 75)) return 'Partial';
-    return 'Missing';
+  const handleRefresh = async () => {
+    try {
+      setLoadError(null);
+      await refreshAllData();
+    } catch (err: any) {
+      setLoadError(err?.message || 'Failed to refresh review queue.');
+    }
   };
 
-  // 1. Dynamic Top Summary Counts (Derived strictly from centralized findings data)
-  const summaryCounts = useMemo(() => {
-    const activeItems = findings.filter(f => f.status === 'CANDIDATE' || f.status === 'UNDER_REVIEW');
-    const highPriorityActive = activeItems.filter(f => f.priority === 'CRITICAL' || f.priority === 'HIGH');
-    const evidenceRequired = activeItems.filter(f => getEvidenceTier(f) === 'Missing' || getEvidenceTier(f) === 'Partial');
-    const underReview = findings.filter(f => f.status === 'UNDER_REVIEW');
-
-    return {
-      totalRequiringReview: activeItems.length,
-      highPriority: highPriorityActive.length,
-      evidenceRequired: evidenceRequired.length,
-      underReview: underReview.length
-    };
+  // Unique Controls and Periods from real findings
+  const availableControls = useMemo(() => {
+    const ctrlSet = new Set<string>();
+    findings.forEach(f => {
+      if (f.controlId) ctrlSet.add(f.controlId);
+    });
+    return Array.from(ctrlSet).sort();
   }, [findings]);
 
-  // 2. Filter logic with multi-criteria support
+  const availablePeriods = useMemo(() => {
+    const periodSet = new Set<string>();
+    findings.forEach(f => {
+      if (f.provenance?.assessmentPeriod) periodSet.add(f.provenance.assessmentPeriod);
+    });
+    return Array.from(periodSet).sort();
+  }, [findings]);
+
+  // Available Examiners from decidedBy / audit
+  const availableExaminers = useMemo(() => {
+    const exSet = new Set<string>();
+    findings.forEach(f => {
+      if (f.decidedBy) exSet.add(f.decidedBy);
+    });
+    return Array.from(exSet).sort();
+  }, [findings]);
+
+  // Last analysis timestamp
+  const lastUpdatedTimestamp = useMemo(() => {
+    if (auditTrail && auditTrail.length > 0) {
+      return auditTrail[0].timestamp;
+    }
+    const dates = findings.map(f => f.decidedAt).filter(Boolean);
+    if (dates.length > 0) {
+      return new Date(dates[0] as string).toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    return '29 Sep 2026, 14:30 IST';
+  }, [auditTrail, findings]);
+
+  // Count of pending review items
+  const pendingReviewCount = useMemo(() => {
+    return findings.filter(f => f.status === 'CANDIDATE' || f.status === 'UNDER_REVIEW').length;
+  }, [findings]);
+
+  // Filtered Findings
   const filteredFindings = useMemo(() => {
     return findings.filter((f) => {
-      // Search across Finding ID, CSE ID, CSE Name, Signal, Control ID, Title
+      // Search across Finding ID, CSE ID, CSE Name, Title, Control ID, Signal Type
       if (searchTerm) {
         const q = searchTerm.toLowerCase();
         const matches = 
@@ -128,21 +185,27 @@ export const ReviewQueuePage: React.FC = () => {
       // CSE Filter
       if (selectedCse !== 'ALL' && f.cseId.toLowerCase() !== selectedCse.toLowerCase()) return false;
 
+      // Control Filter
+      if (selectedControl !== 'ALL' && f.controlId.toLowerCase() !== selectedControl.toLowerCase()) return false;
+
       // Signal Filter
       if (selectedSignal !== 'ALL' && f.signalType !== selectedSignal) return false;
 
       // Priority Filter
       if (selectedPriority !== 'ALL' && f.priority !== selectedPriority) return false;
 
-      // Evidence Filter
-      if (selectedEvidence !== 'ALL') {
-        const tier = getEvidenceTier(f);
-        if (selectedEvidence === 'STRONG' && tier !== 'Strong') return false;
-        if (selectedEvidence === 'PARTIAL' && tier !== 'Partial') return false;
-        if (selectedEvidence === 'MISSING' && tier !== 'Missing') return false;
+      // Assignment Filter
+      if (selectedAssignment !== 'ALL') {
+        if (selectedAssignment === 'UNASSIGNED' && f.decidedBy) return false;
+        if (selectedAssignment !== 'UNASSIGNED' && f.decidedBy !== selectedAssignment) return false;
       }
 
-      // Status Filter (Default 'ACTIVE' = CANDIDATE + UNDER_REVIEW)
+      // Period / Date Filter
+      if (selectedPeriod !== 'ALL') {
+        if (f.provenance?.assessmentPeriod !== selectedPeriod) return false;
+      }
+
+      // Status Filter ('ACTIVE' = CANDIDATE + UNDER_REVIEW)
       if (selectedStatus === 'ACTIVE') {
         if (f.status !== 'CANDIDATE' && f.status !== 'UNDER_REVIEW') return false;
       } else if (selectedStatus !== 'ALL') {
@@ -150,26 +213,62 @@ export const ReviewQueuePage: React.FC = () => {
       }
 
       return true;
-    }).sort((a, b) => {
-      // Sort priority: CRITICAL > HIGH > MEDIUM > LOW
-      const priorityOrder: Record<Priority, number> = {
-        CRITICAL: 4,
-        HIGH: 3,
-        MEDIUM: 2,
-        LOW: 1
-      };
-      const pDiff = (priorityOrder[b.priority] || 0) - (priorityOrder[a.priority] || 0);
-      if (pDiff !== 0) return pDiff;
-      return a.id.localeCompare(b.id);
     });
-  }, [findings, searchTerm, selectedCse, selectedSignal, selectedPriority, selectedEvidence, selectedStatus]);
+  }, [findings, searchTerm, selectedCse, selectedControl, selectedSignal, selectedPriority, selectedStatus, selectedAssignment, selectedPeriod]);
 
-  // Paginated findings
-  const totalPages = Math.ceil(filteredFindings.length / pageSize) || 1;
-  const paginatedFindings = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredFindings.slice(start, start + pageSize);
-  }, [filteredFindings, currentPage]);
+  // Grouping using actual priority: HIGH (including CRITICAL), MEDIUM, LOW
+  const groupedFindings = useMemo(() => {
+    const highGroup: Finding[] = [];
+    const mediumGroup: Finding[] = [];
+    const lowGroup: Finding[] = [];
+
+    filteredFindings.forEach(f => {
+      if (f.priority === 'CRITICAL' || f.priority === 'HIGH') {
+        highGroup.push(f);
+      } else if (f.priority === 'MEDIUM') {
+        mediumGroup.push(f);
+      } else {
+        lowGroup.push(f);
+      }
+    });
+
+    return [
+      {
+        id: 'HIGH',
+        label: 'HIGH PRIORITY',
+        subtitle: 'Critical & High Severity — Requires Immediate Supervisory Adjudication',
+        count: highGroup.length,
+        items: highGroup,
+        colorBadge: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
+        dotColor: 'bg-rose-500'
+      },
+      {
+        id: 'MEDIUM',
+        label: 'MEDIUM PRIORITY',
+        subtitle: 'Secondary Discrepancies & Process Variance Inquiries',
+        count: mediumGroup.length,
+        items: mediumGroup,
+        colorBadge: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+        dotColor: 'bg-amber-500'
+      },
+      {
+        id: 'LOW',
+        label: 'LOW PRIORITY',
+        subtitle: 'Informational Signals & Minor Sampling Anomalies',
+        count: lowGroup.length,
+        items: lowGroup,
+        colorBadge: 'bg-slate-500/15 text-slate-300 border-slate-500/30',
+        dotColor: 'bg-slate-400'
+      }
+    ];
+  }, [filteredFindings]);
+
+  const toggleGroup = (groupId: string) => {
+    setCollapsedGroups(prev => ({
+      ...prev,
+      [groupId]: !prev[groupId]
+    }));
+  };
 
   const handleOpenFinding = (findingId: string) => {
     setActiveFindingId(findingId);
@@ -196,31 +295,62 @@ export const ReviewQueuePage: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* ========================================================================= */}
-      {/* 1. PAGE HEADER (Section 5)                                                */}
-      {/* ========================================================================= */}
-      <PageHeader
-        title={isFindingsView ? "Supervisory Findings" : "Supervisory Review Queue"}
-        description={isFindingsView ? "Authoritative inventory of findings, qualified issues, and candidate signals." : "Items requiring supervisory or examiner attention."}
-        badge={
-          <span className="text-[11px] font-mono text-[#7bdb80] bg-[#7bdb80]/10 px-2.5 py-0.5 rounded border border-[#7bdb80]/30 font-medium">
-            Human-in-the-Loop Active
-          </span>
-        }
-        actions={
-          <div className="flex items-center gap-2">
+      {/* 1. OPERATIONAL WORKLIST HEADER */}
+      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1.5 min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-[18px] md:text-[20px] font-semibold text-[#f1f5f9] tracking-tight">
+                Review Queue
+              </h1>
+              <span className="text-[#475569]">•</span>
+              <span className="font-mono text-[11px] px-2.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 font-bold">
+                {pendingReviewCount} Pending Review
+              </span>
+              <span className="text-[11px] font-mono text-[#7bdb80] bg-[#7bdb80]/10 px-2 py-0.5 rounded border border-[#7bdb80]/30 font-medium">
+                Active Enclave
+              </span>
+            </div>
+
+            <p className="text-[12px] text-[#94a3b8]">
+              Immediate operational worklist of analytical signals, negative space gaps, and statutory candidate findings awaiting supervisor decision.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#64748b] font-mono pt-0.5">
+              <span>Assessment Cycle: <strong className="text-[#cbd5e1]">Q3 2026 Active Assessment</strong></span>
+              <span>•</span>
+              <span>Active Scope: <strong className="text-[#60a5fa]">{cses.length} Enrolled Entities</strong></span>
+              <span>•</span>
+              <span>Role: <strong className="text-[#cbd5e1]">{userRole} (NC-8802)</strong></span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5 text-[#64748b]" />
+                <span>Last Updated: <strong className="text-[#cbd5e1]">{lastUpdatedTimestamp}</strong></span>
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#212c3d]">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              icon={<RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
+              title="Synchronize queue with backend"
+            >
+              Sync
+            </Button>
             <Button
               variant="outline"
               size="sm"
               icon={<RotateCcw className="w-3 h-3 text-[#8c90a0]" />}
               onClick={resetFilters}
-              className="text-[11px] font-mono"
             >
               Reset Filters
             </Button>
           </div>
-        }
-      />
+        </div>
+      </div>
 
       {/* Success Notification Banner */}
       {demandSuccessMsg && (
@@ -235,149 +365,63 @@ export const ReviewQueuePage: React.FC = () => {
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* 2. TOP SUMMARY (Section 6: Max 4 Compact Summary Cards)                   */}
-      {/* ========================================================================= */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-4 min-w-0">
-        <div 
-          onClick={() => setSelectedStatus('ACTIVE')}
-          className={`p-3.5 rounded-lg border cursor-pointer transition-all ${
-            selectedStatus === 'ACTIVE' 
-              ? 'bg-[#182335] border-[#3b82f6]' 
-              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
-          }`}
-        >
-          <div className="text-[11px] font-mono uppercase text-[#94a3b8] flex items-center justify-between">
-            <span>Total Requiring Review</span>
-            <span className="w-2 h-2 rounded-full bg-[#60a5fa]" />
-          </div>
-          <div className="text-[24px] font-bold font-mono text-[#f1f5f9] mt-1 leading-none">
-            {summaryCounts.totalRequiringReview}
-          </div>
-          <div className="text-[11px] text-[#8c90a0] mt-1.5 font-mono">Active triage backlog</div>
-        </div>
+      {/* 2. OPERATIONAL FILTERS TOOLBAR */}
+      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-3.5 mb-4 space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+          {/* Free Text Search */}
+          <Input
+            icon={<Search className="w-4 h-4 text-[#64748b]" />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search Finding ID, CSE, Control, Issue..."
+            sizeVariant="sm"
+          />
 
-        <div 
-          onClick={() => {
-            setSelectedPriority('HIGH');
-            setSelectedStatus('ACTIVE');
-          }}
-          className={`p-3.5 rounded-lg border cursor-pointer transition-all ${
-            selectedPriority === 'HIGH' || selectedPriority === 'CRITICAL'
-              ? 'bg-rose-950/20 border-rose-500/60' 
-              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
-          }`}
-        >
-          <div className="text-[11px] font-mono uppercase text-rose-300 flex items-center justify-between">
-            <span>High Priority</span>
-            <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
-          </div>
-          <div className="text-[24px] font-bold font-mono text-rose-300 mt-1 leading-none">
-            {summaryCounts.highPriority}
-          </div>
-          <div className="text-[11px] text-[#8c90a0] mt-1.5 font-mono">Critical & High SLA &lt;24h</div>
-        </div>
+          {/* Priority Filter */}
+          <Select
+            sizeVariant="sm"
+            value={selectedPriority}
+            onChange={(e) => setSelectedPriority(e.target.value)}
+            options={[
+              { value: 'ALL', label: 'All Priorities' },
+              { value: 'CRITICAL', label: 'Critical' },
+              { value: 'HIGH', label: 'High' },
+              { value: 'MEDIUM', label: 'Medium' },
+              { value: 'LOW', label: 'Low' }
+            ]}
+          />
 
-        <div 
-          onClick={() => {
-            setSelectedEvidence('MISSING');
-            setSelectedStatus('ACTIVE');
-          }}
-          className={`p-3.5 rounded-lg border cursor-pointer transition-all ${
-            selectedEvidence === 'MISSING' 
-              ? 'bg-amber-950/20 border-amber-500/60' 
-              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
-          }`}
-        >
-          <div className="text-[11px] font-mono uppercase text-amber-300 flex items-center justify-between">
-            <span>Evidence Required</span>
-            <FileText className="w-3.5 h-3.5 text-amber-400" />
-          </div>
-          <div className="text-[24px] font-bold font-mono text-amber-300 mt-1 leading-none">
-            {summaryCounts.evidenceRequired}
-          </div>
-          <div className="text-[11px] text-[#8c90a0] mt-1.5 font-mono">Demands / Missing Telemetry</div>
-        </div>
+          {/* Control Filter */}
+          <Select
+            sizeVariant="sm"
+            value={selectedControl}
+            onChange={(e) => setSelectedControl(e.target.value)}
+            options={[
+              { value: 'ALL', label: 'All Controls' },
+              ...availableControls.map(c => ({ value: c, label: `Control: ${c}` }))
+            ]}
+          />
 
-        <div 
-          onClick={() => setSelectedStatus('UNDER_REVIEW')}
-          className={`p-3.5 rounded-lg border cursor-pointer transition-all ${
-            selectedStatus === 'UNDER_REVIEW' 
-              ? 'bg-[#1c2436] border-[#60a5fa]' 
-              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
-          }`}
-        >
-          <div className="text-[11px] font-mono uppercase text-[#60a5fa] flex items-center justify-between">
-            <span>Under Review</span>
-            <Clock className="w-3.5 h-3.5 text-[#60a5fa]" />
-          </div>
-          <div className="text-[24px] font-bold font-mono text-[#60a5fa] mt-1 leading-none">
-            {summaryCounts.underReview}
-          </div>
-          <div className="text-[11px] text-[#8c90a0] mt-1.5 font-mono">Active Examiner Inquiries</div>
-        </div>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* 3. FILTER BAR (Section 14 & 16)                                           */}
-      {/* ========================================================================= */}
-      <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-3 mb-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
-          {/* Search Input */}
-          <div className="lg:col-span-2">
-            <Input
-              icon={<Search className="w-4 h-4 text-[#64748b]" />}
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Search Finding ID, CSE, Signal, Control..."
-              sizeVariant="sm"
-            />
-          </div>
-
-          {/* CSE Selector */}
+          {/* CSE Filter */}
           <Select
             sizeVariant="sm"
             value={selectedCse}
-            onChange={(e) => {
-              setSelectedCse(e.target.value);
-              setCurrentPage(1);
-            }}
+            onChange={(e) => setSelectedCse(e.target.value)}
             options={[
               { value: 'ALL', label: 'All CSEs' },
               ...cses.map(c => ({ value: c.cseId, label: `${c.cseId} — ${c.cseName}` }))
             ]}
           />
+        </div>
 
-          {/* Priority Selector */}
-          <Select
-            sizeVariant="sm"
-            value={selectedPriority}
-            onChange={(e) => {
-              setSelectedPriority(e.target.value);
-              setCurrentPage(1);
-            }}
-            options={[
-              { value: 'ALL', label: 'All Priorities' },
-              { value: 'CRITICAL', label: 'Critical Priority' },
-              { value: 'HIGH', label: 'High Priority' },
-              { value: 'MEDIUM', label: 'Medium Priority' },
-              { value: 'LOW', label: 'Low Priority' }
-            ]}
-          />
-
-          {/* Signal Selector */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
+          {/* Signal Type Filter */}
           <Select
             sizeVariant="sm"
             value={selectedSignal}
-            onChange={(e) => {
-              setSelectedSignal(e.target.value);
-              setCurrentPage(1);
-            }}
+            onChange={(e) => setSelectedSignal(e.target.value)}
             options={[
-              { value: 'ALL', label: 'All Signals' },
+              { value: 'ALL', label: 'All Signal Types' },
               { value: 'EXECUTION_GAP', label: 'Execution Gap' },
               { value: 'NEGATIVE_SPACE', label: 'Negative Space' },
               { value: 'PROCESS_DEVIATION', label: 'Process Deviation' },
@@ -388,14 +432,11 @@ export const ReviewQueuePage: React.FC = () => {
             ]}
           />
 
-          {/* Status Selector */}
+          {/* Status Filter */}
           <Select
             sizeVariant="sm"
             value={selectedStatus}
-            onChange={(e) => {
-              setSelectedStatus(e.target.value);
-              setCurrentPage(1);
-            }}
+            onChange={(e) => setSelectedStatus(e.target.value)}
             options={[
               { value: 'ACTIVE', label: 'Active (Review Required)' },
               { value: 'ALL', label: 'All Statuses' },
@@ -406,270 +447,313 @@ export const ReviewQueuePage: React.FC = () => {
               { value: 'OVERRIDDEN', label: 'Overridden' }
             ]}
           />
+
+          {/* Assignment Filter */}
+          <Select
+            sizeVariant="sm"
+            value={selectedAssignment}
+            onChange={(e) => setSelectedAssignment(e.target.value)}
+            options={[
+              { value: 'ALL', label: 'All Assignments' },
+              { value: 'UNASSIGNED', label: 'Unassigned / System Flagged' },
+              ...availableExaminers.map(ex => ({ value: ex, label: `Assigned: ${ex}` }))
+            ]}
+          />
+
+          {/* Assessment Period / Date Filter */}
+          <Select
+            sizeVariant="sm"
+            value={selectedPeriod}
+            onChange={(e) => setSelectedPeriod(e.target.value)}
+            options={[
+              { value: 'ALL', label: 'All Assessment Periods' },
+              ...availablePeriods.map(p => ({ value: p, label: `Period: ${p}` }))
+            ]}
+          />
         </div>
 
-        {/* Filter Summary & Evidence Filter Pills */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#212c3d] text-[11px] font-mono">
-          <div className="flex items-center gap-2">
-            <span className="text-[#8c90a0]">Evidence Filter:</span>
-            <div className="flex items-center gap-1">
-              {['ALL', 'STRONG', 'PARTIAL', 'MISSING'].map((evKey) => (
-                <button
-                  key={evKey}
-                  onClick={() => {
-                    setSelectedEvidence(evKey);
-                    setCurrentPage(1);
-                  }}
-                  className={`px-2 py-0.5 rounded text-[10px] uppercase font-mono transition-colors ${
-                    selectedEvidence === evKey
-                      ? 'bg-[#1d4ed8] text-white font-bold'
-                      : 'bg-[#161e29] text-[#94a3b8] hover:text-[#f1f5f9] border border-[#212c3d]'
-                  }`}
-                >
-                  {evKey === 'ALL' ? 'All Evidence' : evKey}
-                </button>
-              ))}
-            </div>
+        {/* Filter Results Summary */}
+        <div className="flex items-center justify-between pt-2 border-t border-[#212c3d] text-[11px] font-mono text-[#8c90a0]">
+          <div>
+            Showing <strong className="text-[#f1f5f9]">{filteredFindings.length}</strong> active review items in worklist
           </div>
-
-          <div className="text-[#8c90a0]">
-            Showing <strong className="text-[#f1f5f9]">{filteredFindings.length}</strong> items requiring attention
-          </div>
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="hover:text-[#f1f5f9] transition-colors flex items-center gap-1 cursor-pointer"
+          >
+            <RotateCcw className="w-3 h-3" />
+            <span>Reset All</span>
+          </button>
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* 4. MAIN CONTENT = REVIEW TABLE (Sections 7, 8, 11, 12, 19, 21, 26)       */}
-      {/* ========================================================================= */}
-      <Card className="p-0 overflow-hidden">
-        {filteredFindings.length > 0 ? (
-          <div className="overflow-x-auto min-w-0">
-            <table className="w-full text-left text-[12px] text-[#dfe2eb]">
-              <thead className="bg-[#111722] text-[#8c90a0] font-mono uppercase text-[10px] border-b border-[#212c3d]">
-                <tr>
-                  <th className="py-3 px-3.5">Finding ID</th>
-                  <th className="py-3 px-3.5">CSE / Sector</th>
-                  <th className="py-3 px-3.5">Signal</th>
-                  <th className="py-3 px-3.5">Priority</th>
-                  <th className="py-3 px-3.5">Evidence</th>
-                  <th className="py-3 px-3.5">Status</th>
-                  <th className="py-3 px-3.5">Why Flagged</th>
-                  <th className="py-3 px-3.5 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#212c3d]/60 bg-[#0e131b]">
-                {paginatedFindings.map((finding) => {
-                  const evTier = getEvidenceTier(finding);
-                  const isMissingEvidence = evTier === 'Missing';
+      {/* 3. WORKLIST CONTENT: LOADING / ERROR / EMPTY / PRIORITY-GROUPED QUEUE */}
+      {isLoading && findings.length === 0 ? (
+        <LoadingState message="Loading supervisory review worklist..." />
+      ) : loadError ? (
+        <ErrorState
+          title="Review Queue Ingestion Error"
+          message={loadError}
+          onRetry={handleRefresh}
+        />
+      ) : filteredFindings.length === 0 ? (
+        <EmptyState
+          title="No items currently require supervisory review."
+          description={
+            searchTerm || selectedCse !== 'ALL' || selectedControl !== 'ALL' || selectedSignal !== 'ALL' || selectedPriority !== 'ALL' || selectedStatus !== 'ACTIVE'
+              ? "All findings matching the active filters have been adjudicated or cleared. Reset filters to view other candidate signals."
+              : "All analytical outputs have been validated or resolved in the active assessment scope."
+          }
+          action={
+            <Button variant="outline" size="sm" onClick={resetFilters}>
+              Reset All Filters
+            </Button>
+          }
+        />
+      ) : (
+        <div className="space-y-4">
+          {groupedFindings.map((group) => {
+            if (group.count === 0 && selectedPriority !== 'ALL' && selectedPriority !== group.id) {
+              return null;
+            }
 
-                  return (
-                    <tr 
-                      key={finding.id} 
-                      className="hover:bg-[#111722] transition-colors group cursor-pointer"
-                      onClick={() => handleOpenFinding(finding.id)}
-                    >
-                      {/* 1. Finding ID */}
-                      <td className="py-3 px-3.5 whitespace-nowrap">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono font-bold text-[#60a5fa] group-hover:underline">
-                            {finding.id}
-                          </span>
-                        </div>
-                        <div className="text-[10px] text-[#64748b] font-mono mt-0.5">
-                          {finding.controlId}
-                        </div>
-                      </td>
+            const isCollapsed = collapsedGroups[group.id];
 
-                      {/* 2. CSE / Entity */}
-                      <td 
-                        className="py-3 px-3.5 whitespace-nowrap"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/supervision/cses/${finding.cseId}`);
-                        }}
-                      >
-                        <div className="font-semibold text-[#f1f5f9] hover:text-[#60a5fa] flex items-center gap-1">
-                          <span>{finding.cseId}</span>
-                          <ExternalLink className="w-3 h-3 text-[#64748b]" />
-                        </div>
-                        <div className="text-[10px] text-[#8c90a0] truncate max-w-[130px]">
-                          {finding.cseName}
-                        </div>
-                      </td>
+            return (
+              <div 
+                key={group.id}
+                className="bg-[#111622] border border-[#212c3d] rounded-lg overflow-hidden shadow-sm"
+              >
+                {/* Group Header Bar */}
+                <div 
+                  onClick={() => toggleGroup(group.id)}
+                  className="px-4 py-3 bg-[#0d121a] border-b border-[#212c3d] flex items-center justify-between cursor-pointer hover:bg-[#141b27] transition-colors select-none"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className={`w-2 h-2 rounded-full ${group.dotColor}`} />
+                    <span className="font-mono text-[12px] font-bold tracking-wider text-[#f1f5f9]">
+                      {group.label}
+                    </span>
+                    <span className={`font-mono text-[10px] px-2 py-0.5 rounded border ${group.colorBadge} font-bold`}>
+                      {group.count} Items
+                    </span>
+                    <span className="hidden md:inline text-[11px] text-[#64748b]">
+                      • {group.subtitle}
+                    </span>
+                  </div>
 
-                      {/* 3. Signal */}
-                      <td className="py-3 px-3.5 whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded font-mono text-[11px] font-medium bg-[#182335] text-[#ffb693] border border-[#263750]">
-                          {finding.signalType.replace(/_/g, ' ')}
-                        </span>
-                      </td>
+                  <div className="flex items-center gap-2 text-[#8c90a0]">
+                    <span className="text-[11px] font-mono">
+                      {isCollapsed ? 'Expand' : 'Collapse'}
+                    </span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isCollapsed ? '-rotate-90' : ''}`} />
+                  </div>
+                </div>
 
-                      {/* 4. Priority */}
-                      <td className="py-3 px-3.5 whitespace-nowrap">
-                        <PriorityBadge priority={finding.priority} />
-                      </td>
+                {/* Queue Items Table */}
+                {!isCollapsed && group.count > 0 && (
+                  <div className="w-full overflow-x-auto">
+                    <table className="w-full border-collapse text-left text-[12px] md:text-[13px]">
+                      <thead>
+                        <tr className="border-b border-[#212c3d] bg-[#111622] text-[10px] font-mono uppercase text-[#8c90a0] tracking-wider select-none">
+                          <th className="px-3.5 py-2.5" style={{ width: '130px' }}>Priority &amp; ID</th>
+                          <th className="px-3.5 py-2.5" style={{ minWidth: '240px' }}>Finding / Issue</th>
+                          <th className="px-3.5 py-2.5" style={{ width: '160px' }}>CSE Entity</th>
+                          <th className="px-3.5 py-2.5" style={{ width: '150px' }}>Signal Type</th>
+                          <th className="px-3.5 py-2.5 text-center" style={{ width: '100px' }}>Evidence</th>
+                          <th className="px-3.5 py-2.5" style={{ width: '110px' }}>Score</th>
+                          <th className="px-3.5 py-2.5" style={{ width: '150px' }}>Assignment &amp; Age</th>
+                          <th className="px-3.5 py-2.5" style={{ width: '120px' }}>Status</th>
+                          <th className="px-3.5 py-2.5 text-right" style={{ width: '140px' }}>Action</th>
+                        </tr>
+                      </thead>
 
-                      {/* 5. Evidence Status */}
-                      <td className="py-3 px-3.5 whitespace-nowrap">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-semibold border ${
-                            evTier === 'Strong'
-                              ? 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30'
-                              : evTier === 'Partial'
-                              ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                              : 'bg-rose-500/10 text-rose-300 border-rose-500/30'
-                          }`}>
-                            {evTier} ({finding.completeness}%)
-                          </span>
-                        </div>
-                        <div className="text-[10px] text-[#64748b] font-mono mt-0.5">
-                          {finding.sourceEvidence.length} records
-                        </div>
-                      </td>
+                      <tbody className="divide-y divide-[#212c3d] text-[#dfe2eb] bg-[#0d121a]">
+                        {group.items.map((item) => {
+                          const evidenceCount = item.sourceEvidence ? item.sourceEvidence.length : 0;
+                          const score = item.completeness || 80;
+                          const ageDisplay = item.decidedAt 
+                            ? new Date(item.decidedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+                            : 'On-Cycle';
 
-                      {/* 6. Review Status */}
-                      <td className="py-3 px-3.5 whitespace-nowrap">
-                        <StatusBadge status={finding.status} />
-                      </td>
-
-                      {/* 7. Why Flagged */}
-                      <td className="py-3 px-3.5 max-w-[280px]">
-                        <div className="font-semibold text-[#f1f5f9] truncate">
-                          {finding.title}
-                        </div>
-                        <div className="text-[11px] text-[#8c90a0] truncate mt-0.5">
-                          {finding.whyFlagged}
-                        </div>
-                      </td>
-
-                      {/* 8. Action */}
-                      <td 
-                        className="py-3 px-3.5 text-right whitespace-nowrap"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="flex items-center justify-end gap-1.5">
-                          {/* Request Evidence Quick Action */}
-                          {isMissingEvidence && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleOpenEvidenceDemand(finding)}
-                              className="text-[10px] font-mono py-1 px-2 border-amber-500/40 text-amber-300 hover:bg-amber-500/20"
+                          return (
+                            <tr
+                              key={item.id}
+                              onClick={() => handleOpenFinding(item.id)}
+                              className="h-14 hover:bg-[#111622] cursor-pointer transition-colors group"
                             >
-                              Request Evd
-                            </Button>
-                          )}
+                              {/* 1. Priority & ID */}
+                              <td className="px-3.5 py-2.5 align-middle">
+                                <div className="flex flex-col space-y-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <PriorityBadge priority={item.priority} />
+                                  </div>
+                                  <div className="flex items-center gap-1 font-mono text-[11px]">
+                                    <span className="font-bold text-[#60a5fa] group-hover:underline">
+                                      {item.id}
+                                    </span>
+                                    <span className="text-[#475569]">•</span>
+                                    <span className="text-[#94a3b8]">{item.controlId}</span>
+                                  </div>
+                                </div>
+                              </td>
 
-                          {/* Quick Inspect Drawer Button */}
-                          <button
-                            onClick={() => setDrawerFinding(finding)}
-                            className="p-1.5 rounded bg-[#161e29] border border-[#212c3d] text-[#8c90a0] hover:text-[#f1f5f9] transition-colors"
-                            title="Inspect Details"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
+                              {/* 2. Finding / Issue */}
+                              <td className="px-3.5 py-2.5 align-middle">
+                                <div className="flex flex-col pr-2">
+                                  <span className="font-medium text-[#f1f5f9] text-[13px] leading-snug line-clamp-1 group-hover:text-[#60a5fa] transition-colors">
+                                    {item.title}
+                                  </span>
+                                  <p className="text-[11px] text-[#8c90a0] line-clamp-1 mt-0.5 font-sans">
+                                    <strong className="text-[#cbd5e1]">Gap: </strong>{item.gapSummary || item.whyFlagged}
+                                  </p>
+                                </div>
+                              </td>
 
-                          {/* Primary Examiner Workspace Button */}
-                          <Button
-                            size="sm"
-                            variant="primary"
-                            iconRight={<ArrowRight className="w-3 h-3" />}
-                            onClick={() => handleOpenFinding(finding.id)}
-                            className="text-[11px] font-mono py-1 px-2.5 bg-[#1d4ed8] hover:bg-[#2563eb]"
-                          >
-                            Open →
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          /* Empty State (Section 31) */
-          <div className="p-8 text-center space-y-2.5">
-            <CheckCircle2 className="w-8 h-8 text-[#10b981] mx-auto" />
-            <h3 className="text-[14px] font-bold text-[#f1f5f9]">
-              No items currently require review.
-            </h3>
-            <p className="text-[11px] text-[#8c90a0] max-w-sm mx-auto font-mono">
-              All active supervisory signals have been reviewed, or no findings match your selected filter criteria.
-            </p>
-            <div className="pt-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={resetFilters}
-                className="text-[11px] font-mono"
-              >
-                Reset All Filters
-              </Button>
-            </div>
-          </div>
-        )}
+                              {/* 3. CSE Entity */}
+                              <td 
+                                className="px-3.5 py-2.5 align-middle"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setActiveCseId(item.cseId);
+                                  navigate(`/supervision/cses/${item.cseId}`);
+                                }}
+                              >
+                                <div className="flex flex-col font-mono text-[11px]">
+                                  <span className="font-semibold text-[#cbd5e1] hover:text-[#60a5fa] hover:underline flex items-center gap-1">
+                                    <span>{item.cseId}</span>
+                                    <ExternalLink className="w-2.5 h-2.5 text-[#64748b]" />
+                                  </span>
+                                  <span className="text-[10px] text-[#64748b] truncate max-w-[150px]">
+                                    {item.cseName}
+                                  </span>
+                                </div>
+                              </td>
 
-        {/* Pagination Bar (Section 18) */}
-        {filteredFindings.length > 0 && (
-          <div className="p-3 bg-[#111722] border-t border-[#212c3d] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-[#8c90a0]">
-            <div>
-              Showing {Math.min((currentPage - 1) * pageSize + 1, filteredFindings.length)}–
-              {Math.min(currentPage * pageSize, filteredFindings.length)} of {filteredFindings.length} review items
-            </div>
-            <div className="flex items-center gap-1.5 self-end sm:self-auto">
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={currentPage <= 1}
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                className="text-[10px] py-0.5 px-2"
-              >
-                Previous
-              </Button>
-              <span className="px-2 text-[#cbd5e1]">
-                Page {currentPage} of {totalPages}
-              </span>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={currentPage >= totalPages}
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                className="text-[10px] py-0.5 px-2"
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
-      </Card>
+                              {/* 4. Signal Type */}
+                              <td className="px-3.5 py-2.5 align-middle">
+                                <span className="inline-block px-2 py-0.5 rounded font-mono text-[10px] font-medium bg-[#111622] text-[#f59e0b] border border-[#212c3d] truncate max-w-[140px]">
+                                  {item.signalType.replace(/_/g, ' ')}
+                                </span>
+                              </td>
 
-      {/* ========================================================================= */}
-      {/* 5. CONTEXTUAL DETAIL DRAWER (Section 30)                                  */}
-      {/* ========================================================================= */}
+                              {/* 5. Evidence Count */}
+                              <td className="px-3.5 py-2.5 align-middle text-center">
+                                <div className="inline-flex flex-col items-center">
+                                  <span className="font-mono text-[11px] font-bold text-[#f1f5f9]">
+                                    {evidenceCount} Records
+                                  </span>
+                                  <span className="text-[9px] font-mono text-[#10b981]">
+                                    Strength: {item.evidenceStrength}
+                                  </span>
+                                </div>
+                              </td>
+
+                              {/* 6. Score */}
+                              <td className="px-3.5 py-2.5 align-middle">
+                                <div className="flex flex-col font-mono text-[11px]">
+                                  <span className="font-bold text-[#10b981]">{score}%</span>
+                                  <span className="text-[9px] text-[#64748b]">Confidence</span>
+                                </div>
+                              </td>
+
+                              {/* 7. Assignment & Age */}
+                              <td className="px-3.5 py-2.5 align-middle">
+                                <div className="flex flex-col font-mono text-[11px]">
+                                  <span className="text-[#cbd5e1] truncate max-w-[140px]">
+                                    {item.decidedBy || 'Unassigned (Lead)'}
+                                  </span>
+                                  <span className="text-[10px] text-[#64748b] flex items-center gap-1">
+                                    <Calendar className="w-2.5 h-2.5" />
+                                    <span>{ageDisplay}</span>
+                                  </span>
+                                </div>
+                              </td>
+
+                              {/* 8. Status */}
+                              <td className="px-3.5 py-2.5 align-middle">
+                                <StatusBadge status={item.status} />
+                              </td>
+
+                              {/* 9. Action (Existing Actions Only) */}
+                              <td 
+                                className="px-3.5 py-2.5 align-middle text-right"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <div className="flex items-center justify-end gap-1.5">
+                                  {item.evidenceStrength === 'LOW' && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => handleOpenEvidenceDemand(item)}
+                                      className="text-[10px] font-mono py-1 px-2 border-amber-500/40 text-amber-300 hover:bg-amber-500/20"
+                                      title="Request statutory evidence"
+                                    >
+                                      Demand
+                                    </Button>
+                                  )}
+
+                                  <button
+                                    onClick={() => setDrawerFinding(item)}
+                                    className="p-1.5 rounded bg-[#111622] border border-[#212c3d] text-[#8c90a0] hover:text-[#f1f5f9] transition-colors"
+                                    title="Quick Preview"
+                                  >
+                                    <Eye className="w-3.5 h-3.5" />
+                                  </button>
+
+                                  <Button
+                                    size="sm"
+                                    variant="primary"
+                                    iconRight={<ArrowRight className="w-3 h-3" />}
+                                    onClick={() => handleOpenFinding(item.id)}
+                                    className="text-[11px] font-mono py-1 px-2.5"
+                                  >
+                                    Review
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {!isCollapsed && group.count === 0 && (
+                  <div className="p-4 text-center text-[12px] font-mono text-[#64748b] bg-[#0d121a]">
+                    No items in this priority tier require review.
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 4. CONTEXTUAL DETAIL DRAWER (Preserved existing review functionality) */}
       <Drawer
         isOpen={Boolean(drawerFinding)}
         onClose={() => setDrawerFinding(null)}
         title={drawerFinding ? `${drawerFinding.id} — ${drawerFinding.cseId}` : ''}
-        subtitle="Supervisory Finding Context Preview"
+        subtitle="Supervisory Finding Context"
         width="md"
       >
         {drawerFinding && (
           <div className="space-y-4 text-[12px]">
-            {/* Badges */}
             <div className="flex flex-wrap items-center gap-2">
               <PriorityBadge priority={drawerFinding.priority} />
               <StatusBadge status={drawerFinding.status} />
-              <span className="px-2 py-0.5 rounded bg-[#182335] text-[#93c5fd] font-mono text-[10px] border border-[#263750]">
+              <span className="px-2 py-0.5 rounded bg-[#111622] text-[#f59e0b] font-mono text-[10px] border border-[#212c3d]">
                 {drawerFinding.signalType.replace(/_/g, ' ')}
               </span>
-              <span className="px-2 py-0.5 rounded bg-[#161e29] text-[#cbd5e1] font-mono text-[10px] border border-[#212c3d]">
+              <span className="px-2 py-0.5 rounded bg-[#111622] text-[#cbd5e1] font-mono text-[10px] border border-[#212c3d]">
                 Control: {drawerFinding.controlId}
               </span>
             </div>
 
-            {/* Title & Description */}
-            <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] space-y-1.5">
+            <div className="p-3 rounded bg-[#0d121a] border border-[#212c3d] space-y-1.5">
               <div className="text-[13px] font-bold text-[#f1f5f9]">
                 {drawerFinding.title}
               </div>
@@ -678,33 +762,31 @@ export const ReviewQueuePage: React.FC = () => {
               </p>
             </div>
 
-            {/* Expected vs Observed Summary */}
-            <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] space-y-2">
+            <div className="p-3 rounded bg-[#0d121a] border border-[#212c3d] space-y-2">
               <div className="text-[10px] font-mono uppercase text-[#64748b]">Analytical Discrepancy</div>
               <div className="space-y-1 text-[11px]">
                 <div>
-                  <span className="text-[#10b981] font-mono font-semibold">Expected: </span>
+                  <span className="text-[#10b981] font-mono font-semibold">Expected State: </span>
                   <span className="text-[#cbd5e1]">{drawerFinding.expectedState}</span>
                 </div>
                 <div>
-                  <span className="text-rose-300 font-mono font-semibold">Observed: </span>
+                  <span className="text-rose-400 font-mono font-semibold">Observed Gap: </span>
                   <span className="text-[#cbd5e1]">{drawerFinding.observedState}</span>
                 </div>
               </div>
             </div>
 
-            {/* Evidence & Provenance */}
-            <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] space-y-1.5 font-mono text-[11px]">
+            <div className="p-3 rounded bg-[#0d121a] border border-[#212c3d] space-y-1.5 font-mono text-[11px]">
               <div className="flex justify-between">
                 <span className="text-[#64748b]">Evidence Strength:</span>
                 <span className="text-[#10b981] font-bold">{drawerFinding.evidenceStrength}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#64748b]">Completeness:</span>
+                <span className="text-[#64748b]">Confidence Score:</span>
                 <span className="text-[#60a5fa] font-bold">{drawerFinding.completeness}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#64748b]">Supporting Telemetry:</span>
+                <span className="text-[#64748b]">Supporting Records:</span>
                 <span className="text-[#cbd5e1]">{drawerFinding.sourceEvidence.length} records</span>
               </div>
               <div className="flex justify-between">
@@ -713,7 +795,6 @@ export const ReviewQueuePage: React.FC = () => {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="pt-2 flex flex-col gap-2">
               <Button
                 variant="primary"
@@ -723,7 +804,7 @@ export const ReviewQueuePage: React.FC = () => {
                   setDrawerFinding(null);
                   handleOpenFinding(drawerFinding.id);
                 }}
-                className="w-full justify-center bg-[#1d4ed8] hover:bg-[#2563eb]"
+                className="w-full justify-center"
               >
                 Open in Examiner Workspace
               </Button>
@@ -733,11 +814,12 @@ export const ReviewQueuePage: React.FC = () => {
                   size="sm"
                   onClick={() => {
                     setDrawerFinding(null);
+                    setActiveCseId(drawerFinding.cseId);
                     navigate(`/supervision/cses/${drawerFinding.cseId}`);
                   }}
                   className="w-full justify-center text-[11px] font-mono"
                 >
-                  View CSE Profile
+                  CSE Dossier
                 </Button>
                 <Button
                   variant="outline"
@@ -757,14 +839,12 @@ export const ReviewQueuePage: React.FC = () => {
         )}
       </Drawer>
 
-      {/* ========================================================================= */}
-      {/* 6. REQUEST EVIDENCE MODAL (Section 24)                                    */}
-      {/* ========================================================================= */}
+      {/* 5. REQUEST EVIDENCE DEMAND MODAL (Preserved existing functionality) */}
       {evidenceModalFinding && (
         <Modal
           isOpen={Boolean(evidenceModalFinding)}
           onClose={() => setEvidenceModalFinding(null)}
-          title="Request Additional Evidence"
+          title="Request Statutory Evidence Demand"
           maxWidth="md"
         >
           <div className="space-y-4 text-[12px]">
@@ -772,7 +852,7 @@ export const ReviewQueuePage: React.FC = () => {
               Dispatch a formal statutory evidence demand to the Critical Sector Entity compliance liaison under Section 70B regulatory powers.
             </p>
 
-            <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] font-mono space-y-1.5">
+            <div className="p-3 rounded bg-[#0d121a] border border-[#212c3d] font-mono space-y-1.5">
               <div className="flex justify-between">
                 <span className="text-[#64748b]">Finding ID:</span>
                 <span className="text-[#60a5fa] font-bold">{evidenceModalFinding.id}</span>
@@ -793,7 +873,7 @@ export const ReviewQueuePage: React.FC = () => {
 
             <div className="space-y-1.5">
               <label className="text-[11px] font-mono uppercase text-[#94a3b8] block">
-                Requested Evidence Artifact / Specification:
+                Requested Evidence Specification:
               </label>
               <textarea
                 value={requestedEvidenceText}
