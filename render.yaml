@@ -1,0 +1,71 @@
+# Render Blueprint Specification for SATARK / SAT-SA
+# Reference: https://render.com/docs/blueprint-spec
+
+services:
+  # ---------------------------------------------------------------------------
+  # Backend API Service (FastAPI)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: sat-sa-backend
+    runtime: python
+    rootDir: backend
+    plan: standard
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: bash entrypoint.sh
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: APP_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: AUTO_MIGRATE
+        value: "true"
+      - key: AUTO_SEED
+        value: "true"
+      - key: DB_SQLITE_FALLBACK_ON_ERROR
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sat-sa-postgres
+          property: connectionString
+      - key: BACKEND_CORS_ORIGINS
+        value: '["*"]'
+
+  # ---------------------------------------------------------------------------
+  # Frontend Static Site (React / Vite)
+  # ---------------------------------------------------------------------------
+  - type: web
+    name: sat-sa-frontend
+    runtime: static
+    rootDir: frontend
+    plan: static
+    region: oregon
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      # Proxy /api requests to backend service
+      - type: rewrite
+        source: /api/*
+        destination: https://sat-sa-backend.onrender.com/api/*
+      # Single-Page Application (SPA) routing fallback
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: VITE_API_BASE_URL
+        value: ""
+
+# -----------------------------------------------------------------------------
+# Managed PostgreSQL Database
+# -----------------------------------------------------------------------------
+databases:
+  - name: sat-sa-postgres
+    plan: standard
+    region: oregon
+    databaseName: sat_sa
+    user: sat_admin
