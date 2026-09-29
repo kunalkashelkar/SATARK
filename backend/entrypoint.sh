@@ -45,5 +45,6 @@ if [ "${AUTO_SEED:-true}" = "true" ]; then
     }
 fi
 
-echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [INFO] Starting Uvicorn production server on port ${API_PORT:-8001}..."
-exec uvicorn app.main:app --host "${API_HOST:-0.0.0.0}" --port "${API_PORT:-8001}" --workers "${WORKERS:-2}" --log-level "${LOG_LEVEL:-info}"
+SERVER_PORT="${PORT:-${API_PORT:-8001}}"
+echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] [INFO] Starting Uvicorn production server on port ${SERVER_PORT}..."
+exec uvicorn app.main:app --host "${API_HOST:-0.0.0.0}" --port "${SERVER_PORT}" --workers "${WORKERS:-1}" --log-level "${LOG_LEVEL:-info}"
