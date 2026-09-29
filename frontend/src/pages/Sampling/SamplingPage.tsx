@@ -40,7 +40,8 @@ import {
   Drawer,
   LoadingState,
   EmptyState,
-  ErrorState
+  ErrorState,
+  PageHeader
 } from '@/components/common';
 import { samplingApi } from '@/api/sampling';
 
@@ -300,60 +301,43 @@ export const SamplingPage: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* 1. SAMPLING CONTEXT HEADER */}
-      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1.5 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-[18px] md:text-[20px] font-semibold text-[#f1f5f9] tracking-tight">
-                Supervisory Sampling Engine
-              </h1>
-              <span className="text-[#475569]">•</span>
-              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-[#1f6feb]/20 text-[#60a5fa] border border-[#1f6feb]/30">
-                {contextData.totalRecommended} Cases Recommended
-              </span>
-              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
-                Status: {contextData.samplingStatus}
-              </span>
-            </div>
-
-            <p className="text-[12px] text-[#94a3b8]">
-              Risk-weighted allocation of examiner manual investigation bandwidth answering: <strong className="text-[#cbd5e1]">Why were these records selected for examination?</strong>
-            </p>
-
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#64748b] font-mono pt-0.5">
-              <span>Assessment: <strong className="text-[#cbd5e1]">{contextData.assessmentTitle}</strong></span>
-              <span>•</span>
-              <span>Scope: <strong className="text-[#60a5fa]">{contextData.cseScope}</strong></span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-[#64748b]" />
-                <span>Last Run: <strong className="text-[#cbd5e1]">{contextData.lastRunTimestamp}</strong></span>
-              </span>
-            </div>
+      <PageHeader
+        title="Sampling"
+        subtitle="Representative and risk-based sample sets"
+        metadata={
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              {contextData.totalRecommended} Cases Recommended
+            </span>
+            <span>•</span>
+            <span>Assessment: {contextData.assessmentTitle}</span>
+            <span>•</span>
+            <span>Scope: {contextData.cseScope}</span>
+            <span>•</span>
+            <span>Last Run: {contextData.lastRunTimestamp}</span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#212c3d]">
+        }
+        actions={
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={handleRefresh}
               icon={<RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
-              title="Synchronize sampling pool from backend"
             >
               Sync
             </Button>
             <Button
               variant="outline"
               size="sm"
-              icon={<Download className="w-3.5 h-3.5 text-[#8c90a0]" />}
+              icon={<Download className="w-3.5 h-3.5" />}
               onClick={handleExportSamples}
-              title="Export stratified sampling package as CSV"
             >
               Export
             </Button>
           </div>
-        </div>
+        }
+      />
 
         {/* Real Context KPI Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3 mt-3 border-t border-[#212c3d]">
@@ -382,7 +366,6 @@ export const SamplingPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Dismissible Feedback Banner */}
       {toastMessage && (

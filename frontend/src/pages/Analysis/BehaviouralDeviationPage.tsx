@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   PageContainer, 
+  PageHeader,
   PriorityBadge, 
   StatusBadge, 
   Button,
@@ -340,90 +341,51 @@ export const BehaviouralDeviationPage: React.FC<{ forcedSlug?: string }> = () =>
   return (
     <PageContainer>
       <div className="space-y-6 pb-12">
-        {/* Navigation Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs font-mono text-[#94a3b8]">
-          <Link to="/analysis" className="hover:text-[#38bdf8] transition-colors flex items-center gap-1">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Analysis Hub
-          </Link>
-          <span>/</span>
-          <span className="text-[#f1f5f9] font-medium">Behavioural Deviation</span>
-        </div>
-
-        {/* 1. Assessment Context Header */}
-        <div className="bg-[#111622] border border-[#212c3d] rounded-xl p-5 shadow-sm">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-[#38bdf8]/10 text-[#38bdf8] border border-[#38bdf8]/20">
-                  <Brain className="w-6 h-6" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-[#f1f5f9] tracking-tight">
-                    Behavioural Deviation Analysis
-                  </h1>
-                  <p className="text-xs text-[#94a3b8] mt-0.5 font-medium">
-                    PRIMARY QUESTION: <span className="text-[#38bdf8] font-semibold">&ldquo;Has the SOC&apos;s observed operational behaviour deviated from its historical baseline?&rdquo;</span>
-                  </p>
-                </div>
-              </div>
+        {/* 1. STANDARDIZED PAGE HEADER */}
+        <PageHeader
+          title="Behavioural Deviation"
+          subtitle="Operator activity patterns and triage shifts"
+          badge={
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950/60 text-sky-300 border border-sky-500/30 font-semibold uppercase">
+              Engine 06
+            </span>
+          }
+          breadcrumbs={
+            <Link
+              to="/analysis"
+              className="inline-flex items-center gap-1.5 text-[#94a3b8] hover:text-[#f8fafc] transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Analysis Hub</span>
+            </Link>
+          }
+          metadata={
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[#cbd5e1] font-semibold">{selectedCse === 'ALL' ? 'All Regulated CSEs' : (currentCseInfo?.cseName || selectedCse)}</span>
+              <span>•</span>
+              <span>Cycle: Q3 2026 · Method: Z-Score (3σ)</span>
+              <span>•</span>
+              <span>Rule: BEHAV-DEV-1.2</span>
             </div>
-
-            {/* Assessment Scope & Engine Metadata */}
-            <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-              <div className="bg-[#0b0f17] border border-[#212c3d] px-3 py-1.5 rounded-lg text-[#94a3b8] flex items-center gap-2">
-                <Calendar className="w-3.5 h-3.5 text-[#38bdf8]" />
-                <span>Cycle: <strong className="text-[#f1f5f9]">Q3-2026</strong></span>
-              </div>
-              <div className="bg-[#0b0f17] border border-[#212c3d] px-3 py-1.5 rounded-lg text-[#94a3b8] flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Evaluated: <strong className="text-[#f1f5f9]">{lastRefreshed}</strong></span>
-              </div>
-              <div className="bg-[#0b0f17] border border-[#212c3d] px-3 py-1.5 rounded-lg text-[#94a3b8] flex items-center gap-2">
-                <Scale className="w-3.5 h-3.5 text-purple-400" />
-                <span>Rule: <strong className="text-[#f1f5f9]">BEHAV-DEV-1.2</strong></span>
-              </div>
+          }
+          actions={
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/50 text-emerald-400 border border-emerald-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Active
+              </span>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={fetchSignals}
                 disabled={isLoading}
-                className="gap-1.5 text-xs border-[#212c3d] hover:bg-[#1e293b]"
+                icon={<RotateCcw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
               >
-                <RotateCcw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-                Refresh
+                Sync
               </Button>
             </div>
-          </div>
-
-          {/* Context Banner */}
-          <div className="mt-4 pt-4 border-t border-[#212c3d]/60 grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
-            <div className="bg-[#0b0f17]/60 p-2.5 rounded-lg border border-[#212c3d]/60">
-              <span className="text-[#64748b] block font-mono text-[11px]">Assessment Scope</span>
-              <span className="font-semibold text-[#f1f5f9] mt-0.5 block truncate">
-                {selectedCse === 'ALL' ? 'All Active Critical Infrastructure' : (currentCseInfo?.cseName || selectedCse)}
-              </span>
-            </div>
-            <div className="bg-[#0b0f17]/60 p-2.5 rounded-lg border border-[#212c3d]/60">
-              <span className="text-[#64748b] block font-mono text-[11px]">Analytical Method</span>
-              <span className="font-semibold text-emerald-400 mt-0.5 block">
-                Z-Score Baseline Distribution (3σ)
-              </span>
-            </div>
-            <div className="bg-[#0b0f17]/60 p-2.5 rounded-lg border border-[#212c3d]/60">
-              <span className="text-[#64748b] block font-mono text-[11px]">Baseline Window</span>
-              <span className="font-semibold text-[#f1f5f9] mt-0.5 block">
-                Historical Operational Profile (90 Days)
-              </span>
-            </div>
-            <div className="bg-[#0b0f17]/60 p-2.5 rounded-lg border border-[#212c3d]/60">
-              <span className="text-[#64748b] block font-mono text-[11px]">Deviations Identified</span>
-              <span className="font-semibold text-amber-400 mt-0.5 block font-mono">
-                {metricItems.length} Material Discrepancies
-              </span>
-            </div>
-          </div>
-        </div>
+          }
+        />
 
         {/* 2. Baseline vs Current Visualization */}
         <div className="bg-[#111622] border border-[#212c3d] rounded-xl p-5 shadow-sm">

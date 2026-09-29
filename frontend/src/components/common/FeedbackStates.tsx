@@ -1,5 +1,7 @@
 import React from 'react';
+import { AlertTriangle, Inbox, RefreshCw } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { Button } from './Button';
 
 interface EmptyStateProps {
   title?: string;
@@ -11,7 +13,7 @@ interface EmptyStateProps {
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
   title = 'No records found',
-  description = 'There are no items matching the current filter criteria.',
+  description = 'No telemetry matches the selected supervisory filter criteria.',
   icon,
   action,
   className,
@@ -19,16 +21,16 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center p-8 text-center rounded-lg border border-dashed border-[#262a31] bg-[#181c22]/50 space-y-3',
+        'flex flex-col items-center justify-center p-6 text-center rounded-md border border-[#212c3d] bg-[#10151e] space-y-2.5',
         className
       )}
     >
-      <div className="w-10 h-10 rounded-full bg-[#1c2026] flex items-center justify-center text-[#8c90a0]">
-        {icon || <span className="material-symbols-outlined text-[20px]">inbox</span>}
+      <div className="w-8 h-8 rounded-full bg-[#131922] border border-[#212c3d] flex items-center justify-center text-[#64748b]">
+        {icon || <Inbox className="w-4 h-4" />}
       </div>
-      <div className="space-y-1">
-        <h4 className="text-[14px] font-semibold text-[#dfe2eb]">{title}</h4>
-        <p className="text-[12px] text-[#8c90a0] max-w-sm">{description}</p>
+      <div className="space-y-0.5 max-w-sm">
+        <h4 className="text-[13px] font-semibold text-[#f1f5f9]">{title}</h4>
+        <p className="text-[11px] text-[#94a3b8]">{description}</p>
       </div>
       {action && <div className="pt-1">{action}</div>}
     </div>
@@ -47,12 +49,12 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center p-12 text-center space-y-3',
+        'flex flex-col items-center justify-center p-8 text-center space-y-2.5',
         className
       )}
     >
-      <div className="w-8 h-8 rounded-full border-2 border-[#1f6feb] border-t-transparent animate-spin" />
-      <p className="text-[12px] font-mono text-[#8c90a0] tracking-wide">{message}</p>
+      <div className="w-6 h-6 rounded-full border-2 border-[#3b82f6] border-t-transparent animate-spin" />
+      <p className="text-[11px] font-mono text-[#94a3b8] tracking-wider uppercase">{message}</p>
     </div>
   );
 };
@@ -65,32 +67,34 @@ interface ErrorStateProps {
 }
 
 export const ErrorState: React.FC<ErrorStateProps> = ({
-  title = 'Telemetry ingestion error',
-  message = 'Failed to load analytical model or telemetry data.',
+  title = 'Telemetry retrieval error',
+  message = 'Failed to retrieve analytical signals or assessment telemetry.',
   onRetry,
   className,
 }) => {
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center p-8 text-center rounded-lg border border-rose-500/30 bg-rose-950/15 space-y-3',
+        'flex flex-col items-center justify-center p-6 text-center rounded-md border border-rose-500/30 bg-rose-950/15 space-y-2.5',
         className
       )}
     >
-      <div className="w-10 h-10 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center">
-        <span className="material-symbols-outlined text-[20px]">warning</span>
+      <div className="w-8 h-8 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center">
+        <AlertTriangle className="w-4 h-4" />
       </div>
-      <div className="space-y-1">
-        <h4 className="text-[14px] font-semibold text-rose-300">{title}</h4>
-        <p className="text-[12px] text-[#c2c6d6] max-w-sm">{message}</p>
+      <div className="space-y-0.5 max-w-sm">
+        <h4 className="text-[13px] font-semibold text-rose-300">{title}</h4>
+        <p className="text-[11px] text-[#94a3b8]">{message}</p>
       </div>
       {onRetry && (
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onRetry}
-          className="mt-2 px-3 py-1.5 rounded-md bg-[#262a31] hover:bg-[#323742] text-[12px] font-medium text-[#dfe2eb] border border-[#3b414d]"
+          icon={<RefreshCw className="w-3.5 h-3.5" />}
         >
-          Retry Ingestion
-        </button>
+          Retry
+        </Button>
       )}
     </div>
   );

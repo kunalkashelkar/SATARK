@@ -5,7 +5,8 @@ import {
   PriorityBadge, 
   StatusBadge, 
   Button,
-  Drawer
+  Drawer,
+  PageHeader
 } from '@/components/common';
 import { 
   AnalyticsSignal, 
@@ -372,64 +373,52 @@ export const PeerBenchmarkingPage: React.FC<{ forcedSlug?: string }> = () => {
   return (
     <PageContainer>
       <div className="space-y-6 pb-12">
-        {/* Breadcrumb Navigation */}
-        <div className="flex items-center gap-2 text-xs font-mono text-[#94a3b8]">
-          <Link to="/analysis" className="hover:text-[#38bdf8] transition-colors flex items-center gap-1">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Analysis Hub
-          </Link>
-          <span>/</span>
-          <span className="text-[#f1f5f9] font-medium">Peer Benchmarking</span>
-        </div>
-
-        {/* 1. Peer Cohort Context Header & Strict Confidentiality Notice */}
-        <div className="bg-[#111622] border border-[#212c3d] rounded-xl p-5 shadow-sm">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                  <Users className="w-6 h-6" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-[#f1f5f9] tracking-tight">
-                    Peer Benchmarking Analysis
-                  </h1>
-                  <p className="text-xs text-[#94a3b8] mt-0.5 font-medium">
-                    PRIMARY QUESTION: <span className="text-[#38bdf8] font-semibold">&ldquo;How does the selected CSE compare with its authorized peer cohort?&rdquo;</span>
-                  </p>
-                </div>
-              </div>
+        <PageHeader
+          title="Peer Benchmarking"
+          subtitle="Cross-entity cohort variance and baselines"
+          breadcrumbs={[
+            { label: 'Analysis Hub', href: '/analysis' },
+            { label: 'Peer Benchmarking' }
+          ]}
+          metadata={
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                Engine 08
+              </span>
+              <span>•</span>
+              <span>Cohort: {peerCohortInfo.cohortName} (N={peerCohortInfo.cohortSize})</span>
+              <span>•</span>
+              <span>Statutory Anonymized</span>
             </div>
-
-            {/* Entity Selector & Cohort Scope */}
-            <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-              <div className="flex items-center bg-[#0b0f17] border border-[#212c3d] rounded-lg px-2.5 py-1 text-[#f1f5f9]">
-                <Building2 className="w-3.5 h-3.5 text-[#38bdf8] mr-1.5" />
+          }
+          actions={
+            <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+              <div className="flex items-center bg-[#131922] border border-[#212c3d] rounded-md px-2.5 py-1 text-[#f1f5f9]">
+                <Building2 className="w-3.5 h-3.5 text-[#3b82f6] mr-1.5" />
                 <select
                   value={selectedCse}
                   onChange={(e) => setSelectedCse(e.target.value)}
                   className="bg-transparent border-none text-xs text-[#f1f5f9] focus:outline-none cursor-pointer"
                 >
                   {cses.map(c => (
-                    <option key={c.id} value={c.cseId || c.id} className="bg-[#0b0f17] text-[#f1f5f9]">
+                    <option key={c.id} value={c.cseId || c.id} className="bg-[#131922] text-[#f1f5f9]">
                       {c.cseId || c.id} - {c.cseName}
                     </option>
                   ))}
                 </select>
               </div>
 
-              {/* Sector Filter */}
-              <div className="flex items-center bg-[#0b0f17] border border-[#212c3d] rounded-lg px-2.5 py-1 text-[#94a3b8]">
+              <div className="flex items-center bg-[#131922] border border-[#212c3d] rounded-md px-2.5 py-1 text-[#94a3b8]">
                 <span className="text-[#64748b] mr-1">Sector:</span>
                 <select
                   value={selectedSector}
                   onChange={(e) => setSelectedSector(e.target.value)}
                   className="bg-transparent border-none text-xs text-[#f1f5f9] focus:outline-none cursor-pointer"
                 >
-                  <option value="ALL" className="bg-[#0b0f17]">All Authorized Sectors</option>
-                  <option value="Power & Energy" className="bg-[#0b0f17]">Power & Energy</option>
-                  <option value="Banking & Financial" className="bg-[#0b0f17]">Banking & Financial</option>
-                  <option value="Telecom & ICT" className="bg-[#0b0f17]">Telecom & ICT</option>
+                  <option value="ALL" className="bg-[#131922]">All Authorized Sectors</option>
+                  <option value="Power & Energy" className="bg-[#131922]">Power & Energy</option>
+                  <option value="Banking & Financial" className="bg-[#131922]">Banking & Financial</option>
+                  <option value="Telecom & ICT" className="bg-[#131922]">Telecom & ICT</option>
                 </select>
               </div>
 
@@ -438,13 +427,13 @@ export const PeerBenchmarkingPage: React.FC<{ forcedSlug?: string }> = () => {
                 size="sm"
                 onClick={fetchSignals}
                 disabled={isLoading}
-                className="gap-1.5 text-xs border-[#212c3d] hover:bg-[#1e293b]"
+                icon={<RotateCcw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
               >
-                <RotateCcw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-                Refresh
+                Sync
               </Button>
             </div>
-          </div>
+          }
+        />
 
           {/* Statutory Confidentiality & Non-Identification Enclave Badge */}
           <div className="mt-4 p-3 rounded-lg bg-[#0b0f17] border border-[#212c3d] flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
@@ -488,7 +477,6 @@ export const PeerBenchmarkingPage: React.FC<{ forcedSlug?: string }> = () => {
               </span>
             </div>
           </div>
-        </div>
 
         {/* 3. Restrained Visual Comparison Chart */}
         <div className="bg-[#111622] border border-[#212c3d] rounded-xl p-5 shadow-sm">

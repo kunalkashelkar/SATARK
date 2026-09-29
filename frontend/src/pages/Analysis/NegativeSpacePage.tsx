@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   PageContainer, 
+  PageHeader,
   PriorityBadge, 
   StatusBadge, 
   Button,
@@ -35,7 +36,8 @@ import {
   SlidersHorizontal,
   Compass,
   FileSearch,
-  ScanEye
+  ScanEye,
+  Activity
 } from 'lucide-react';
 
 interface NegativeSpaceMatrixRow {
@@ -291,70 +293,45 @@ export const NegativeSpacePage: React.FC<{ forcedSlug?: string }> = () => {
     <PageContainer>
       <div className="space-y-6">
 
-        {/* 1. HEADER (Section 1) */}
-        <div className="rounded-xl bg-gradient-to-b from-[#111726] to-[#0c1017] border border-[#1f293d] p-5 shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2.5">
-                <Link
-                  to="/analysis"
-                  className="p-1 rounded bg-[#161f30] text-[#94a3b8] hover:text-[#f8fafc] hover:bg-[#1e293b] border border-[#2d3748] transition-colors"
-                  title="Back to Analysis Hub"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Link>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#38bdf8] text-[24px]">contrast</span>
-                  <h1 className="text-xl md:text-2xl font-bold tracking-tight text-[#f8fafc] font-sans">
-                    Negative Space Analysis
-                  </h1>
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950/60 text-sky-300 border border-sky-500/30 font-semibold uppercase tracking-wider">
-                  Engine 02 • Supervisory Telemetry Audit
-                </span>
-              </div>
-
-              {/* 2. EXPLANATION (Section 2) */}
-              <p className="text-[13px] text-[#cbd5e1] max-w-2xl leading-relaxed">
-                Identifies expected operational activity for which supporting evidence was not observed.
-              </p>
-              <div className="text-[12px] text-[#94a3b8] flex items-center gap-1.5 font-mono">
-                <span className="text-[#38bdf8] font-medium">Primary Supervisory Question:</span>
-                <span className="italic text-[#e2e8f0]">"What evidence or activity was expected but is missing?"</span>
-              </div>
+        {/* 1. STANDARDIZED PAGE HEADER */}
+        <PageHeader
+          title="Negative Space"
+          subtitle="Missing evidence and unobserved activity"
+          badge={
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950/60 text-sky-300 border border-sky-500/30 font-semibold uppercase">
+              Engine 02
+            </span>
+          }
+          breadcrumbs={
+            <Link
+              to="/analysis"
+              className="inline-flex items-center gap-1.5 text-[#94a3b8] hover:text-[#f8fafc] transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Analysis Hub</span>
+            </Link>
+          }
+          metadata={
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[#cbd5e1] font-semibold">{selectedCse !== 'ALL' ? selectedCse : 'All Regulated CSEs'}</span>
+              <span>•</span>
+              <span>{filteredRows.length} Omission Signals</span>
+              <span>•</span>
+              <span>Rule: NEG-SPACE-1.2 · Model: v1.2.0</span>
             </div>
-
-            {/* Scope & Engine Status Badges */}
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="px-3.5 py-2 rounded-lg bg-[#0d121c] border border-[#212c3d] text-right">
-                <div className="text-[10px] font-mono uppercase text-[#64748b]">Analytical Scope</div>
-                <div className="text-[13px] font-semibold text-[#f1f5f9] flex items-center justify-end gap-1.5 mt-0.5">
-                  <Building2 className="w-3.5 h-3.5 text-[#38bdf8]" />
-                  <span>{selectedCse !== 'ALL' ? selectedCse : 'All Regulated CSEs'}</span>
-                </div>
-                <div className="text-[11px] font-mono text-[#94a3b8]">
-                  {filteredRows.length} Omission Signal(s)
-                </div>
-              </div>
-
-              <div className="px-3.5 py-2 rounded-lg bg-[#0d121c] border border-[#212c3d]">
-                <div className="text-[10px] font-mono uppercase text-[#64748b]">Engine Status</div>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/50 text-emerald-400 border border-emerald-500/30">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Active Engine
-                  </span>
-                  <span className="text-[11px] font-mono text-[#cbd5e1]">
-                    {lastAnalysisTimestamp}
-                  </span>
-                </div>
-                <div className="text-[10px] font-mono text-[#64748b] mt-0.5">
-                  Rule: NEG-SPACE-1.2 • Model: v1.2.0
-                </div>
-              </div>
+          }
+          actions={
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/50 text-emerald-400 border border-emerald-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Active
+              </span>
+              <span className="text-[11px] font-mono text-[#cbd5e1]">
+                {lastAnalysisTimestamp}
+              </span>
             </div>
-          </div>
-        </div>
+          }
+        />
 
         {/* 7. FILTERS (Section 7) */}
         <div className="p-3.5 rounded-lg bg-[#0d121c] border border-[#212c3d] flex flex-wrap items-center justify-between gap-3">
@@ -451,15 +428,15 @@ export const NegativeSpacePage: React.FC<{ forcedSlug?: string }> = () => {
 
         {/* 4. VISUALIZE: EXPECTED → OBSERVED → MISSING (Section 4) */}
         {activeFocusRow && (
-          <div className="rounded-xl bg-[#111622] border border-[#212c3d] p-4 space-y-3 shadow-md">
+          <div className="rounded-md bg-[#131922] border border-[#212c3d] p-4 space-y-3 shadow-xs">
             <div className="flex items-center justify-between pb-2 border-b border-[#212c3d]">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#38bdf8] text-[20px]">timeline</span>
+                <Activity className="w-4 h-4 text-[#3b82f6]" />
                 <h2 className="text-[13px] font-semibold text-[#f1f5f9] uppercase tracking-wider font-mono">
-                  Negative Space Progression Pipeline: Expected → Observed → Missing
+                  Progression: Expected → Observed → Missing
                 </h2>
               </div>
-              <span className="text-[11px] font-mono text-[#38bdf8] bg-sky-950/40 px-2 py-0.5 rounded border border-sky-500/30">
+              <span className="text-[11px] font-mono text-[#60a5fa] bg-sky-950/40 px-2 py-0.5 rounded border border-sky-500/30">
                 {activeFocusRow.controlId} • {activeFocusRow.cseId}
               </span>
             </div>
@@ -540,27 +517,27 @@ export const NegativeSpacePage: React.FC<{ forcedSlug?: string }> = () => {
         )}
 
         {/* 3. EXPECTED VS OBSERVED MATRIX & 5. RESULTS TABLE (Sections 3 & 5) */}
-        <div className="rounded-xl bg-[#111622] border border-[#212c3d] overflow-hidden shadow-md">
-          <div className="p-3.5 border-b border-[#212c3d] flex items-center justify-between bg-[#0d121c]">
+        <div className="rounded-md bg-[#131922] border border-[#212c3d] overflow-hidden shadow-xs">
+          <div className="p-3.5 border-b border-[#212c3d] flex items-center justify-between bg-[#0e141c]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#38bdf8] text-[18px]">view_column</span>
+              <Layers className="w-4 h-4 text-[#3b82f6]" />
               <span className="text-[13px] font-semibold text-[#f1f5f9]">
                 Expected vs Observed Matrix ({filteredRows.length})
               </span>
             </div>
             <span className="text-[11px] font-mono text-[#94a3b8]">
-              Click row to inspect progression pipeline and view explainability
+              Select row to inspect
             </span>
           </div>
 
           {filteredRows.length === 0 ? (
-            <div className="p-16 text-center space-y-3">
-              <span className="material-symbols-outlined text-[#64748b] text-[40px]">check_circle</span>
-              <div className="text-[15px] font-semibold text-[#f1f5f9]">
-                No negative space omissions identified for the selected scope.
+            <div className="p-12 text-center space-y-2">
+              <CheckCircle2 className="w-8 h-8 text-[#64748b] mx-auto" />
+              <div className="text-[14px] font-semibold text-[#f1f5f9]">
+                No omissions identified
               </div>
               <p className="text-[12px] text-[#94a3b8] max-w-md mx-auto">
-                All expected operational activity and statutory evidence streams are confirmed present in the supervisory enclave vault.
+                All expected activity and evidence streams are confirmed present for the selected filters.
               </p>
               {(selectedControl !== 'ALL' || selectedCse !== 'ALL' || selectedSeverity !== 'ALL' || selectedStatus !== 'ALL' || searchQuery) && (
                 <Button
@@ -740,10 +717,9 @@ export const NegativeSpacePage: React.FC<{ forcedSlug?: string }> = () => {
                 <span className="text-[11px] font-mono text-[#94a3b8]">{selectedRow.updatedAt}</span>
               </div>
 
-              {/* Explainability Reasoning */}
-              <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1.5">
+              <div className="p-3.5 rounded-md bg-[#131922] border border-[#212c3d] space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#38bdf8] uppercase tracking-wider font-semibold">
-                  <span className="material-symbols-outlined text-[16px]">psychology</span>
+                  <Activity className="w-3.5 h-3.5 text-[#38bdf8]" />
                   Supervisory Negative Space Formulation
                 </div>
                 <p className="text-[12px] text-[#cbd5e1] leading-relaxed">

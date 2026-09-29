@@ -5,7 +5,8 @@ import {
   PriorityBadge, 
   StatusBadge, 
   Button,
-  Drawer
+  Drawer,
+  PageHeader
 } from '@/components/common';
 import { 
   AnalyticsSignal, 
@@ -626,55 +627,39 @@ export const CrossSourceConsistencyPage: React.FC<{ forcedSlug?: string }> = () 
   return (
     <PageContainer>
       <div className="space-y-6 pb-12">
-        {/* Navigation Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs font-mono text-[#94a3b8]">
-          <Link to="/analysis" className="hover:text-[#38bdf8] transition-colors flex items-center gap-1">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Analysis Hub
-          </Link>
-          <span>/</span>
-          <span className="text-[#f1f5f9] font-medium">Cross-Source Consistency</span>
-        </div>
-
-        {/* 1. Header & Context */}
-        <div className="bg-[#111622] border border-[#212c3d] rounded-xl p-5 shadow-sm">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
-                  <Split className="w-6 h-6" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-[#f1f5f9] tracking-tight">
-                    Cross-Source Consistency Analysis
-                  </h1>
-                  <p className="text-xs text-[#94a3b8] mt-0.5 font-medium">
-                    PRIMARY QUESTION: <span className="text-[#38bdf8] font-semibold">&ldquo;Do independent evidence sources tell a consistent story?&rdquo;</span>
-                  </p>
-                </div>
-              </div>
+        <PageHeader
+          title="Cross-Source Consistency"
+          subtitle="Telemetry reconciliation across telemetry feeds"
+          breadcrumbs={[
+            { label: 'Analysis Hub', href: '/analysis' },
+            { label: 'Cross-Source Consistency' }
+          ]}
+          metadata={
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                Engine 09
+              </span>
+              <span>•</span>
+              <span>Reconciled: {lastRefreshed}</span>
+              <span>•</span>
+              <span>Parity: {sourceParitySummary.rate}%</span>
             </div>
-
-            {/* Scope & Refresh */}
-            <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-              <div className="flex items-center bg-[#0b0f17] border border-[#212c3d] rounded-lg px-2.5 py-1 text-[#f1f5f9]">
-                <Building2 className="w-3.5 h-3.5 text-[#38bdf8] mr-1.5" />
+          }
+          actions={
+            <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+              <div className="flex items-center bg-[#131922] border border-[#212c3d] rounded-md px-2.5 py-1 text-[#f1f5f9]">
+                <Building2 className="w-3.5 h-3.5 text-[#3b82f6] mr-1.5" />
                 <select
                   value={selectedCse}
                   onChange={(e) => setSelectedCse(e.target.value)}
                   className="bg-transparent border-none text-xs text-[#f1f5f9] focus:outline-none cursor-pointer"
                 >
                   {cses.map(c => (
-                    <option key={c.id} value={c.cseId || c.id} className="bg-[#0b0f17] text-[#f1f5f9]">
+                    <option key={c.id} value={c.cseId || c.id} className="bg-[#131922] text-[#f1f5f9]">
                       {c.cseId || c.id} - {c.cseName}
                     </option>
                   ))}
                 </select>
-              </div>
-
-              <div className="bg-[#0b0f17] border border-[#212c3d] px-3 py-1.5 rounded-lg text-[#94a3b8] flex items-center gap-2">
-                <Clock className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Synchronized: <strong className="text-[#f1f5f9]">{lastRefreshed}</strong></span>
               </div>
 
               <Button
@@ -682,13 +667,13 @@ export const CrossSourceConsistencyPage: React.FC<{ forcedSlug?: string }> = () 
                 size="sm"
                 onClick={fetchSignals}
                 disabled={isLoading}
-                className="gap-1.5 text-xs border-[#212c3d] hover:bg-[#1e293b]"
+                icon={<RotateCcw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
               >
-                <RotateCcw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
                 Re-Correlate
               </Button>
             </div>
-          </div>
+          }
+        />
 
           {/* Context Banner */}
           <div className="mt-4 pt-4 border-t border-[#212c3d]/60 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
@@ -717,7 +702,6 @@ export const CrossSourceConsistencyPage: React.FC<{ forcedSlug?: string }> = () 
               </span>
             </div>
           </div>
-        </div>
 
         {/* 1. Source Overview Grid - Only where actual data exists */}
         <div className="bg-[#111622] border border-[#212c3d] rounded-xl p-5 shadow-sm">

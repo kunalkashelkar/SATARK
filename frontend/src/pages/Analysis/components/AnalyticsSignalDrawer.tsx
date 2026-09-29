@@ -17,7 +17,9 @@ import {
   AlertTriangle,
   ArrowRight,
   Database,
-  Filter
+  Filter,
+  Info,
+  Activity
 } from 'lucide-react';
 
 interface AnalyticsSignalDrawerProps {
@@ -101,7 +103,7 @@ export const AnalyticsSignalDrawer: React.FC<AnalyticsSignalDrawerProps> = ({
         {/* 2. Explainability: WHY WAS THIS SIGNAL GENERATED? (Section 23) */}
         <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1.5">
           <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#60a5fa] uppercase tracking-wider font-semibold">
-            <span className="material-symbols-outlined text-[16px]">info</span>
+            <Info className="w-4 h-4 text-[#3b82f6]" />
             Supervisory Signal Explainability
           </div>
           <p className="text-[12px] text-[#cbd5e1] leading-relaxed">
@@ -139,7 +141,7 @@ export const AnalyticsSignalDrawer: React.FC<AnalyticsSignalDrawerProps> = ({
 
             {/* Difference / Gap */}
             <div className="p-2.5 rounded bg-[#161e29] border border-amber-500/30 flex items-start gap-2">
-              <span className="material-symbols-outlined text-amber-400 text-[18px] shrink-0 mt-0.5">difference</span>
+              <Activity className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
               <div>
                 <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-semibold">
                   Identified Analytical Variance

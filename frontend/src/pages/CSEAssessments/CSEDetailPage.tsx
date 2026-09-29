@@ -16,7 +16,9 @@ import {
   Layers,
   Database,
   Eye,
-  Info
+  Info,
+  Activity,
+  GitBranch
 } from 'lucide-react';
 import { ImportEvidenceModal } from '@/components/evidence/ImportEvidenceModal';
 import {
@@ -29,7 +31,8 @@ import {
   StatusBadge,
   PriorityBadge,
   Button,
-  Drawer
+  Drawer,
+  PageHeader
 } from '@/components/common';
 
 export const CSEDetailPage: React.FC = () => {
@@ -97,94 +100,68 @@ export const CSEDetailPage: React.FC = () => {
       {/* ========================================================================= */}
       {/* 1. COMPACT PAGE HEADER (Sections 5 & 25)                                   */}
       {/* ========================================================================= */}
-      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 mb-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          
-          {/* Identity & Badges */}
-          <div className="space-y-1.5 min-w-0">
-            <div className="flex items-center gap-2">
-              <Link
-                to="/supervision/cses"
-                className="text-[11px] font-mono text-[#8c90a0] hover:text-[#60a5fa] transition-colors flex items-center gap-1"
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Assessments Portfolio</span>
-              </Link>
-              <span className="text-[#3a4454]">/</span>
-              <span className="text-[11px] font-mono text-[#cbd5e1]">{cse.cseId}</span>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-[18px] md:text-[20px] font-bold text-[#f1f5f9] tracking-tight">
-                {cse.cseId} — {cse.cseName}
-              </h1>
-            </div>
-
-            {/* Compact Metadata Row */}
-            <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-[#8c90a0]">
-              <span className="px-2 py-0.5 rounded bg-[#182335] text-[#93c5fd] border border-[#263750]">
-                Sector: {cse.sector}
-              </span>
-              <span className="px-2 py-0.5 rounded bg-[#161e29] text-[#cbd5e1] border border-[#212c3d]">
-                SOC: {cse.socType}
-              </span>
-              <span className="px-2 py-0.5 rounded bg-[#161e29] text-[#cbd5e1] border border-[#212c3d]">
-                Period: <strong className="text-[#f1f5f9]">{activePeriod}</strong>
-              </span>
-              <span className={`px-2 py-0.5 rounded border font-semibold ${
-                cse.status === 'Review Required' 
-                  ? 'bg-rose-500/15 text-rose-300 border-rose-500/30' 
-                  : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-              }`}>
-                {cse.status.toUpperCase()}
-              </span>
-              <PriorityBadge priority={cse.supervisoryPriority} />
-            </div>
+      <PageHeader
+        title={`${cse.cseId} — ${cse.cseName}`}
+        subtitle="Supervisory profile and assessment evidence posture"
+        breadcrumbs={[
+          { label: 'Assessments Portfolio', href: '/supervision/cses' },
+          { label: cse.cseId }
+        ]}
+        metadata={
+          <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono text-[#64748b]">
+            <span>Sector: {cse.sector}</span>
+            <span>•</span>
+            <span>SOC: {cse.socType}</span>
+            <span>•</span>
+            <span>Period: {activePeriod}</span>
+            <span>•</span>
+            <span className={`px-2 py-0.5 rounded border font-semibold ${
+              cse.status === 'Review Required' 
+                ? 'bg-rose-500/15 text-rose-300 border-rose-500/30' 
+                : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+            }`}>
+              {cse.status.toUpperCase()}
+            </span>
+            <PriorityBadge priority={cse.supervisoryPriority} />
           </div>
-
-          {/* Quick CSE Switcher & Actions */}
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-            {/* Quick CSE Switcher */}
-            <div className="flex items-center gap-1.5 bg-[#0e131b] border border-[#212c3d] rounded-md px-2.5 py-1">
-              <Building2 className="w-3.5 h-3.5 text-[#64748b]" />
+        }
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5 bg-[#131922] border border-[#212c3d] rounded-md px-2.5 py-1">
+              <Building2 className="w-3.5 h-3.5 text-[#3b82f6]" />
               <select
                 value={cse.cseId}
                 onChange={(e) => handleCseChange(e.target.value)}
-                className="bg-transparent text-[11px] font-mono text-[#cbd5e1] focus:outline-none cursor-pointer"
+                className="bg-transparent text-[11px] font-mono text-[#f1f5f9] focus:outline-none cursor-pointer"
               >
                 {cses.map((c) => (
-                  <option key={c.cseId} value={c.cseId} className="bg-[#111622] text-[#f1f5f9]">
+                  <option key={c.cseId} value={c.cseId} className="bg-[#131922] text-[#f1f5f9]">
                     {c.cseId} ({c.sector.split('/')[0].trim()})
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Action 1: Add Evidence */}
             <Button
               variant="primary"
               size="sm"
-              icon={<Upload className="w-3.5 h-3.5 text-white" />}
+              icon={<Upload className="w-3.5 h-3.5" />}
               onClick={() => setIsImportModalOpen(true)}
-              className="font-medium bg-[#1d4ed8] hover:bg-[#2563eb]"
             >
               + Add Evidence
             </Button>
 
-            {/* Action 2: Review Findings */}
             <Button
               variant="outline"
               size="sm"
               iconRight={<ArrowRight className="w-3.5 h-3.5" />}
               onClick={() => navigate(`/review?cseId=${cse.cseId}`)}
-              className="text-[12px] font-medium"
             >
               Review Findings ({cseFindings.length})
             </Button>
           </div>
-
-        </div>
-      </div>
+        }
+      />
 
       {/* ========================================================================= */}
       {/* 2. TOP STATUS SUMMARY (Section 7: Exactly 5 Compact Cards)                 */}
@@ -238,7 +215,7 @@ export const CSEDetailPage: React.FC = () => {
         <Card>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#212c3d]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#60a5fa] text-[18px]">difference</span>
+              <Activity className="w-4 h-4 text-[#3b82f6]" />
               <h2 className="text-[14px] font-bold text-[#f1f5f9] tracking-wide uppercase font-mono">
                 Claimed vs Observed Capability
               </h2>
@@ -307,7 +284,7 @@ export const CSEDetailPage: React.FC = () => {
         <Card>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#212c3d]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#60a5fa] text-[18px]">cloud_upload</span>
+              <Upload className="w-4 h-4 text-[#3b82f6]" />
               <h2 className="text-[14px] font-bold text-[#f1f5f9] tracking-wide uppercase font-mono">
                 Evidence Submission & Telemetry Ingestion
               </h2>
@@ -514,7 +491,7 @@ export const CSEDetailPage: React.FC = () => {
         <Card>
           <div className="flex items-center justify-between pb-3 border-b border-[#212c3d]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#60a5fa] text-[18px]">notification_important</span>
+              <AlertTriangle className="w-4 h-4 text-[#3b82f6]" />
               <h2 className="text-[14px] font-bold text-[#f1f5f9] tracking-wide uppercase font-mono">
                 Supervisory Signals & Deviations
               </h2>
@@ -641,7 +618,7 @@ export const CSEDetailPage: React.FC = () => {
         <Card>
           <div className="flex items-center justify-between pb-3 border-b border-[#212c3d]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#60a5fa] text-[18px]">gavel</span>
+              <ShieldCheck className="w-4 h-4 text-[#3b82f6]" />
               <h2 className="text-[14px] font-bold text-[#f1f5f9] tracking-wide uppercase font-mono">
                 Supervisory Findings ({cseFindings.length})
               </h2>
@@ -727,7 +704,7 @@ export const CSEDetailPage: React.FC = () => {
         <Card>
           <div className="flex items-center justify-between pb-3 border-b border-[#212c3d]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#60a5fa] text-[18px]">linear_scale</span>
+              <GitBranch className="w-4 h-4 text-[#3b82f6]" />
               <h2 className="text-[14px] font-bold text-[#f1f5f9] tracking-wide uppercase font-mono">
                 Operational Process Snapshot
               </h2>
@@ -778,7 +755,7 @@ export const CSEDetailPage: React.FC = () => {
         <Card>
           <div className="flex items-center justify-between pb-3 border-b border-[#212c3d]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#10b981] text-[18px]">verified</span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               <h2 className="text-[14px] font-bold text-[#f1f5f9] tracking-wide uppercase font-mono">
                 Remediation Status
               </h2>

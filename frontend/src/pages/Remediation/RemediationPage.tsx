@@ -31,7 +31,7 @@ import {
   Copy,
   FolderGit2
 } from 'lucide-react';
-import { StatusBadge, PriorityBadge, Button, Modal, PageContainer } from '@/components/common';
+import { StatusBadge, PriorityBadge, Button, Modal, PageContainer, PageHeader } from '@/components/common';
 
 interface RemediationPageProps {
   defaultStage?: 'open' | 'verification' | 'regression';
@@ -252,37 +252,24 @@ export const RemediationPage: React.FC<RemediationPageProps> = ({ defaultStage }
 
   return (
     <PageContainer>
-      {/* 1. STANDARDIZED SAT-SA PAGE HEADER */}
-      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1.5 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-[18px] md:text-[20px] font-semibold text-[#f1f5f9] tracking-tight">
-                Remediation Lifecycle
-              </h1>
-              <span className="text-[#475569]">•</span>
-              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-[#1f6feb]/20 text-[#60a5fa] border border-[#1f6feb]/30">
-                {remediations.length} Active Mandates
-              </span>
-              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
-                Lifecycle Verification
-              </span>
-            </div>
-
-            <p className="text-[12px] text-[#94a3b8]">
-              Corrective action tracking and verification gates. Primary question: <strong className="text-[#cbd5e1]">&ldquo;What is being done about confirmed findings, and has remediation been verified?&rdquo;</strong>
-            </p>
-
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#64748b] font-mono pt-0.5">
-              <span>Standard: <strong className="text-[#cbd5e1]">NCIIPC Mandatory Corrective Directives</strong></span>
-              <span>•</span>
-              <span>Scope: <strong className="text-[#60a5fa]">{cses.length} Critical Entities</strong></span>
-              <span>•</span>
-              <span>Audit Status: <strong className="text-emerald-400">Cryptographic Verification Active</strong></span>
-            </div>
+      <PageHeader
+        title="Remediation"
+        subtitle="Corrective actions and verification status"
+        metadata={
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              {remediations.length} Mandates
+            </span>
+            <span>•</span>
+            <span>Standard: NCIIPC Directives</span>
+            <span>•</span>
+            <span>Scope: {cses.length} Entities</span>
+            <span>•</span>
+            <span>Audit: Cryptographic Verification</span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#212c3d]">
+        }
+        actions={
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -297,12 +284,12 @@ export const RemediationPage: React.FC<RemediationPageProps> = ({ defaultStage }
                 size="sm"
                 iconRight={<ExternalLink className="w-3.5 h-3.5" />}
               >
-                Findings Workspace
+                Findings
               </Button>
             </Link>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* 2. ACTUAL SUMMARY STRIP */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">

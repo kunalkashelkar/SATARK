@@ -16,7 +16,9 @@ import {
   Gavel, 
   Info,
   ExternalLink,
-  GitFork
+  GitFork,
+  Activity,
+  SlidersHorizontal
 } from 'lucide-react';
 import {
   PageContainer,
@@ -221,7 +223,7 @@ export const FindingDetailPage: React.FC = () => {
           <Card className="space-y-4">
             <div className="flex items-center justify-between pb-2 border-b border-[#262a31]/60">
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[#afc6ff] text-[18px]">compare_arrows</span>
+                <Activity className="w-4 h-4 text-[#3b82f6]" />
                 <h3 className="text-[14px] md:text-[15px] font-semibold text-[#dfe2eb]">
                   Expected vs Observed Sequence
                 </h3>
@@ -409,7 +411,7 @@ export const FindingDetailPage: React.FC = () => {
                 variant="outline"
                 size="md"
                 className="w-full justify-between border-[#3b414d] text-[#c2c6d6] hover:bg-[#262a31]"
-                iconRight={<span className="material-symbols-outlined text-[15px]">published_with_changes</span>}
+                iconRight={<SlidersHorizontal className="w-3.5 h-3.5" />}
                 onClick={() => setModalAction('OVERRIDDEN' as any)}
               >
                 Override Model Weight

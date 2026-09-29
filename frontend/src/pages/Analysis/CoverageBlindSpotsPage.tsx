@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   PageContainer, 
+  PageHeader,
   PriorityBadge, 
   StatusBadge, 
   Button,
@@ -39,7 +40,8 @@ import {
   EyeOff,
   Radio,
   SlidersHorizontal,
-  HardDrive
+  HardDrive,
+  Activity
 } from 'lucide-react';
 
 export type CoverageState = 'COVERED' | 'PARTIAL' | 'MISSING' | 'UNKNOWN';
@@ -405,66 +407,45 @@ export const CoverageBlindSpotsPage: React.FC<{ forcedSlug?: string }> = () => {
     <PageContainer>
       <div className="space-y-6">
 
-        {/* HEADER */}
-        <div className="rounded-xl bg-gradient-to-b from-[#111726] to-[#0c1017] border border-[#1f293d] p-5 shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2.5">
-                <Link
-                  to="/analysis"
-                  className="p-1 rounded bg-[#161f30] text-[#94a3b8] hover:text-[#f8fafc] hover:bg-[#1e293b] border border-[#2d3748] transition-colors"
-                  title="Back to Analysis Hub"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Link>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#38bdf8] text-[24px]">radar</span>
-                  <h1 className="text-xl md:text-2xl font-bold tracking-tight text-[#f8fafc] font-sans">
-                    Coverage &amp; Blind Spots
-                  </h1>
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950/60 text-sky-300 border border-sky-500/30 font-semibold uppercase tracking-wider">
-                  Engine 03 • Telemetry &amp; Asset Perimeter Audit
-                </span>
-              </div>
-
-              {/* PRIMARY QUESTION */}
-              <div className="text-[13px] text-[#cbd5e1] flex flex-wrap items-center gap-1.5 pt-0.5 font-mono">
-                <span className="text-[#38bdf8] font-medium">Primary Supervisory Question:</span>
-                <span className="italic text-[#f1f5f9]">"Where does the available evidence/telemetry fail to cover expected supervisory requirements?"</span>
-              </div>
+        {/* 1. STANDARDIZED PAGE HEADER */}
+        <PageHeader
+          title="Coverage & Blind Spots"
+          subtitle="Perimeter monitoring and unmonitored assets"
+          badge={
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950/60 text-sky-300 border border-sky-500/30 font-semibold uppercase">
+              Engine 03
+            </span>
+          }
+          breadcrumbs={
+            <Link
+              to="/analysis"
+              className="inline-flex items-center gap-1.5 text-[#94a3b8] hover:text-[#f8fafc] transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Analysis Hub</span>
+            </Link>
+          }
+          metadata={
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[#cbd5e1] font-semibold">{selectedCse !== 'ALL' ? selectedCse : 'All Regulated CSEs'}</span>
+              <span>•</span>
+              <span>Cycle: Q3 2026 · Enclave Telemetry</span>
+              <span>•</span>
+              <span>Rule: COV-BLIND-1.3 · Model: v1.3.1</span>
             </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="px-3.5 py-2 rounded-lg bg-[#0d121c] border border-[#212c3d] text-right">
-                <div className="text-[10px] font-mono uppercase text-[#64748b]">Evaluation Scope</div>
-                <div className="text-[13px] font-semibold text-[#f1f5f9] flex items-center justify-end gap-1.5 mt-0.5">
-                  <Building2 className="w-3.5 h-3.5 text-[#38bdf8]" />
-                  <span>{selectedCse !== 'ALL' ? selectedCse : 'All Regulated CSEs'}</span>
-                </div>
-                <div className="text-[11px] font-mono text-[#94a3b8]">
-                  Cycle: Q3 2026 • Enclave Telemetry
-                </div>
-              </div>
-
-              <div className="px-3.5 py-2 rounded-lg bg-[#0d121c] border border-[#212c3d]">
-                <div className="text-[10px] font-mono uppercase text-[#64748b]">Engine Status</div>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/50 text-emerald-400 border border-emerald-500/30">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Active Engine
-                  </span>
-                  <span className="text-[11px] font-mono text-[#cbd5e1]">
-                    {lastAnalysisTimestamp}
-                  </span>
-                </div>
-                <div className="text-[10px] font-mono text-[#64748b] mt-0.5">
-                  Rule: COV-BLIND-1.3 • Model: v1.3.1
-                </div>
-              </div>
+          }
+          actions={
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/50 text-emerald-400 border border-emerald-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Active
+              </span>
+              <span className="text-[11px] font-mono text-[#cbd5e1]">
+                {lastAnalysisTimestamp}
+              </span>
             </div>
-          </div>
-        </div>
+          }
+        />
 
         {/* 1. COVERAGE SUMMARY (Section 1) */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
@@ -624,10 +605,10 @@ export const CoverageBlindSpotsPage: React.FC<{ forcedSlug?: string }> = () => {
         </div>
 
         {/* 3. BLIND SPOT LIST (Section 3: Dedicated Prioritized Blind Spot Cards) */}
-        <div className="rounded-xl bg-[#111622] border border-[#212c3d] overflow-hidden shadow-md">
-          <div className="p-3.5 border-b border-[#212c3d] bg-[#0d121c] flex items-center justify-between">
+        <div className="rounded-md bg-[#131922] border border-[#212c3d] overflow-hidden shadow-xs">
+          <div className="p-3.5 border-b border-[#212c3d] bg-[#0e141c] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-rose-400 text-[18px]">emergency</span>
+              <AlertTriangle className="w-4 h-4 text-rose-400" />
               <span className="text-[13px] font-semibold text-[#f1f5f9]">
                 Identified Blind Spots ({blindSpotList.length})
               </span>
@@ -636,7 +617,7 @@ export const CoverageBlindSpotsPage: React.FC<{ forcedSlug?: string }> = () => {
               </span>
             </div>
             <span className="text-[11px] font-mono text-[#94a3b8]">
-              Supervisory monitoring gaps requiring entity inquiry
+              Monitoring gaps requiring inquiry
             </span>
           </div>
 
@@ -701,16 +682,16 @@ export const CoverageBlindSpotsPage: React.FC<{ forcedSlug?: string }> = () => {
         </div>
 
         {/* 2. COVERAGE MATRIX (Section 2) */}
-        <div className="rounded-xl bg-[#111622] border border-[#212c3d] overflow-hidden shadow-md">
-          <div className="p-3.5 border-b border-[#212c3d] flex items-center justify-between bg-[#0d121c]">
+        <div className="rounded-md bg-[#131922] border border-[#212c3d] overflow-hidden shadow-xs">
+          <div className="p-3.5 border-b border-[#212c3d] flex items-center justify-between bg-[#0e141c]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#38bdf8] text-[18px]">table_chart</span>
+              <Layers className="w-4 h-4 text-[#3b82f6]" />
               <span className="text-[13px] font-semibold text-[#f1f5f9]">
-                Coverage Matrix: Assets, Controls &amp; Evidence Domains ({filteredRows.length})
+                Coverage Matrix ({filteredRows.length})
               </span>
             </div>
             <span className="text-[11px] font-mono text-[#94a3b8]">
-              Expected vs Observed with state distinction
+              Expected vs Observed
             </span>
           </div>
 
@@ -849,16 +830,16 @@ export const CoverageBlindSpotsPage: React.FC<{ forcedSlug?: string }> = () => {
               </div>
 
               {/* Exact Supervisory Explanation of Why This Is Considered a Blind Spot */}
-              <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1.5">
+              <div className="p-3.5 rounded-md bg-[#131922] border border-[#212c3d] space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#38bdf8] uppercase tracking-wider font-semibold">
-                  <span className="material-symbols-outlined text-[16px]">psychology</span>
+                  <Activity className="w-3.5 h-3.5 text-[#38bdf8]" />
                   Why Is This Classified as a Blind Spot?
                 </div>
                 <p className="text-[12px] text-[#cbd5e1] leading-relaxed">
                   {selectedItem.whyBlindSpot}
                 </p>
                 <div className="text-[11px] text-[#94a3b8] pt-1">
-                  <strong>Regulatory Standard:</strong> Control {selectedItem.controlId} specifies continuous or periodic telemetry stream across all declared operating zones. The enclave observed an evidentiary void.
+                  <strong>Standard:</strong> Control {selectedItem.controlId} requires telemetry across all declared operating zones.
                 </div>
               </div>
 
@@ -871,7 +852,7 @@ export const CoverageBlindSpotsPage: React.FC<{ forcedSlug?: string }> = () => {
                 <div className="p-3 rounded bg-[#0d121c] border border-emerald-500/30 space-y-1">
                   <div className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-semibold flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    Expected Telemetry / Coverage Standard
+                    Expected Telemetry
                   </div>
                   <p className="text-[#e2e8f0] text-[12px] leading-relaxed">
                     {selectedItem.expected}
@@ -881,16 +862,16 @@ export const CoverageBlindSpotsPage: React.FC<{ forcedSlug?: string }> = () => {
                 <div className="p-3 rounded bg-[#0d121c] border border-rose-500/30 space-y-1">
                   <div className="text-[10px] font-mono uppercase tracking-wider text-rose-400 font-semibold flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-                    Observed Vault Telemetry State
+                    Observed Telemetry State
                   </div>
                   <p className="text-[#f87171] text-[12px] font-medium leading-relaxed">
                     {selectedItem.observed}
                   </p>
                 </div>
 
-                <div className="p-2.5 rounded bg-[#161e29] border border-amber-500/40 space-y-1">
+                <div className="p-2.5 rounded bg-[#131922] border border-amber-500/40 space-y-1">
                   <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-semibold flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-amber-400 text-[16px]">difference</span>
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
                     Identified Blind Spot Gap
                   </div>
                   <p className="text-[#f1f5f9] text-[12px] font-medium leading-relaxed">

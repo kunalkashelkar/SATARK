@@ -7,7 +7,8 @@ import {
   Input,
   LoadingState,
   EmptyState,
-  ErrorState 
+  ErrorState,
+  PageHeader 
 } from '@/components/common';
 import { 
   ArrowRight, 
@@ -24,7 +25,14 @@ import {
   HelpCircle,
   SlidersHorizontal,
   FolderSync,
-  Play
+  Play,
+  GitBranch,
+  EyeOff,
+  FileCheck,
+  History,
+  Users,
+  Split,
+  Calculator
 } from 'lucide-react';
 
 export type EngineStatus = 'COMPLETED' | 'RUNNING' | 'WARNING' | 'FAILED' | 'NOT_RUN';
@@ -296,54 +304,47 @@ export const AnalysisHubPage: React.FC = () => {
     }
   };
 
+  const getEngineIcon = (id: string) => {
+    switch (id) {
+      case 'EXECUTION_GAP': return <GitBranch className="w-4 h-4 text-[#3b82f6]" />;
+      case 'NEGATIVE_SPACE': return <EyeOff className="w-4 h-4 text-amber-400" />;
+      case 'COVERAGE': return <ShieldCheck className="w-4 h-4 text-emerald-400" />;
+      case 'PROCESS_CONFORMANCE': return <Activity className="w-4 h-4 text-blue-400" />;
+      case 'INVESTIGATION_QUALITY': return <FileCheck className="w-4 h-4 text-purple-400" />;
+      case 'BEHAVIOURAL_DEVIATION': return <SlidersHorizontal className="w-4 h-4 text-indigo-400" />;
+      case 'HISTORICAL_COMPARISON': return <History className="w-4 h-4 text-sky-400" />;
+      case 'PEER_BENCHMARKING': return <Users className="w-4 h-4 text-indigo-400" />;
+      case 'CROSS_SOURCE_CONSISTENCY': return <Split className="w-4 h-4 text-teal-400" />;
+      case 'METRIC_INTEGRITY': return <Calculator className="w-4 h-4 text-cyan-400" />;
+      default: return <Layers className="w-4 h-4 text-[#3b82f6]" />;
+    }
+  };
+
   return (
     <PageContainer>
-      {/* 1. CONTROL CENTER HEADER */}
-      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1.5 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-[18px] md:text-[20px] font-semibold text-[#f1f5f9] tracking-tight">
-                Analysis Hub
-              </h1>
-              <span className="text-[#475569]">•</span>
-              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-[#1f6feb]/20 text-[#60a5fa] border border-[#1f6feb]/30">
-                10 Autonomous Engines
-              </span>
-              <span className={`font-mono text-[11px] px-2.5 py-0.5 rounded border font-semibold ${
-                overallProcessingStatus.includes('ATTENTION')
-                  ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                  : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-              }`}>
-                {overallProcessingStatus}
-              </span>
-            </div>
-
-            <p className="text-[12px] text-[#94a3b8]">
-              Central supervisory dispatch and operational telemetry status for statutory analytical engines.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#64748b] font-mono pt-0.5">
-              <span>Assessment Scope: <strong className="text-[#cbd5e1]">{assessmentContextTitle}</strong></span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-[#64748b]" />
-                <span>Last Analysis Run: <strong className="text-[#cbd5e1]">{lastAnalysisRun}</strong></span>
-              </span>
-              <span>•</span>
-              <span>Pipeline: <strong className="text-[#60a5fa]">Deterministic Correlation Core (v2.8-FIPS)</strong></span>
-            </div>
+      <PageHeader
+        title="Analysis Hub"
+        subtitle="Autonomous supervisory analytical engines"
+        metadata={
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              10 Engines
+            </span>
+            <span>•</span>
+            <span>Assessment: {assessmentContextTitle}</span>
+            <span>•</span>
+            <span>Last Run: {lastAnalysisRun}</span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#212c3d]">
+        }
+        actions={
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={handleRefresh}
               icon={<RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
-              title="Synchronize analytical engine states"
             >
-              Sync Telemetry
+              Sync
             </Button>
             <Button
               variant="primary"
@@ -354,8 +355,8 @@ export const AnalysisHubPage: React.FC = () => {
               Review Queue ({findings.length})
             </Button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* 2. OPERATIONAL STATUS BAR & FILTER CONTROLS */}
       <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-3.5 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -437,10 +438,8 @@ export const AnalysisHubPage: React.FC = () => {
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-8 h-8 rounded bg-[#0d121a] border border-[#212c3d] flex items-center justify-center text-[#60a5fa] shrink-0 group-hover:border-[#3b82f6] transition-colors">
-                        <span className="material-symbols-outlined text-[18px]">
-                          {engine.iconName}
-                        </span>
+                      <div className="w-8 h-8 rounded bg-[#0b0f17] border border-[#212c3d] flex items-center justify-center text-[#3b82f6] shrink-0 group-hover:border-[#3b82f6] transition-colors">
+                        {getEngineIcon(engine.id)}
                       </div>
                       <div className="min-w-0">
                         <h3 className="font-semibold text-[#f1f5f9] text-[14px] leading-tight truncate group-hover:text-[#60a5fa] transition-colors">

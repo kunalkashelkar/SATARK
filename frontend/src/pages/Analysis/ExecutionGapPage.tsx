@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   PageContainer, 
+  PageHeader,
   PriorityBadge, 
   StatusBadge, 
   Button,
@@ -316,66 +317,45 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
     <PageContainer>
       <div className="space-y-6">
 
-        {/* 1. HEADER (Section 1) */}
-        <div className="rounded-xl bg-gradient-to-b from-[#111726] to-[#0c1017] border border-[#1f293d] p-5 shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2.5">
-                <Link
-                  to="/analysis"
-                  className="p-1 rounded bg-[#161f30] text-[#94a3b8] hover:text-[#f8fafc] hover:bg-[#1e293b] border border-[#2d3748] transition-colors"
-                  title="Back to Analysis Hub"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Link>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#38bdf8] text-[24px]">rule_folder</span>
-                  <h1 className="text-xl md:text-2xl font-bold tracking-tight text-[#f8fafc] font-sans">
-                    Execution Gap Analysis
-                  </h1>
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-500/30 font-semibold uppercase tracking-wider">
-                  Engine 01 • Decoupled Analytical Engine
-                </span>
-              </div>
-              <p className="text-[13px] text-[#94a3b8] max-w-2xl leading-relaxed">
-                Answers the supervisory inquiry: <span className="text-[#38bdf8] font-medium font-mono">"What was expected to happen, and what actually happened?"</span> Detects omissions, unrecorded steps, and delayed execution against mandatory control baselines.
-              </p>
+        {/* 1. STANDARDIZED PAGE HEADER */}
+        <PageHeader
+          title="Execution Gap"
+          subtitle="Expected vs observed execution"
+          badge={
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/60 text-blue-300 border border-blue-500/30 font-semibold uppercase">
+              Engine 01
+            </span>
+          }
+          breadcrumbs={
+            <Link
+              to="/analysis"
+              className="inline-flex items-center gap-1.5 text-[#94a3b8] hover:text-[#f8fafc] transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Analysis Hub</span>
+            </Link>
+          }
+          metadata={
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[#cbd5e1] font-semibold">{activeCseMeta ? `${activeCseMeta.cseName} (${activeCseMeta.cseId || activeCseMeta.id})` : 'All Regulated CSEs'}</span>
+              <span>•</span>
+              <span>Cycle: Q3 2026 · ASM-2026-Q3</span>
+              <span>•</span>
+              <span>Model: v1.4.2 · Rule: EXEC-GAP-1.4</span>
             </div>
-
-            {/* Assessment Context & Engine Status */}
-            <div className="flex flex-wrap items-center gap-3">
-              {/* Assessment Context Card */}
-              <div className="px-3.5 py-2 rounded-lg bg-[#0d121c] border border-[#212c3d] text-right">
-                <div className="text-[10px] font-mono uppercase text-[#64748b]">Assessment Scope</div>
-                <div className="text-[13px] font-semibold text-[#f1f5f9] flex items-center justify-end gap-1.5 mt-0.5">
-                  <Building2 className="w-3.5 h-3.5 text-[#38bdf8]" />
-                  <span>{activeCseMeta ? `${activeCseMeta.cseName} (${activeCseMeta.cseId || activeCseMeta.id})` : 'All Regulated CSEs'}</span>
-                </div>
-                <div className="text-[11px] font-mono text-[#94a3b8]">
-                  Cycle: Q3 2026 • ASM-2026-Q3
-                </div>
-              </div>
-
-              {/* Status & Last Analysis */}
-              <div className="px-3.5 py-2 rounded-lg bg-[#0d121c] border border-[#212c3d]">
-                <div className="text-[10px] font-mono uppercase text-[#64748b]">Status &amp; Last Run</div>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/50 text-emerald-400 border border-emerald-500/30">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Active Engine
-                  </span>
-                  <span className="text-[11px] font-mono text-[#cbd5e1]">
-                    {lastAnalysisTimestamp}
-                  </span>
-                </div>
-                <div className="text-[10px] font-mono text-[#64748b] mt-0.5">
-                  Model: v1.4.2 • Rule: EXEC-GAP-1.4
-                </div>
-              </div>
+          }
+          actions={
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/50 text-emerald-400 border border-emerald-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Active
+              </span>
+              <span className="text-[11px] font-mono text-[#94a3b8]">
+                {lastAnalysisTimestamp}
+              </span>
             </div>
-          </div>
-        </div>
+          }
+        />
 
         {/* FILTERS & SCOPE SELECTOR */}
         <div className="p-3.5 rounded-lg bg-[#0d121c] border border-[#212c3d] flex flex-wrap items-center justify-between gap-3">
@@ -450,21 +430,21 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
 
         {/* 2. EXPECTED VS OBSERVED COMPARISON (Section 2) */}
         {activeFocusSignal ? (
-          <div className="rounded-xl bg-[#111622] border border-[#212c3d] overflow-hidden shadow-md">
+          <div className="rounded-md bg-[#131922] border border-[#212c3d] overflow-hidden shadow-xs">
             {/* Header banner for Comparison */}
-            <div className="p-4 border-b border-[#212c3d] bg-gradient-to-r from-[#0d121c] via-[#111622] to-[#0d121c] flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="p-3.5 border-b border-[#212c3d] bg-[#0e141c] flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#38bdf8] text-[20px]">compare_arrows</span>
-                  <h2 className="text-[14px] md:text-[15px] font-semibold text-[#f8fafc]">
-                    Expected vs Observed Comparison
+                  <Activity className="w-4 h-4 text-[#3b82f6]" />
+                  <h2 className="text-[14px] font-semibold text-[#f8fafc]">
+                    Expected vs Observed
                   </h2>
-                  <span className="font-mono text-[11px] text-[#38bdf8] px-2 py-0.5 rounded bg-blue-950/40 border border-blue-500/30">
+                  <span className="font-mono text-[11px] text-[#60a5fa] px-2 py-0.5 rounded bg-blue-950/40 border border-blue-500/30">
                     {activeFocusSignal.controlId} • {activeFocusSignal.cseId}
                   </span>
                 </div>
-                <p className="text-[12px] text-[#94a3b8] mt-1">
-                  Active Focus: <strong className="text-[#f1f5f9]">{activeFocusSignal.title}</strong>
+                <p className="text-[12px] text-[#94a3b8] mt-0.5">
+                  Focus: <strong className="text-[#f1f5f9]">{activeFocusSignal.title}</strong>
                 </p>
               </div>
 
@@ -475,7 +455,7 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                   onClick={() => handleOpenDrawer(activeFocusSignal)}
                   iconRight={<ExternalLink className="w-3.5 h-3.5" />}
                 >
-                  Open Detail Drawer
+                  Detail
                 </Button>
                 {activeFocusSignal.findingId && (
                   <Button
@@ -484,7 +464,7 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                     onClick={() => navigate(`/review/findings/${activeFocusSignal.findingId}`)}
                     iconRight={<ArrowRight className="w-3.5 h-3.5" />}
                   >
-                    Open Finding
+                    Finding
                   </Button>
                 )}
               </div>
@@ -511,10 +491,10 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                   {/* Control Expectation */}
                   <div className="space-y-1">
                     <div className="text-[10px] font-mono uppercase text-[#94a3b8] flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[14px] text-emerald-400">gavel</span>
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                       Control Expectation ({activeFocusSignal.controlId})
                     </div>
-                    <div className="p-2.5 rounded bg-[#111622] border border-[#212c3d] text-[#e2e8f0] font-medium leading-relaxed">
+                    <div className="p-2.5 rounded bg-[#131922] border border-[#212c3d] text-[#e2e8f0] font-medium leading-relaxed">
                       {comparisonItems[0]?.expected || activeFocusSignal.expected}
                     </div>
                   </div>
@@ -522,10 +502,10 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                   {/* Required Process */}
                   <div className="space-y-1">
                     <div className="text-[10px] font-mono uppercase text-[#94a3b8] flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[14px] text-emerald-400">account_tree</span>
+                      <GitBranch className="w-3.5 h-3.5 text-emerald-400" />
                       Required Process
                     </div>
-                    <div className="p-2.5 rounded bg-[#111622] border border-[#212c3d] text-[#e2e8f0] leading-relaxed">
+                    <div className="p-2.5 rounded bg-[#131922] border border-[#212c3d] text-[#e2e8f0] leading-relaxed">
                       {comparisonItems[1]?.expected}
                     </div>
                   </div>
@@ -533,10 +513,10 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                   {/* Required Timing */}
                   <div className="space-y-1">
                     <div className="text-[10px] font-mono uppercase text-[#94a3b8] flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[14px] text-emerald-400">schedule</span>
+                      <Clock className="w-3.5 h-3.5 text-emerald-400" />
                       Required Timing
                     </div>
-                    <div className="p-2.5 rounded bg-[#111622] border border-[#212c3d] text-[#e2e8f0] font-mono text-[11px]">
+                    <div className="p-2.5 rounded bg-[#131922] border border-[#212c3d] text-[#e2e8f0] font-mono text-[11px]">
                       {comparisonItems[2]?.expected}
                     </div>
                   </div>
@@ -544,10 +524,10 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                   {/* Required Evidence */}
                   <div className="space-y-1">
                     <div className="text-[10px] font-mono uppercase text-[#94a3b8] flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[14px] text-emerald-400">verified</span>
+                      <FileText className="w-3.5 h-3.5 text-emerald-400" />
                       Required Evidence
                     </div>
-                    <div className="p-2.5 rounded bg-[#111622] border border-[#212c3d] text-[#e2e8f0] font-mono text-[11px]">
+                    <div className="p-2.5 rounded bg-[#131922] border border-[#212c3d] text-[#e2e8f0] font-mono text-[11px]">
                       {comparisonItems[3]?.expected}
                     </div>
                   </div>
@@ -555,10 +535,10 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                   {/* Expected Metric */}
                   <div className="space-y-1">
                     <div className="text-[10px] font-mono uppercase text-[#94a3b8] flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[14px] text-emerald-400">trending_up</span>
+                      <Activity className="w-3.5 h-3.5 text-emerald-400" />
                       Expected Metric
                     </div>
-                    <div className="p-2.5 rounded bg-[#111622] border border-[#212c3d] text-emerald-300 font-mono text-[12px] font-semibold">
+                    <div className="p-2.5 rounded bg-[#131922] border border-[#212c3d] text-emerald-300 font-mono text-[12px] font-semibold">
                       {comparisonItems[4]?.expected}
                     </div>
                   </div>
@@ -566,7 +546,7 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
               </div>
 
               {/* COLUMN 2: OBSERVED */}
-              <div className="rounded-lg bg-[#0d121c] border border-rose-500/30 overflow-hidden flex flex-col">
+              <div className="rounded-md bg-[#0e141c] border border-rose-500/30 overflow-hidden flex flex-col">
                 <div className="px-4 py-3 bg-rose-950/20 border-b border-rose-500/30 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
@@ -583,10 +563,10 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                   {/* Actual Activity */}
                   <div className="space-y-1">
                     <div className="text-[10px] font-mono uppercase text-[#94a3b8] flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[14px] text-rose-400">error_outline</span>
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
                       Actual Activity
                     </div>
-                    <div className="p-2.5 rounded bg-[#111622] border border-rose-500/30 text-[#f87171] font-medium leading-relaxed">
+                    <div className="p-2.5 rounded bg-[#131922] border border-rose-500/30 text-[#f87171] font-medium leading-relaxed">
                       {comparisonItems[0]?.observed || activeFocusSignal.observed}
                     </div>
                   </div>
@@ -594,10 +574,10 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                   {/* Actual Timing / Process */}
                   <div className="space-y-1">
                     <div className="text-[10px] font-mono uppercase text-[#94a3b8] flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[14px] text-rose-400">history_toggle_off</span>
+                      <Clock className="w-3.5 h-3.5 text-rose-400" />
                       Actual Timing
                     </div>
-                    <div className="p-2.5 rounded bg-[#111622] border border-[#212c3d] text-[#e2e8f0] font-mono text-[11px]">
+                    <div className="p-2.5 rounded bg-[#131922] border border-[#212c3d] text-[#e2e8f0] font-mono text-[11px]">
                       {comparisonItems[2]?.observed}
                     </div>
                   </div>
@@ -605,14 +585,14 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                   {/* Actual Evidence */}
                   <div className="space-y-1">
                     <div className="text-[10px] font-mono uppercase text-[#94a3b8] flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[14px] text-rose-400">folder_off</span>
+                      <FileText className="w-3.5 h-3.5 text-rose-400" />
                       Actual Evidence
                     </div>
-                    <div className="p-2.5 rounded bg-[#111622] border border-[#212c3d] text-[#e2e8f0] font-mono text-[11px] flex items-center justify-between">
+                    <div className="p-2.5 rounded bg-[#131922] border border-[#212c3d] text-[#e2e8f0] font-mono text-[11px] flex items-center justify-between">
                       <span>{comparisonItems[3]?.observed}</span>
                       <Link 
                         to="/evidence" 
-                        className="text-[#38bdf8] hover:underline text-[11px] flex items-center gap-1 ml-2 shrink-0"
+                        className="text-[#3b82f6] hover:underline text-[11px] flex items-center gap-1 ml-2 shrink-0"
                       >
                         Inspect Vault <ChevronRight className="w-3 h-3" />
                       </Link>
@@ -622,16 +602,16 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                   {/* Actual Metric */}
                   <div className="space-y-1">
                     <div className="text-[10px] font-mono uppercase text-[#94a3b8] flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[14px] text-rose-400">difference</span>
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
                       Actual Metric / Analytical Variance
                     </div>
-                    <div className="p-2.5 rounded bg-[#111622] border border-amber-500/30 text-amber-300 font-medium text-[12px]">
+                    <div className="p-2.5 rounded bg-[#131922] border border-amber-500/30 text-amber-300 font-medium text-[12px]">
                       {comparisonItems[4]?.observed}
                     </div>
                   </div>
 
                   {/* Summary Gap Highlight */}
-                  <div className="p-2.5 rounded bg-[#161e29] border border-amber-500/40 text-[11px] space-y-1">
+                  <div className="p-2.5 rounded bg-[#131922] border border-amber-500/40 text-[11px] space-y-1">
                     <div className="font-mono text-amber-400 font-semibold uppercase flex items-center gap-1.5">
                       <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
                       Identified Execution Gap
@@ -647,28 +627,28 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
         ) : null}
 
         {/* 3. GAP RESULTS TABLE (Section 3) */}
-        <div className="rounded-xl bg-[#111622] border border-[#212c3d] overflow-hidden shadow-md">
-          <div className="p-3.5 border-b border-[#212c3d] flex items-center justify-between bg-[#0d121c]">
+        <div className="rounded-md bg-[#131922] border border-[#212c3d] overflow-hidden shadow-xs">
+          <div className="p-3.5 border-b border-[#212c3d] flex items-center justify-between bg-[#0e141c]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#38bdf8] text-[18px]">table_rows</span>
+              <Layers className="w-4 h-4 text-[#3b82f6]" />
               <span className="text-[13px] font-semibold text-[#f1f5f9]">
                 Execution Gap Results ({filteredSignals.length})
               </span>
             </div>
             <span className="text-[11px] font-mono text-[#94a3b8]">
-              Select row to update Expected vs Observed view and open detail drawer
+              Select row to update Expected vs Observed view
             </span>
           </div>
 
           {filteredSignals.length === 0 ? (
             /* 6. EMPTY STATE (Section 6) */
-            <div className="p-16 text-center space-y-3">
-              <span className="material-symbols-outlined text-[#64748b] text-[40px]">check_circle</span>
-              <div className="text-[15px] font-semibold text-[#f1f5f9]">
-                No execution gaps identified for the selected scope.
+            <div className="p-12 text-center space-y-2">
+              <CheckCircle2 className="w-8 h-8 text-[#64748b] mx-auto" />
+              <div className="text-[14px] font-semibold text-[#f1f5f9]">
+                No execution gaps identified
               </div>
               <p className="text-[12px] text-[#94a3b8] max-w-md mx-auto">
-                No omissions, unrecorded steps, or execution deviations were detected against statutory control baselines for the current filters.
+                No omissions or deviations detected for the selected filters.
               </p>
               {(selectedCse !== 'ALL' || selectedPriority !== 'ALL' || selectedStatus !== 'ALL' || searchQuery) && (
                 <Button
@@ -854,8 +834,8 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
               {/* Analytical Reasoning */}
               <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#60a5fa] uppercase tracking-wider font-semibold">
-                  <span className="material-symbols-outlined text-[16px]">psychology</span>
-                  Analytical Reasoning &amp; Supervisory Basis
+                  <Activity className="w-3.5 h-3.5 text-[#60a5fa]" />
+                  Analytical Reasoning
                 </div>
                 <p className="text-[12px] text-[#cbd5e1] leading-relaxed">
                   {selectedSignal.reason}
@@ -891,10 +871,10 @@ export const ExecutionGapPage: React.FC<{ forcedSlug?: string }> = () => {
                 </div>
 
                 {/* Difference */}
-                <div className="p-3 rounded bg-[#161e29] border border-amber-500/40 space-y-1">
+                <div className="p-3 rounded bg-[#131922] border border-amber-500/40 space-y-1">
                   <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-semibold flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-amber-400 text-[16px]">difference</span>
-                    Difference (Identified Execution Variance)
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                    Difference (Execution Variance)
                   </div>
                   <p className="text-[#f1f5f9] text-[12px] font-medium leading-relaxed">
                     {selectedSignal.difference}

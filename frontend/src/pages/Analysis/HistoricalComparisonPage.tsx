@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   PageContainer, 
+  PageHeader,
   PriorityBadge, 
   StatusBadge, 
   Button,
@@ -443,98 +444,61 @@ export const HistoricalComparisonPage: React.FC<{ forcedSlug?: string }> = () =>
   return (
     <PageContainer>
       <div className="space-y-6 pb-12">
-        {/* Navigation Breadcrumbs */}
-        <div className="flex items-center gap-2 text-xs font-mono text-[#94a3b8]">
-          <Link to="/analysis" className="hover:text-[#38bdf8] transition-colors flex items-center gap-1">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Analysis Hub
-          </Link>
-          <span>/</span>
-          <span className="text-[#f1f5f9] font-medium">Historical Comparison</span>
-        </div>
-
-        {/* 1. Assessment Selector & Context Header */}
-        <div className="bg-[#111622] border border-[#212c3d] rounded-xl p-5 shadow-sm">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-lg bg-pink-500/10 text-pink-400 border border-pink-500/20">
-                  <History className="w-6 h-6" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-[#f1f5f9] tracking-tight">
-                    Historical Comparison Analysis
-                  </h1>
-                  <p className="text-xs text-[#94a3b8] mt-0.5 font-medium">
-                    PRIMARY QUESTION: <span className="text-[#38bdf8] font-semibold">&ldquo;How has this CSE changed across assessment periods?&rdquo;</span>
-                  </p>
-                </div>
-              </div>
+        {/* 1. STANDARDIZED PAGE HEADER */}
+        <PageHeader
+          title="Historical Comparison"
+          subtitle="Deficiency recurrence and multi-cycle trends"
+          badge={
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950/60 text-sky-300 border border-sky-500/30 font-semibold uppercase">
+              Engine 07
+            </span>
+          }
+          breadcrumbs={
+            <Link
+              to="/analysis"
+              className="inline-flex items-center gap-1.5 text-[#94a3b8] hover:text-[#f8fafc] transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Analysis Hub</span>
+            </Link>
+          }
+          metadata={
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[#cbd5e1] font-semibold">{currentCseInfo?.cseName || selectedCse} ({selectedCse})</span>
+              <span>•</span>
+              <span>{comparisonPeriod}</span>
+              <span>•</span>
+              <span>Rule: HIST-CMP-1.3</span>
             </div>
-
-            {/* Assessment Selector Controls */}
-            <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-              {/* CSE Selector */}
-              <div className="flex items-center bg-[#0b0f17] border border-[#212c3d] rounded-lg px-2.5 py-1 text-[#f1f5f9]">
-                <Building2 className="w-3.5 h-3.5 text-[#38bdf8] mr-1.5" />
+          }
+          actions={
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center bg-[#131922] border border-[#212c3d] rounded-md px-2.5 py-1 text-[#f1f5f9]">
+                <Building2 className="w-3.5 h-3.5 text-[#3b82f6] mr-1.5" />
                 <select
                   value={selectedCse}
                   onChange={(e) => setSelectedCse(e.target.value)}
                   className="bg-transparent border-none text-xs text-[#f1f5f9] focus:outline-none cursor-pointer"
                 >
                   {cses.map(c => (
-                    <option key={c.id} value={c.cseId || c.id} className="bg-[#0b0f17] text-[#f1f5f9]">
+                    <option key={c.id} value={c.cseId || c.id} className="bg-[#131922] text-[#f1f5f9]">
                       {c.cseId || c.id} - {c.cseName}
                     </option>
                   ))}
                 </select>
               </div>
-
-              {/* Current Assessment */}
-              <div className="flex items-center bg-[#0b0f17] border border-[#212c3d] rounded-lg px-2.5 py-1 text-[#94a3b8]">
-                <span className="text-[#64748b] mr-1">Current:</span>
-                <select
-                  value={currentAssessment}
-                  onChange={(e) => setCurrentAssessment(e.target.value)}
-                  className="bg-transparent border-none text-xs text-emerald-400 font-semibold focus:outline-none cursor-pointer"
-                >
-                  <option value="ASM-2026-Q3" className="bg-[#0b0f17]">ASM-2026-Q3 (Active)</option>
-                  <option value="ASM-2026-Q2" className="bg-[#0b0f17]">ASM-2026-Q2 (Closed)</option>
-                </select>
-              </div>
-
-              {/* Previous Assessment */}
-              <div className="flex items-center bg-[#0b0f17] border border-[#212c3d] rounded-lg px-2.5 py-1 text-[#94a3b8]">
-                <span className="text-[#64748b] mr-1">Previous:</span>
-                <select
-                  value={previousAssessment}
-                  onChange={(e) => setPreviousAssessment(e.target.value)}
-                  className="bg-transparent border-none text-xs text-[#60a5fa] font-semibold focus:outline-none cursor-pointer"
-                >
-                  <option value="ASM-2026-Q2" className="bg-[#0b0f17]">ASM-2026-Q2 (Baseline)</option>
-                  <option value="ASM-2025-Q4" className="bg-[#0b0f17]">ASM-2025-Q4</option>
-                  <option value="NONE" className="bg-[#0b0f17]">None (First Cycle)</option>
-                </select>
-              </div>
-
-              {/* Comparison Period */}
-              <div className="bg-[#0b0f17] border border-[#212c3d] px-3 py-1.5 rounded-lg text-[#94a3b8] flex items-center gap-1.5">
-                <GitCompare className="w-3.5 h-3.5 text-purple-400" />
-                <span className="text-[#f1f5f9] font-medium">{comparisonPeriod}</span>
-              </div>
-
               <Button
                 variant="outline"
                 size="sm"
                 onClick={fetchSignals}
                 disabled={isLoading}
-                className="gap-1.5 text-xs border-[#212c3d] hover:bg-[#1e293b]"
+                icon={<RotateCcw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
               >
-                <RotateCcw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-                Refresh
+                Sync
               </Button>
             </div>
-          </div>
+          }
+        />
 
           {/* Insufficient Baseline Statutory Notice Banner */}
           {isInsufficientBaseline ? (
@@ -578,7 +542,6 @@ export const HistoricalComparisonPage: React.FC<{ forcedSlug?: string }> = () =>
               </div>
             </div>
           )}
-        </div>
 
         {/* 2. Comparison Summary KPI Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">

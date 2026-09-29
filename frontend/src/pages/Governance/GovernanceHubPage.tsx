@@ -45,7 +45,7 @@ import {
   ShieldAlert,
   ArrowRight
 } from 'lucide-react';
-import { StatusBadge, PriorityBadge, Button, Drawer, PageContainer } from '@/components/common';
+import { StatusBadge, PriorityBadge, Button, Drawer, PageContainer, PageHeader } from '@/components/common';
 
 export interface SupervisoryRule {
   id: string;
@@ -339,37 +339,33 @@ export const GovernanceHubPage: React.FC<{ initialTab?: string }> = ({ initialTa
 
   return (
     <PageContainer>
-      {/* 1. UNIFIED SAT-SA PAGE HEADER CARD */}
-      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-[#1f6feb]/15 text-[#60a5fa] border border-[#1f6feb]/30">
-                GOVERNANCE &amp; ENCLAVE ADMINISTRATION
-              </span>
-              <span className="text-[11px] font-mono text-[#94a3b8]">
-                FIPS 140-2 LEVEL 3 • SECURE ENCLAVE
-              </span>
-            </div>
-            <h1 className="text-lg md:text-xl font-semibold text-[#f1f5f9] tracking-tight">
-              Supervisory Governance Hub
-            </h1>
-            <p className="text-xs text-[#94a3b8] max-w-3xl leading-relaxed">
-              Maintain regulatory control baselines, deterministic supervisory rules, statutory compliance policies, authorized operator credentials, cryptographic audit trails, and enclave system settings.
-            </p>
+      <PageHeader
+        title="Governance"
+        subtitle="Controls, rules, audit trail, and policies"
+        metadata={
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              FIPS 140-2 Level 3
+            </span>
+            <span>•</span>
+            <span>Secure Enclave</span>
+            <span>•</span>
+            <span>Regulatory Administration</span>
           </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <button
+        }
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => setSearchQuery('')}
-              className="px-3 py-1.5 rounded bg-[#18202f] hover:bg-[#212c3d] text-[#cbd5e1] text-xs font-mono flex items-center gap-1.5 border border-[#212c3d] transition-colors"
+              icon={<RotateCcw className="w-3.5 h-3.5" />}
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Search</span>
-            </button>
+              Reset Search
+            </Button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* INTERNAL TABS: 6 SECTIONS */}
       {/* 1. Control Library | 2. Rules | 3. Policies | 4. Users & Roles | 5. Audit | 6. System Configuration */}

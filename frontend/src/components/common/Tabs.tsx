@@ -19,7 +19,7 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, className
   return (
     <div
       className={cn(
-        'flex items-center gap-1 border-b border-[#262a31] overflow-x-auto min-w-0 py-1 select-none',
+        'flex items-center gap-1 border-b border-[#212c3d] overflow-x-auto min-w-0 select-none',
         className
       )}
     >
@@ -31,10 +31,10 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, className
             type="button"
             onClick={() => onChange(tab.id)}
             className={cn(
-              'flex items-center gap-2 px-3 py-1.5 text-[12px] md:text-[13px] font-medium rounded-t transition-colors relative shrink-0',
+              'flex items-center gap-1.5 px-3 py-2 text-[12px] font-medium transition-colors relative shrink-0 cursor-pointer border-b-2 -mb-[1px]',
               isActive
-                ? 'text-[#afc6ff] bg-[#1c2026] border-b-2 border-[#1f6feb]'
-                : 'text-[#8c90a0] hover:text-[#dfe2eb] hover:bg-[#181c22]'
+                ? 'text-[#60a5fa] border-[#3b82f6] bg-[#131922]/60'
+                : 'text-[#94a3b8] border-transparent hover:text-[#f1f5f9] hover:bg-[#131922]/30'
             )}
           >
             {tab.icon && <span className="inline-flex shrink-0">{tab.icon}</span>}
@@ -43,7 +43,9 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onChange, className
               <span
                 className={cn(
                   'px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold leading-tight',
-                  isActive ? 'bg-[#1f6feb]/20 text-[#afc6ff]' : 'bg-[#262a31] text-[#8c90a0]'
+                  isActive
+                    ? 'bg-[#3b82f6]/20 text-[#60a5fa]'
+                    : 'bg-[#10151e] border border-[#212c3d] text-[#64748b]'
                 )}
               >
                 {tab.count}

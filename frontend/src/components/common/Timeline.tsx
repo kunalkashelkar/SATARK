@@ -19,14 +19,14 @@ interface TimelineProps {
 
 export const Timeline: React.FC<TimelineProps> = ({ events, className }) => {
   return (
-    <div className={cn('relative pl-4 space-y-4 border-l border-[#262a31]', className)}>
+    <div className={cn('relative pl-4 space-y-3.5 border-l border-[#212c3d]', className)}>
       {events.map((evt, idx) => {
         const markerColors = {
-          success: 'bg-emerald-400 border-emerald-950',
-          warning: 'bg-amber-400 border-amber-950',
-          error: 'bg-rose-400 border-rose-950',
-          info: 'bg-[#afc6ff] border-[#10141a]',
-          neutral: 'bg-[#8c90a0] border-[#10141a]',
+          success: 'bg-emerald-400 border-[#0c1017]',
+          warning: 'bg-amber-400 border-[#0c1017]',
+          error: 'bg-rose-400 border-[#0c1017]',
+          info: 'bg-[#60a5fa] border-[#0c1017]',
+          neutral: 'bg-[#64748b] border-[#0c1017]',
         }[evt.status || 'neutral'];
 
         return (
@@ -41,27 +41,27 @@ export const Timeline: React.FC<TimelineProps> = ({ events, className }) => {
 
             <div className="flex flex-col gap-0.5">
               <div className="flex items-center justify-between gap-2 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <span className="text-[12px] md:text-[13px] font-semibold text-[#dfe2eb]">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[12px] font-semibold text-[#f1f5f9]">
                     {evt.title}
                   </span>
                   {evt.badge && <div className="inline-flex">{evt.badge}</div>}
                 </div>
-                <span className="text-[11px] font-mono text-[#8c90a0]">
+                <span className="text-[10px] font-mono text-[#64748b]">
                   {evt.timestamp}
                 </span>
               </div>
 
               {evt.description && (
-                <p className="text-[12px] text-[#c2c6d6] leading-relaxed mt-0.5">
+                <p className="text-[11px] text-[#94a3b8] leading-normal mt-0.5">
                   {evt.description}
                 </p>
               )}
 
               {evt.actor && (
-                <div className="text-[11px] text-[#8c90a0] font-mono mt-0.5">
-                  Actor: <span className="text-[#dfe2eb]">{evt.actor}</span>
-                </div>
+                <span className="text-[10px] font-mono text-[#64748b] mt-0.5">
+                  Actor: <strong className="text-[#cbd5e1] font-normal">{evt.actor}</strong>
+                </span>
               )}
             </div>
           </div>

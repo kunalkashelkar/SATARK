@@ -34,19 +34,19 @@ export function DataTable<T>({
   return (
     <div
       className={cn(
-        'w-full min-w-0 overflow-x-auto rounded-lg border border-[#262a31] bg-[#181c22]',
+        'w-full min-w-0 overflow-x-auto rounded-md border border-[#212c3d] bg-[#131922]',
         className
       )}
     >
-      <table className={cn('w-full border-collapse text-left text-[12px] md:text-[13px]', tableClassName)}>
+      <table className={cn('w-full border-collapse text-left text-[12px]', tableClassName)}>
         <thead>
-          <tr className="border-b border-[#262a31] bg-[#1c2026] text-[12px] font-semibold text-[#8c90a0] uppercase tracking-wider select-none">
+          <tr className="border-b border-[#212c3d] bg-[#0e141c] text-[10px] font-mono font-semibold text-[#64748b] uppercase tracking-wider select-none">
             {columns.map((col, idx) => (
               <th
                 key={idx}
                 style={{ width: col.width }}
                 className={cn(
-                  'h-10 px-3 py-2 text-left font-mono font-medium',
+                  'h-8 px-3 py-1.5 text-left font-mono font-medium',
                   col.headerClassName
                 )}
               >
@@ -55,12 +55,12 @@ export function DataTable<T>({
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#262a31]/60 text-[#dfe2eb]">
+        <tbody className="divide-y divide-[#212c3d]/60 text-[#f1f5f9]">
           {data.length === 0 ? (
             <tr>
               <td
                 colSpan={columns.length}
-                className="h-24 px-4 text-center text-[13px] text-[#8c90a0]"
+                className="h-20 px-4 text-center text-[12px] text-[#64748b] font-mono"
               >
                 {emptyMessage}
               </td>
@@ -71,18 +71,18 @@ export function DataTable<T>({
                 key={keyExtractor ? keyExtractor(row, rowIdx) : rowIdx}
                 onClick={() => onRowClick && onRowClick(row, rowIdx)}
                 className={cn(
-                  'h-11 transition-colors',
-                  striped && rowIdx % 2 === 1 && 'bg-[#15191f]',
+                  'h-9 transition-colors',
+                  striped && rowIdx % 2 === 1 && 'bg-[#10151e]',
                   onRowClick
-                    ? 'cursor-pointer hover:bg-[#262a31]/60'
-                    : 'hover:bg-[#1f232a]'
+                    ? 'cursor-pointer hover:bg-[#161f2c]'
+                    : 'hover:bg-[#161f2c]'
                 )}
               >
                 {columns.map((col, colIdx) => (
                   <td
                     key={colIdx}
                     className={cn(
-                      'px-3 py-2 text-[12px] md:text-[13px] align-middle',
+                      'px-3 py-1.5 text-[12px] align-middle',
                       col.className
                     )}
                   >

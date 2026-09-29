@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   PageContainer, 
+  PageHeader,
   PriorityBadge, 
   StatusBadge, 
   Button,
@@ -38,7 +39,8 @@ import {
   Compass,
   Zap,
   HelpCircle,
-  Timer
+  Timer,
+  Activity
 } from 'lucide-react';
 
 export type DeviationClassification = 
@@ -345,66 +347,45 @@ export const ProcessConformancePage: React.FC<{ forcedSlug?: string }> = () => {
     <PageContainer>
       <div className="space-y-6">
 
-        {/* HEADER */}
-        <div className="rounded-xl bg-gradient-to-b from-[#111726] to-[#0c1017] border border-[#1f293d] p-5 shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2.5">
-                <Link
-                  to="/analysis"
-                  className="p-1 rounded bg-[#161f30] text-[#94a3b8] hover:text-[#f8fafc] hover:bg-[#1e293b] border border-[#2d3748] transition-colors"
-                  title="Back to Analysis Hub"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Link>
-                <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#38bdf8] text-[24px]">account_tree</span>
-                  <h1 className="text-xl md:text-2xl font-bold tracking-tight text-[#f8fafc] font-sans">
-                    Process Conformance Analysis
-                  </h1>
-                </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950/60 text-sky-300 border border-sky-500/30 font-semibold uppercase tracking-wider">
-                  Engine 04 • PM4Py Petri-Net Mining
-                </span>
-              </div>
-
-              {/* PRIMARY QUESTION */}
-              <div className="text-[13px] text-[#cbd5e1] flex flex-wrap items-center gap-1.5 pt-0.5 font-mono">
-                <span className="text-[#38bdf8] font-medium">Primary Supervisory Question:</span>
-                <span className="italic text-[#f1f5f9]">"Does the observed SOC process follow the expected process?"</span>
-              </div>
+        {/* 1. STANDARDIZED PAGE HEADER */}
+        <PageHeader
+          title="Process Conformance"
+          subtitle="Workflow sequence and timing conformance"
+          badge={
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-950/60 text-sky-300 border border-sky-500/30 font-semibold uppercase">
+              Engine 04
+            </span>
+          }
+          breadcrumbs={
+            <Link
+              to="/analysis"
+              className="inline-flex items-center gap-1.5 text-[#94a3b8] hover:text-[#f8fafc] transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Analysis Hub</span>
+            </Link>
+          }
+          metadata={
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[#cbd5e1] font-semibold">{selectedCse !== 'ALL' ? selectedCse : 'All Regulated CSEs'}</span>
+              <span>•</span>
+              <span>Playbook: PW-04 · Trace Alignment</span>
+              <span>•</span>
+              <span>Rule: PROC-CONF-1.6 · PM4Py-1.6.4</span>
             </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="px-3.5 py-2 rounded-lg bg-[#0d121c] border border-[#212c3d] text-right">
-                <div className="text-[10px] font-mono uppercase text-[#64748b]">Evaluation Scope</div>
-                <div className="text-[13px] font-semibold text-[#f1f5f9] flex items-center justify-end gap-1.5 mt-0.5">
-                  <Building2 className="w-3.5 h-3.5 text-[#38bdf8]" />
-                  <span>{selectedCse !== 'ALL' ? selectedCse : 'All Regulated CSEs'}</span>
-                </div>
-                <div className="text-[11px] font-mono text-[#94a3b8]">
-                  Playbook PW-04 • Trace Alignment
-                </div>
-              </div>
-
-              <div className="px-3.5 py-2 rounded-lg bg-[#0d121c] border border-[#212c3d]">
-                <div className="text-[10px] font-mono uppercase text-[#64748b]">PM4Py Engine Status</div>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/50 text-emerald-400 border border-emerald-500/30">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Active Engine
-                  </span>
-                  <span className="text-[11px] font-mono text-[#cbd5e1]">
-                    {lastAnalysisTimestamp}
-                  </span>
-                </div>
-                <div className="text-[10px] font-mono text-[#64748b] mt-0.5">
-                  Rule: PROC-CONF-1.6 • PM4Py-1.6.4
-                </div>
-              </div>
+          }
+          actions={
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/50 text-emerald-400 border border-emerald-500/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Active
+              </span>
+              <span className="text-[11px] font-mono text-[#cbd5e1]">
+                {lastAnalysisTimestamp}
+              </span>
             </div>
-          </div>
-        </div>
+          }
+        />
 
         {/* 5. CONFORMANCE METRICS (Section 5: Real backend values only) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -548,20 +529,20 @@ export const ProcessConformancePage: React.FC<{ forcedSlug?: string }> = () => {
 
         {/* 1, 2, & 3. SIDE-BY-SIDE EXPECTED VS OBSERVED PROCESS COMPARISON (Sections 1, 2, 3) */}
         {activeFocusCase && (
-          <div className="rounded-xl bg-[#111622] border border-[#212c3d] overflow-hidden shadow-md">
-            <div className="p-4 border-b border-[#212c3d] bg-[#0d121c] flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="rounded-md bg-[#131922] border border-[#212c3d] overflow-hidden shadow-xs">
+            <div className="p-3.5 border-b border-[#212c3d] bg-[#0e141c] flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-[#38bdf8] text-[20px]">compare_arrows</span>
-                  <h2 className="text-[14px] md:text-[15px] font-semibold text-[#f8fafc]">
-                    Side-by-Side Process Conformance Comparison
+                  <Activity className="w-4 h-4 text-[#3b82f6]" />
+                  <h2 className="text-[14px] font-semibold text-[#f8fafc]">
+                    Expected vs Observed Process
                   </h2>
-                  <span className="font-mono text-[11px] text-[#38bdf8] px-2 py-0.5 rounded bg-sky-950/40 border border-sky-500/30">
+                  <span className="font-mono text-[11px] text-[#60a5fa] px-2 py-0.5 rounded bg-sky-950/40 border border-sky-500/30">
                     {activeFocusCase.caseId} • {activeFocusCase.cseId}
                   </span>
                 </div>
-                <p className="text-[12px] text-[#94a3b8] mt-1">
-                  Deviation Analysis: <strong className="text-rose-300">{activeFocusCase.deviationDescription}</strong>
+                <p className="text-[12px] text-[#94a3b8] mt-0.5">
+                  Deviation: <strong className="text-rose-300">{activeFocusCase.deviationDescription}</strong>
                 </p>
               </div>
 
@@ -759,27 +740,27 @@ export const ProcessConformancePage: React.FC<{ forcedSlug?: string }> = () => {
         </div>
 
         {/* 6. CASE-LEVEL RESULTS TABLE (Section 6) */}
-        <div className="rounded-xl bg-[#111622] border border-[#212c3d] overflow-hidden shadow-md">
-          <div className="p-3.5 border-b border-[#212c3d] flex items-center justify-between bg-[#0d121c]">
+        <div className="rounded-md bg-[#131922] border border-[#212c3d] overflow-hidden shadow-xs">
+          <div className="p-3.5 border-b border-[#212c3d] flex items-center justify-between bg-[#0e141c]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#38bdf8] text-[18px]">table_rows</span>
+              <Layers className="w-4 h-4 text-[#3b82f6]" />
               <span className="text-[13px] font-semibold text-[#f1f5f9]">
                 Case-Level Conformance Results ({filteredCases.length})
               </span>
             </div>
             <span className="text-[11px] font-mono text-[#94a3b8]">
-              Click row to select case and update side-by-side progression
+              Select row to inspect
             </span>
           </div>
 
           {filteredCases.length === 0 ? (
-            <div className="p-16 text-center space-y-3">
-              <span className="material-symbols-outlined text-[#64748b] text-[40px]">check_circle</span>
-              <div className="text-[15px] font-semibold text-[#f1f5f9]">
-                No process conformance deviations detected for the selected filters.
+            <div className="p-12 text-center space-y-2">
+              <CheckCircle2 className="w-8 h-8 text-[#64748b] mx-auto" />
+              <div className="text-[14px] font-semibold text-[#f1f5f9]">
+                No conformance deviations detected
               </div>
               <p className="text-[12px] text-[#94a3b8] max-w-md mx-auto">
-                All observed case event sequences followed configured statutory playbooks without missing or inverted transitions.
+                All event sequences followed configured playbooks for the selected filters.
               </p>
               {(selectedCse !== 'ALL' || selectedControl !== 'ALL' || selectedDeviation !== 'ALL' || selectedSeverity !== 'ALL' || searchQuery) && (
                 <Button
@@ -957,10 +938,10 @@ export const ProcessConformancePage: React.FC<{ forcedSlug?: string }> = () => {
               </div>
 
               {/* PM4Py Process Mining Formulation */}
-              <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1.5">
+              <div className="p-3.5 rounded-md bg-[#131922] border border-[#212c3d] space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#38bdf8] uppercase tracking-wider font-semibold">
-                  <span className="material-symbols-outlined text-[16px]">account_tree</span>
-                  PM4Py Alignment &amp; Petri-Net Conformance Formulation
+                  <GitBranch className="w-3.5 h-3.5 text-[#38bdf8]" />
+                  Process Conformance Formulation
                 </div>
                 <p className="text-[12px] text-[#cbd5e1] leading-relaxed">
                   {selectedCase.explanation}
@@ -996,9 +977,9 @@ export const ProcessConformancePage: React.FC<{ forcedSlug?: string }> = () => {
                   </div>
                 </div>
 
-                <div className="p-2.5 rounded bg-[#161e29] border border-amber-500/40 space-y-1">
+                <div className="p-2.5 rounded bg-[#131922] border border-amber-500/40 space-y-1">
                   <div className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-semibold flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-amber-400 text-[16px]">difference</span>
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
                     Identified Non-Conformance
                   </div>
                   <p className="text-[#f1f5f9] text-[12px] font-medium leading-relaxed">

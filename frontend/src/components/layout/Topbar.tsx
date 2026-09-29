@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSupervisory } from '@/context/SupervisoryContext';
 import { UserRole } from '@/types';
-import { Search, Bell, Shield, ChevronDown, Check } from 'lucide-react';
+import { Search, Bell, Shield, ChevronDown, Check, Menu, LogOut } from 'lucide-react';
 
 export const Topbar: React.FC<{ isCollapsed?: boolean; onToggleCollapse?: () => void }> = ({
   isCollapsed = false,
@@ -92,7 +92,7 @@ export const Topbar: React.FC<{ isCollapsed?: boolean; onToggleCollapse?: () => 
             className="p-1 rounded hover:bg-[#161e29] text-[#64748b] hover:text-[#f1f5f9] transition-colors"
             title="Toggle Sidebar"
           >
-            <span className="material-symbols-outlined text-[18px]">menu</span>
+            <Menu className="w-4 h-4" />
           </button>
         )}
 
@@ -158,11 +158,11 @@ export const Topbar: React.FC<{ isCollapsed?: boolean; onToggleCollapse?: () => 
           />
         </form>
 
-        {/* Secure Environment Badge (Section 3 & 21) */}
+        {/* Demonstration Synthetic Data Badge (Section 3 & 39) */}
         <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#131922] border border-[#212c3d]">
           <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse"></span>
           <span className="font-mono text-[10px] text-[#10b981] font-semibold tracking-wider">
-            SECURE ENCLAVE • OFFLINE
+            DEMONSTRATION ENVIRONMENT • SYNTHETIC DATA
           </span>
         </div>
 
@@ -268,7 +268,7 @@ export const Topbar: React.FC<{ isCollapsed?: boolean; onToggleCollapse?: () => 
                   className="w-full flex items-center justify-between px-2.5 py-1.5 rounded text-left transition-colors font-mono text-[11px] text-rose-400 hover:bg-rose-500/10 cursor-pointer"
                 >
                   <span>Sign Out</span>
-                  <span className="material-symbols-outlined text-[14px]">logout</span>
+                  <LogOut className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>

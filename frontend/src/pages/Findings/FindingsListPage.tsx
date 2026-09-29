@@ -25,7 +25,7 @@ import {
   ShieldAlert,
   Info
 } from 'lucide-react';
-import { Modal, Button, PageContainer } from '@/components/common';
+import { Modal, Button, PageContainer, PageHeader } from '@/components/common';
 
 export const FindingsListPage: React.FC = () => {
   const {
@@ -261,37 +261,24 @@ export const FindingsListPage: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* 1. STANDARDIZED SAT-SA PAGE HEADER */}
-      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1.5 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-[18px] md:text-[20px] font-semibold text-[#f1f5f9] tracking-tight">
-                Findings Adjudication
-              </h1>
-              <span className="text-[#475569]">•</span>
-              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-[#1f6feb]/20 text-[#60a5fa] border border-[#1f6feb]/30">
-                {findings.length} Available Records
-              </span>
-              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
-                SEC-70B Adjudication
-              </span>
-            </div>
-
-            <p className="text-[12px] text-[#94a3b8]">
-              Authoritative supervisory findings ledger. Primary question: <strong className="text-[#cbd5e1]">&ldquo;What findings require supervisory action?&rdquo;</strong>
-            </p>
-
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#64748b] font-mono pt-0.5">
-              <span>Standard: <strong className="text-[#cbd5e1]">NCIIPC Guidelines Sec 70B</strong></span>
-              <span>•</span>
-              <span>Assessment Scope: <strong className="text-[#60a5fa]">{uniqueCses.length} Entities Enrolled</strong></span>
-              <span>•</span>
-              <span>Examiner Node: <strong className="text-[#cbd5e1]">NC-8802 (Lead Examiner)</strong></span>
-            </div>
+      <PageHeader
+        title="Findings"
+        subtitle="Supervisory findings and review status"
+        metadata={
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              {findings.length} Findings
+            </span>
+            <span>•</span>
+            <span>Scope: {uniqueCses.length} Entities</span>
+            <span>•</span>
+            <span>Standard: NCIIPC Sec 70B</span>
+            <span>•</span>
+            <span>Cycle: Q3 2026</span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#212c3d]">
+        }
+        actions={
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -306,12 +293,12 @@ export const FindingsListPage: React.FC = () => {
                 size="sm"
                 iconRight={<ExternalLink className="w-3.5 h-3.5" />}
               >
-                Remediation Workspace
+                Remediation
               </Button>
             </Link>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* 2. ACTUAL SUMMARY STRIP */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-4">

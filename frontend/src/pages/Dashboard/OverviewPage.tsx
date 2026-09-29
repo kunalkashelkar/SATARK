@@ -31,7 +31,8 @@ import {
   Button,
   LoadingState,
   EmptyState,
-  ErrorState
+  ErrorState,
+  PageHeader
 } from '@/components/common';
 import { useSupervisory } from '@/context/SupervisoryContext';
 import { Finding, Priority } from '@/types';
@@ -287,71 +288,33 @@ export const DashboardOverviewPage: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* 1. ASSESSMENT CONTEXT HEADER */}
-      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1.5 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded bg-[#1f6feb]/20 text-[#60a5fa] border border-[#1f6feb]/40">
-                {cseId}
-              </span>
-              <h1 className="text-[17px] md:text-[20px] font-semibold text-[#f1f5f9] tracking-tight truncate">
-                {cseName}
-              </h1>
-              <span className="hidden sm:inline text-[#475569]">•</span>
-              <span className="text-[12px] font-mono text-[#94a3b8] bg-[#0d121a] px-2.5 py-0.5 rounded border border-[#212c3d]">
-                Sector: <strong className="text-[#cbd5e1] font-semibold">{currentCSE?.sector || 'Energy / Power'}</strong>
-              </span>
-              <span className="text-[12px] font-mono text-[#94a3b8] bg-[#0d121a] px-2.5 py-0.5 rounded border border-[#212c3d]">
-                Tier: <strong className="text-[#cbd5e1] font-semibold">{currentCSE?.organizationType || 'Tier-1 Critical'}</strong>
-              </span>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[12px] text-[#94a3b8] pt-1">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#64748b]">Cycle:</span>
-                <span className="font-semibold text-[#f1f5f9] font-mono">{assessmentCycle}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#64748b]">Period:</span>
-                <span className="text-[#cbd5e1] font-mono">{assessmentPeriod}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-[#64748b]">Status:</span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] animate-pulse"></span>
-                  {assessmentStatus}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-[#64748b]" />
-                <span className="text-[#64748b]">Last Analysis:</span>
-                <span className="text-[#cbd5e1] font-mono">{lastAnalysisTimestamp}</span>
-              </div>
-            </div>
+      <PageHeader
+        title="Overview"
+        subtitle="Supervisory telemetry and control posture"
+        metadata={
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold">
+              {cseId}
+            </span>
+            <span>{cseName}</span>
+            <span>•</span>
+            <span>Sector: {currentCSE?.sector || 'Energy / Power'}</span>
+            <span>•</span>
+            <span>Cycle: {assessmentCycle}</span>
+            <span>•</span>
+            <span>Status: {assessmentStatus}</span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#212c3d]">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded bg-[#0d121a] border border-[#212c3d]">
-              <UserCheck className="w-3.5 h-3.5 text-[#60a5fa]" />
-              <div className="flex flex-col text-left">
-                <span className="text-[10px] text-[#64748b] uppercase tracking-wider font-mono">Supervisor Node</span>
-                <span className="text-[11px] font-semibold text-[#cbd5e1] font-mono leading-none">
-                  {userRole} • NC-8802
-                </span>
-              </div>
-            </div>
-
+        }
+        actions={
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={handleRefresh}
-              title="Synchronize backend analytical telemetry"
               icon={<RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
             >
               Sync
             </Button>
-
             <Button
               variant="primary"
               size="sm"
@@ -361,8 +324,8 @@ export const DashboardOverviewPage: React.FC = () => {
               CSE Dossier
             </Button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* 2. SUPERVISORY SUMMARY KPI ROW */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 min-w-0">

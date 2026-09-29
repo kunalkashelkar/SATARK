@@ -34,7 +34,8 @@ import {
   TrendingDown,
   TrendingUp,
   SlidersHorizontal,
-  Info
+  Info,
+  Activity
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -313,7 +314,7 @@ export const EngineDetailPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug
         <div className="p-4 rounded-lg bg-[#111622] border border-[#212c3d]">
           <div className="flex items-center justify-between mb-3">
             <div className="text-[12px] font-semibold text-[#f1f5f9] flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#38bdf8] text-[18px]">timeline</span>
+              <Activity className="w-4 h-4 text-[#38bdf8]" />
               Remediation Persistence & Recurrence Trend Across Assessment Cycles
             </div>
             <span className="text-[10px] font-mono text-[#94a3b8]">3 Assessment Cycles Compared</span>
@@ -342,7 +343,7 @@ export const EngineDetailPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug
         <div className="p-4 rounded-lg bg-[#111622] border border-[#212c3d]">
           <div className="flex items-center justify-between mb-3">
             <div className="text-[12px] font-semibold text-[#f1f5f9] flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#38bdf8] text-[18px]">psychology</span>
+              <Activity className="w-4 h-4 text-[#38bdf8]" />
               Baseline vs Current Operational Behaviour Distribution
             </div>
             <span className="text-[10px] font-mono text-[#94a3b8]">3-Sigma Statistical Window</span>
@@ -525,9 +526,7 @@ export const EngineDetailPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug
       <div className="rounded-lg bg-[#111622] border border-[#212c3d] overflow-hidden">
         <div className="p-3 border-b border-[#212c3d] flex items-center justify-between bg-[#0d121c]">
           <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#38bdf8] text-[18px]">
-              {engineMeta.iconName}
-            </span>
+            <Layers className="w-4 h-4 text-[#38bdf8]" />
             <span className="text-[13px] font-semibold text-[#f1f5f9]">
               Analytical Signals ({filteredSignals.length})
             </span>
@@ -540,7 +539,7 @@ export const EngineDetailPage: React.FC<{ forcedSlug?: string }> = ({ forcedSlug
         {filteredSignals.length === 0 ? (
           /* Empty State (Section 33) */
           <div className="p-12 text-center space-y-3">
-            <span className="material-symbols-outlined text-[#64748b] text-[36px]">filter_list_off</span>
+            <Filter className="w-8 h-8 text-[#64748b] mx-auto" />
             <div className="text-[14px] font-semibold text-[#f1f5f9]">
               No {engineMeta.shortName} signals match the current filters
             </div>

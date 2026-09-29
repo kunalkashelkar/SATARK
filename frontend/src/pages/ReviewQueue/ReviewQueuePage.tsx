@@ -36,7 +36,8 @@ import {
   Modal,
   LoadingState,
   EmptyState,
-  ErrorState
+  ErrorState,
+  PageHeader
 } from '@/components/common';
 
 export const ReviewQueuePage: React.FC = () => {
@@ -295,62 +296,43 @@ export const ReviewQueuePage: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* 1. OPERATIONAL WORKLIST HEADER */}
-      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1.5 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-[18px] md:text-[20px] font-semibold text-[#f1f5f9] tracking-tight">
-                Review Queue
-              </h1>
-              <span className="text-[#475569]">•</span>
-              <span className="font-mono text-[11px] px-2.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 font-bold">
-                {pendingReviewCount} Pending Review
-              </span>
-              <span className="text-[11px] font-mono text-[#7bdb80] bg-[#7bdb80]/10 px-2 py-0.5 rounded border border-[#7bdb80]/30 font-medium">
-                Active Enclave
-              </span>
-            </div>
-
-            <p className="text-[12px] text-[#94a3b8]">
-              Immediate operational worklist of analytical signals, negative space gaps, and statutory candidate findings awaiting supervisor decision.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#64748b] font-mono pt-0.5">
-              <span>Assessment Cycle: <strong className="text-[#cbd5e1]">Q3 2026 Active Assessment</strong></span>
-              <span>•</span>
-              <span>Active Scope: <strong className="text-[#60a5fa]">{cses.length} Enrolled Entities</strong></span>
-              <span>•</span>
-              <span>Role: <strong className="text-[#cbd5e1]">{userRole} (NC-8802)</strong></span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-[#64748b]" />
-                <span>Last Updated: <strong className="text-[#cbd5e1]">{lastUpdatedTimestamp}</strong></span>
-              </span>
-            </div>
+      <PageHeader
+        title="Review Queue"
+        subtitle="Findings and signals requiring supervisory review"
+        metadata={
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30 font-bold">
+              {pendingReviewCount} Pending Review
+            </span>
+            <span>•</span>
+            <span>Scope: {cses.length} Entities</span>
+            <span>•</span>
+            <span>Role: {userRole}</span>
+            <span>•</span>
+            <span>Updated: {lastUpdatedTimestamp}</span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#212c3d]">
+        }
+        actions={
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={handleRefresh}
               icon={<RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
-              title="Synchronize queue with backend"
             >
               Sync
             </Button>
             <Button
               variant="outline"
               size="sm"
-              icon={<RotateCcw className="w-3 h-3 text-[#8c90a0]" />}
+              icon={<RotateCcw className="w-3.5 h-3.5" />}
               onClick={resetFilters}
             >
               Reset Filters
             </Button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Success Notification Banner */}
       {demandSuccessMsg && (

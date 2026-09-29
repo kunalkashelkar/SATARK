@@ -33,7 +33,7 @@ import {
   FolderGit2
 } from 'lucide-react';
 import { ImportEvidenceModal } from '@/components/evidence/ImportEvidenceModal';
-import { StatusBadge, Button, PageContainer } from '@/components/common';
+import { StatusBadge, Button, PageContainer, PageHeader } from '@/components/common';
 
 export const EvidenceExplorerPage: React.FC = () => {
   const { evidence, cses, findings, setActiveFindingId, setActiveCseId } = useSupervisory();
@@ -240,37 +240,24 @@ export const EvidenceExplorerPage: React.FC = () => {
 
   return (
     <PageContainer>
-      {/* 1. STANDARDIZED SAT-SA PAGE HEADER */}
-      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1.5 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-[18px] md:text-[20px] font-semibold text-[#f1f5f9] tracking-tight">
-                Evidence Explorer
-              </h1>
-              <span className="text-[#475569]">•</span>
-              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-[#1f6feb]/20 text-[#60a5fa] border border-[#1f6feb]/30">
-                {evidence.length} Artifacts in Vault
-              </span>
-              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
-                Air-Gapped Vault • FIPS 140-2 Level 3
-              </span>
-            </div>
-
-            <p className="text-[12px] text-[#94a3b8]">
-              Cryptographic forensic evidence vault. Primary question: <strong className="text-[#cbd5e1]">&ldquo;What evidence supports this assessment/finding?&rdquo;</strong>
-            </p>
-
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#64748b] font-mono pt-0.5">
-              <span>Security Level: <strong className="text-emerald-400">Air-Gapped Enclave (TLS 1.3 / FIPS-140-2)</strong></span>
-              <span>•</span>
-              <span>Hashing Standard: <strong className="text-[#cbd5e1]">SHA-256 Digest Ledger</strong></span>
-              <span>•</span>
-              <span>Scope: <strong className="text-[#60a5fa]">{cses.length} Critical Sector Entities</strong></span>
-            </div>
+      <PageHeader
+        title="Evidence Explorer"
+        subtitle="Telemetric evidence repository and provenance"
+        metadata={
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+              {evidence.length} Records
+            </span>
+            <span>•</span>
+            <span>Enclave: Air-Gapped (TLS 1.3 / FIPS-140-2)</span>
+            <span>•</span>
+            <span>Digest: SHA-256 Ledger</span>
+            <span>•</span>
+            <span>Scope: {cses.length} Entities</span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#212c3d]">
+        }
+        actions={
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -285,11 +272,11 @@ export const EvidenceExplorerPage: React.FC = () => {
               icon={<Upload className="w-3.5 h-3.5" />}
               onClick={() => setIsImportModalOpen(true)}
             >
-              + Ingest Evidence
+              Ingest Evidence
             </Button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* 3-COLUMN PRODUCTION-GRADE EVIDENCE INVESTIGATION WORKSPACE */}
       {/* LEFT (Filters 3 Cols) | CENTER (Evidence Results 5 Cols) | RIGHT (Selected Details 4 Cols) */}

@@ -18,9 +18,9 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       className={cn(
-        'bg-[#181c22] border border-[#262a31] rounded-lg text-[#dfe2eb] min-w-0 transition-all',
+        'bg-[#131922] border border-[#212c3d] rounded-md text-[#f1f5f9] min-w-0 transition-all shadow-xs',
         dense ? 'p-3' : 'p-4',
-        interactive && 'hover:border-[#3b414d] hover:bg-[#1c2026] cursor-pointer',
+        interactive && 'hover:border-[#3b82f6]/40 hover:bg-[#161e29] cursor-pointer',
         className
       )}
       {...props}
@@ -40,7 +40,7 @@ export const CardHeader: React.FC<CardHeaderProps> = ({ children, className, act
   return (
     <div
       className={cn(
-        'flex items-center justify-between gap-3 pb-2.5 mb-3 border-b border-[#262a31]/60 min-w-0',
+        'flex items-center justify-between gap-3 pb-2.5 mb-3 border-b border-[#212c3d] min-w-0',
         className
       )}
     >
@@ -61,7 +61,7 @@ export const CardTitle: React.FC<CardTitleProps> = ({ children, className, badge
     <div className="flex items-center gap-2 min-w-0">
       <h3
         className={cn(
-          'text-[14px] md:text-[15px] font-semibold text-[#dfe2eb] leading-snug truncate',
+          'text-[14px] font-semibold text-[#f1f5f9] leading-snug truncate',
           className
         )}
       >
@@ -90,7 +90,7 @@ export const CardFooter: React.FC<CardFooterProps> = ({ children, className }) =
   return (
     <div
       className={cn(
-        'flex items-center justify-between gap-2 pt-3 mt-3 border-t border-[#262a31]/60 text-xs text-[#8c90a0]',
+        'flex items-center justify-between gap-2 pt-2.5 mt-3 border-t border-[#212c3d] text-[11px] text-[#94a3b8]',
         className
       )}
     >

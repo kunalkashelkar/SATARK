@@ -21,28 +21,28 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const sizeClasses = {
-    sm: 'h-8 px-2.5 text-[12px] gap-1.5',
-    md: 'h-9 px-3.5 text-[13px] gap-2',
-    lg: 'h-10 px-4 text-[14px] gap-2',
+    sm: 'h-7 px-2.5 text-[11px] gap-1.5 rounded',
+    md: 'h-8 px-3 text-[12px] gap-2 rounded',
+    lg: 'h-9 px-3.5 text-[13px] gap-2 rounded-md',
   }[size];
 
   const variantClasses = {
     primary:
-      'bg-[#1f6feb] text-white hover:bg-[#388bfd] active:bg-[#005cc5] border border-blue-400/30 shadow-sm font-medium',
+      'bg-[#3b82f6] text-white hover:bg-[#2563eb] active:bg-[#1d4ed8] border border-blue-500/30 shadow-xs font-medium',
     secondary:
-      'bg-[#262a31] text-[#dfe2eb] hover:bg-[#31353c] hover:text-white border border-[#3b414d] active:bg-[#1c2026] font-medium',
+      'bg-[#131922] text-[#cbd5e1] hover:bg-[#1a2332] hover:text-[#f1f5f9] border border-[#212c3d] active:bg-[#10151e] font-medium',
     outline:
-      'bg-transparent text-[#c2c6d6] hover:text-[#dfe2eb] hover:bg-[#262a31]/60 border border-[#3b414d] font-medium',
+      'bg-transparent text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#131922] border border-[#212c3d] font-medium',
     danger:
-      'bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 border border-rose-500/40 active:bg-rose-500/40 font-medium',
+      'bg-rose-500/15 text-rose-300 hover:bg-rose-500/25 border border-rose-500/30 active:bg-rose-500/30 font-medium',
     ghost:
-      'bg-transparent text-[#8c90a0] hover:text-[#dfe2eb] hover:bg-[#262a31]/50 border border-transparent font-medium',
+      'bg-transparent text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#131922]/50 border border-transparent font-medium',
   }[variant];
 
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center rounded-md font-sans tracking-wide transition-colors focus:outline-none focus:ring-1 focus:ring-[#afc6ff] disabled:opacity-50 disabled:pointer-events-none select-none shrink-0',
+        'inline-flex items-center justify-center font-sans tracking-tight transition-colors focus:outline-none focus:ring-1 focus:ring-[#3b82f6] disabled:opacity-50 disabled:pointer-events-none select-none shrink-0 cursor-pointer',
         sizeClasses,
         variantClasses,
         className
