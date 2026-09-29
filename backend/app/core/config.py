@@ -21,6 +21,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000",
         "http://localhost",
         "http://127.0.0.1",
+        "https://satark-sooty.vercel.app",
+        "https://satark-2.onrender.com",
     ]
 
     @field_validator("CORS_ORIGINS", mode="before")

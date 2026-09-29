@@ -1,11 +1,12 @@
 // Real HTTP API client communicating with FastAPI backend
 // Base URL configured via VITE_API_BASE_URL:
-// - In production / deployed reverse proxy: '/api/v1' (same origin)
-// - In local Vite dev server without proxy: 'http://localhost:8001/api/v1'
+// - In production: uses VITE_API_BASE_URL or defaults to deployed Render backend
 export const API_BASE_URL = 
   import.meta.env.VITE_API_BASE_URL !== undefined 
     ? import.meta.env.VITE_API_BASE_URL 
-    : (import.meta.env.PROD ? '/api/v1' : 'http://localhost:8001/api/v1');
+    : (import.meta.env.PROD 
+        ? 'https://satark-2.onrender.com/api/v1' 
+        : 'http://localhost:8001/api/v1');
 
 export interface ApiResponse<T> {
   data: T;
