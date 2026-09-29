@@ -8,12 +8,18 @@ const formatBaseUrl = (raw?: string): string => {
   return clean.endsWith('/api/v1') ? clean : `${clean}/api/v1`;
 };
 
-export const API_BASE_URL = 
-  import.meta.env.VITE_API_BASE_URL
-    ? formatBaseUrl(import.meta.env.VITE_API_BASE_URL)
-    : (import.meta.env.PROD 
-        ? 'https://satark-2.onrender.com/api/v1' 
-        : 'http://localhost:8001/api/v1');
+export const API_BASE_URL = (() => {
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  // If in production and envUrl is empty or accidentally points to localhost/127.0.0.1, always default to Render
+  if (import.meta.env.PROD) {
+    if (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1')) {
+      return 'https://satark-2.onrender.com/api/v1';
+    }
+    return formatBaseUrl(envUrl);
+  }
+  // Local development
+  return envUrl ? formatBaseUrl(envUrl) : 'http://localhost:8001/api/v1';
+})();
 
 export interface ApiResponse<T> {
   data: T;
