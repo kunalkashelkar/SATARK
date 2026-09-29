@@ -1,978 +1,1123 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useSupervisory } from '@/context/SupervisoryContext';
-import { Finding, FindingStatus } from '@/types';
-
-interface ExtendedFinding extends Finding {
-  sector: string;
-  primarySignalLabel: string;
-  secondarySignalLabel?: string;
-  uncLabel: string;
-  caseDocket: string;
-  artifactsCount: number;
-}
+import { Finding, FindingStatus, Priority } from '@/types';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  FileText,
+  Search,
+  RotateCcw,
+  ExternalLink,
+  ChevronRight,
+  Shield,
+  Layers,
+  ArrowRight,
+  Send,
+  X,
+  Check,
+  Building2,
+  Calendar,
+  Filter,
+  Activity,
+  GitBranch,
+  ShieldAlert,
+  Info
+} from 'lucide-react';
+import { Modal, Button, PageContainer } from '@/components/common';
 
 export const FindingsListPage: React.FC = () => {
-  const { findings } = useSupervisory();
-  const fnd0142 = findings.find(f => f.id === 'FND-0142') || findings[0];
+  const {
+    findings,
+    cses,
+    remediations,
+    updateFindingDecision,
+    requestEvidenceDemand
+  } = useSupervisory();
 
-  // Enhanced findings set matching the Stitch queue design exactly, driven dynamically by live findings
-  const allFindings: ExtendedFinding[] = useMemo(() => {
-    return findings.map((f, idx) => {
-      const is0142 = f.id === 'FND-0142';
-      return {
-        ...f,
-        sector: is0142 ? 'Energy / Power' : 'Energy / Power',
-        primarySignalLabel: f.signalType === 'EXECUTION_GAP' ? 'Exec Gap (GAP-0071)' : f.signalType === 'NEGATIVE_SPACE' ? 'Negative Space' : f.signalType,
-        secondarySignalLabel: is0142 ? '+ Negative Space' : undefined,
-        uncLabel: f.uncertainty === 'LOW' ? 'Strong (Low Unc)' : f.uncertainty === 'MEDIUM' ? 'Mod (Med Unc)' : 'Weak (High Unc)',
-        caseDocket: `CASE-${1042 - idx * 7}`,
-        artifactsCount: f.sourceEvidence?.length || 4,
-      };
+  // Selected finding ID for detail view drawer
+  const [selectedFindingId, setSelectedFindingId] = useState<string>(() => {
+    return findings[0]?.id || 'FND-0142';
+  });
+
+  // Filter States
+  const [filterPriority, setFilterPriority] = useState<string>('ALL');
+  const [filterStatus, setFilterStatus] = useState<string>('ALL');
+  const [filterControl, setFilterControl] = useState<string>('ALL');
+  const [filterCse, setFilterCse] = useState<string>('ALL');
+  const [filterSignalType, setFilterSignalType] = useState<string>('ALL');
+  const [filterExaminer, setFilterExaminer] = useState<string>('ALL');
+  const [filterDate, setFilterDate] = useState<string>('ALL');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  // Examiner action state & modal
+  const [modalAction, setModalAction] = useState<FindingStatus | 'REQUEST_EVD' | null>(null);
+  const [modalReason, setModalReason] = useState('NCIIPC-SEC-70B-CRIT-07');
+  const [actionNotes, setActionNotes] = useState('');
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  const showNotification = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3500);
+  };
+
+  // Derive unique filter lists from actual findings
+  const uniqueControls = useMemo(() => {
+    const set = new Set<string>();
+    findings.forEach(f => {
+      if (f.controlId) set.add(f.controlId);
     });
+    return Array.from(set).sort();
   }, [findings]);
 
-  // Filter & Search states
-  const [selectedStatusTab, setSelectedStatusTab] = useState<string>('ALL');
-  const [searchTerm, setSearchTerm] = useState<string>('FND-0142');
-  const [scopeCse, setScopeCse] = useState<string>('CSE-014');
-  const [signalTypeFilter, setSignalTypeFilter] = useState<string>('');
-  const [priorityFilter, setPriorityFilter] = useState<string>('');
-  const [evidenceStrengthFilter, setEvidenceStrengthFilter] = useState<string>('');
-  const [controlFilter, setControlFilter] = useState<string>('');
+  const uniqueCses = useMemo(() => {
+    const map = new Map<string, string>();
+    findings.forEach(f => {
+      if (f.cseId) map.set(f.cseId, f.cseName || f.cseId);
+    });
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+  }, [findings]);
 
-  // Active selected finding in right-hand drawer
-  const [selectedFindingId, setSelectedFindingId] = useState<string>('FND-0142');
+  const uniqueFindingTypes = useMemo(() => {
+    const set = new Set<string>();
+    findings.forEach(f => {
+      if (f.signalType) set.add(f.signalType);
+    });
+    return Array.from(set).sort();
+  }, [findings]);
 
-  // Filter computation
+  const uniqueExaminers = useMemo(() => {
+    const set = new Set<string>();
+    findings.forEach(f => {
+      if (f.decidedBy) set.add(f.decidedBy);
+    });
+    if (set.size === 0) set.add('NC-8802 (Lead Examiner)');
+    return Array.from(set).sort();
+  }, [findings]);
+
+  const uniqueDates = useMemo(() => {
+    const set = new Set<string>();
+    findings.forEach(f => {
+      if (f.provenance?.assessmentPeriod) {
+        set.add(f.provenance.assessmentPeriod);
+      }
+    });
+    return Array.from(set).sort();
+  }, [findings]);
+
+  // Actual Summary Metrics
+  const summaryCounts = useMemo(() => {
+    let openCount = 0;
+    let highCount = 0;
+    let mediumCount = 0;
+    let lowCount = 0;
+    let confirmedCount = 0;
+    let remediationPendingCount = 0;
+    let closedCount = 0;
+
+    findings.forEach(f => {
+      // Priority counts (High includes CRITICAL + HIGH)
+      if (f.priority === 'CRITICAL' || f.priority === 'HIGH') {
+        highCount += 1;
+      } else if (f.priority === 'MEDIUM') {
+        mediumCount += 1;
+      } else if (f.priority === 'LOW') {
+        lowCount += 1;
+      }
+
+      // Status classification
+      if (f.status === 'VALIDATED') {
+        confirmedCount += 1;
+      }
+
+      // Check linked remediation status
+      const linkedRem = remediations.find(r => r.findingId?.toLowerCase() === f.id.toLowerCase());
+      const isRemPending = linkedRem && (linkedRem.status === 'OPEN' || linkedRem.status === 'IN_PROGRESS' || linkedRem.status === 'SUBMITTED' || linkedRem.status === 'UNDER_VERIFICATION');
+
+      if (isRemPending) {
+        remediationPendingCount += 1;
+      }
+
+      if (f.status === 'REJECTED' || (linkedRem && linkedRem.status === 'CLOSED')) {
+        closedCount += 1;
+      }
+
+      // Open: any finding that is actively requiring attention (Candidate, Under Review, or Validated with pending remediation)
+      if (f.status === 'CANDIDATE' || f.status === 'UNDER_REVIEW' || isRemPending) {
+        openCount += 1;
+      }
+    });
+
+    return {
+      open: openCount,
+      high: highCount,
+      medium: mediumCount,
+      low: lowCount,
+      confirmed: confirmedCount,
+      remediationPending: remediationPendingCount,
+      closed: closedCount
+    };
+  }, [findings, remediations]);
+
+  // Filtered Findings
   const filteredFindings = useMemo(() => {
-    return allFindings.filter((item) => {
-      // Status pill tab filter
-      if (selectedStatusTab !== 'ALL' && item.status !== selectedStatusTab) {
-        return false;
+    return findings.filter(f => {
+      if (filterPriority !== 'ALL') {
+        if (filterPriority === 'HIGH' && f.priority !== 'HIGH' && f.priority !== 'CRITICAL') return false;
+        if (filterPriority !== 'HIGH' && f.priority !== filterPriority) return false;
       }
-      // CSE Scope filter
-      if (scopeCse !== 'ALL' && item.cseId !== scopeCse) {
-        return false;
-      }
-      // Search term filter
-      if (searchTerm.trim()) {
-        const query = searchTerm.toLowerCase();
-        const matchesId = item.id.toLowerCase().includes(query);
-        const matchesCSE = item.cseId.toLowerCase().includes(query) || item.cseName.toLowerCase().includes(query);
-        const matchesCase = item.caseDocket.toLowerCase().includes(query);
-        const matchesTitle = item.title.toLowerCase().includes(query);
-        if (!matchesId && !matchesCSE && !matchesCase && !matchesTitle) {
+
+      if (filterStatus !== 'ALL') {
+        if (filterStatus === 'CONFIRMED' && f.status !== 'VALIDATED') return false;
+        else if (filterStatus === 'CLOSED') {
+          const linkedRem = remediations.find(r => r.findingId?.toLowerCase() === f.id.toLowerCase());
+          if (f.status !== 'REJECTED' && (!linkedRem || linkedRem.status !== 'CLOSED')) return false;
+        } else if (filterStatus === 'REMEDIATION_PENDING') {
+          const linkedRem = remediations.find(r => r.findingId?.toLowerCase() === f.id.toLowerCase());
+          if (!linkedRem || (linkedRem.status !== 'OPEN' && linkedRem.status !== 'IN_PROGRESS' && linkedRem.status !== 'SUBMITTED' && linkedRem.status !== 'UNDER_VERIFICATION')) return false;
+        } else if (filterStatus === 'OPEN') {
+          const linkedRem = remediations.find(r => r.findingId?.toLowerCase() === f.id.toLowerCase());
+          const isRemPending = linkedRem && (linkedRem.status === 'OPEN' || linkedRem.status === 'IN_PROGRESS' || linkedRem.status === 'SUBMITTED' || linkedRem.status === 'UNDER_VERIFICATION');
+          if (f.status !== 'CANDIDATE' && f.status !== 'UNDER_REVIEW' && !isRemPending) return false;
+        } else if (f.status !== filterStatus) {
           return false;
         }
       }
-      // Signal type filter
-      if (signalTypeFilter && item.signalType !== signalTypeFilter) {
-        return false;
+
+      if (filterControl !== 'ALL' && f.controlId !== filterControl) return false;
+      if (filterCse !== 'ALL' && f.cseId !== filterCse) return false;
+      if (filterSignalType !== 'ALL' && f.signalType !== filterSignalType) return false;
+
+      if (filterExaminer !== 'ALL') {
+        const examiner = f.decidedBy || 'NC-8802 (Lead Examiner)';
+        if (!examiner.toLowerCase().includes(filterExaminer.toLowerCase())) return false;
       }
-      // Priority filter
-      if (priorityFilter && item.priority !== priorityFilter) {
-        return false;
+
+      if (filterDate !== 'ALL') {
+        if (f.provenance?.assessmentPeriod !== filterDate) return false;
       }
-      // Evidence strength filter
-      if (evidenceStrengthFilter && item.evidenceStrength !== evidenceStrengthFilter) {
-        return false;
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matches =
+          f.id.toLowerCase().includes(q) ||
+          f.title.toLowerCase().includes(q) ||
+          f.controlId.toLowerCase().includes(q) ||
+          f.cseId.toLowerCase().includes(q) ||
+          f.cseName.toLowerCase().includes(q) ||
+          f.whyFlagged.toLowerCase().includes(q);
+        if (!matches) return false;
       }
-      // Control filter
-      if (controlFilter && item.controlId !== controlFilter) {
-        return false;
-      }
+
       return true;
     });
-  }, [allFindings, selectedStatusTab, scopeCse, searchTerm, signalTypeFilter, priorityFilter, evidenceStrengthFilter, controlFilter]);
+  }, [findings, filterPriority, filterStatus, filterControl, filterCse, filterSignalType, filterExaminer, filterDate, searchQuery, remediations]);
 
-  const activeFinding = allFindings.find(f => f.id === selectedFindingId) || allFindings[0];
+  // Selected Finding object for the Detail view
+  const activeFinding = useMemo(() => {
+    return findings.find(f => f.id.toLowerCase() === selectedFindingId.toLowerCase()) || filteredFindings[0] || findings[0];
+  }, [findings, selectedFindingId, filteredFindings]);
 
+  // Linked remediation for the active finding
+  const activeRemediation = useMemo(() => {
+    if (!activeFinding) return undefined;
+    return remediations.find(r => r.findingId?.toLowerCase() === activeFinding.id.toLowerCase());
+  }, [remediations, activeFinding]);
+
+  // Reset Filters Handler
   const handleResetFilters = () => {
-    setSelectedStatusTab('ALL');
-    setSearchTerm('');
-    setScopeCse('ALL');
-    setSignalTypeFilter('');
-    setPriorityFilter('');
-    setEvidenceStrengthFilter('');
-    setControlFilter('');
+    setFilterPriority('ALL');
+    setFilterStatus('ALL');
+    setFilterControl('ALL');
+    setFilterCse('ALL');
+    setFilterSignalType('ALL');
+    setFilterExaminer('ALL');
+    setFilterDate('ALL');
+    setSearchQuery('');
+  };
+
+  // Execute Examiner Decision
+  const handleExecuteDecision = async () => {
+    if (!modalAction || !activeFinding) return;
+
+    if (modalAction === 'REQUEST_EVD') {
+      await requestEvidenceDemand(
+        activeFinding.id,
+        actionNotes || 'Demanded Tier-2 escalation records per Section 70B'
+      );
+      showNotification(`Evidence Demand Dispatched for ${activeFinding.id}. Status updated.`);
+    } else {
+      await updateFindingDecision(activeFinding.id, {
+        status: modalAction,
+        notes: actionNotes || activeFinding.decisionNotes,
+        reason: modalReason
+      });
+      showNotification(`Human Examiner Decision Saved: ${modalAction} for ${activeFinding.id}`);
+    }
+    setModalAction(null);
+    setActionNotes('');
   };
 
   return (
-    <div className="flex flex-col w-full text-on-surface antialiased pb-20">
-      
-      {/* BREADCRUMB & CONTEXT HEADER */}
-      <div className="flex flex-col gap-sm mb-lg">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-xs font-code-sm text-code-sm text-on-surface-variant">
-            <span>SAT-SA</span>
-            <span>/</span>
-            <span>Assessment</span>
-            <span>/</span>
-            <span className="text-primary font-semibold">Findings</span>
-            <span className="ml-sm px-xs py-0.5 rounded bg-surface-container-high text-outline text-[10px] font-mono tracking-wider">v4.8-GOV-FIPS</span>
-          </div>
-
-          <div className="flex items-center gap-sm flex-wrap">
-            <div className="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high text-on-surface text-body-sm">
-              <span className="material-symbols-outlined text-[16px] text-outline">calendar_month</span>
-              <span className="font-code-sm text-code-sm">Assessment Period:</span>
-              <select className="bg-transparent font-code-sm text-code-sm text-primary font-semibold focus:outline-none cursor-pointer">
-                <option className="bg-surface-container text-on-surface">Q3 2026 (Active Cycle)</option>
-                <option className="bg-surface-container text-on-surface">Q2 2026 (Archived)</option>
-                <option className="bg-surface-container text-on-surface">Q1 2026 (Archived)</option>
-              </select>
-            </div>
-
-            <div className="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high text-on-surface text-body-sm">
-              <span className="material-symbols-outlined text-[16px] text-outline">filter_alt</span>
-              <span className="font-code-sm text-code-sm">Scope:</span>
-              <select 
-                className="bg-transparent font-code-sm text-code-sm text-primary font-semibold focus:outline-none cursor-pointer"
-                value={scopeCse}
-                onChange={(e) => setScopeCse(e.target.value)}
-              >
-                <option className="bg-surface-container text-on-surface" value="CSE-014">CSE-014 (NorthGrid Energy)</option>
-                <option className="bg-surface-container text-on-surface" value="ALL">All Monitored CSEs (6)</option>
-                <option className="bg-surface-container text-on-surface" value="CSE-007">CSE-007 (State Bank of Bharat)</option>
-                <option className="bg-surface-container text-on-surface" value="CSE-021">CSE-021 (Videsh Sanchar Corp)</option>
-                <option className="bg-surface-container text-on-surface" value="CSE-011">CSE-011 (Reserve Clearing House)</option>
-              </select>
-            </div>
-
-            <button className="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high hover:bg-surface-container text-on-surface transition-colors font-body-sm text-body-sm shadow-sm">
-              <span className="material-symbols-outlined text-[16px] text-outline">file_download</span>
-              <span>Export Dossier</span>
-            </button>
-            <button className="flex items-center gap-xs px-sm py-xs rounded bg-surface-container-high hover:bg-surface-container text-secondary transition-colors font-body-sm text-body-sm shadow-sm">
-              <span className="material-symbols-outlined text-[16px] text-secondary">sync</span>
-              <span className="font-code-sm text-code-sm">Sync Telemetry</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="flex flex-col mt-2">
-          <div className="flex items-center gap-md flex-wrap">
-            <h1 className="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Findings &amp; Supervisory Candidates</h1>
-            <div className="px-sm py-xs rounded bg-primary-container/20 text-primary font-code-sm text-code-sm font-semibold tracking-wide flex items-center gap-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-              <span>SYNTHESIS ENGINE RUN: LIVE (DELTA T -14m)</span>
-            </div>
-          </div>
-          <p className="font-body-sm text-body-sm text-on-surface-variant max-w-4xl mt-xs">
-            Review evidence-based supervisory finding candidates, supporting signals, evidence strength, uncertainty indicators, and examiner assessment status across critical sector entities.
-          </p>
-        </div>
-      </div>
-
-      {/* STATUTORY SUPERVISORY DOCTRINE BANNER */}
-      <div className="p-md rounded bg-surface-container-low mb-lg shadow-sm border border-[#30363d]/60">
-        <div className="flex items-start gap-md">
-          <div className="p-xs rounded bg-tertiary-container/30 text-tertiary mt-0.5">
-            <span className="material-symbols-outlined text-[20px]">gavel</span>
-          </div>
-          <div className="flex flex-col gap-xs flex-1">
-            <div className="flex items-center gap-sm">
-              <span className="font-label-caps text-label-caps uppercase text-tertiary font-bold tracking-wider">
-                NCIIPC Statutory Supervisory Directive (Section 70A, IT Act)
+    <PageContainer>
+      {/* 1. STANDARDIZED SAT-SA PAGE HEADER */}
+      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1.5 min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-[18px] md:text-[20px] font-semibold text-[#f1f5f9] tracking-tight">
+                Findings Adjudication
+              </h1>
+              <span className="text-[#475569]">•</span>
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-[#1f6feb]/20 text-[#60a5fa] border border-[#1f6feb]/30">
+                {findings.length} Available Records
               </span>
-              <span className="font-code-sm text-[11px] text-outline">REF: DIR-2026-FND-SYN</span>
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
+                SEC-70B Adjudication
+              </span>
             </div>
-            <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
-              <span className="text-on-surface font-semibold">FINDING CANDIDATES INDICATE EVIDENCE DISCREPANCIES REQUIRING EXAMINER EXAMINATION.</span>{' '}
-              They do not constitute automatic statutory non-compliance. Human Examiner validation, qualification, or administrative override is mandated before any formal regulatory sanction, penalty proceeding, or CSE compliance scoring downgrade is recorded.
+
+            <p className="text-[12px] text-[#94a3b8]">
+              Authoritative supervisory findings ledger. Primary question: <strong className="text-[#cbd5e1]">&ldquo;What findings require supervisory action?&rdquo;</strong>
             </p>
-          </div>
-          <div className="hidden lg:flex flex-col items-end gap-xs text-right pr-xs">
-            <span className="font-code-sm text-code-sm text-outline">Mandatory SLA: 14 Days</span>
-            <span className="font-code-sm text-code-sm text-secondary font-semibold">Active Docket: CASE-1042</span>
-          </div>
-        </div>
-      </div>
 
-      {/* SUMMARY METRICS STRIP (8 Compact Cards) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-sm mb-lg">
-        {/* Total Findings */}
-        <div className="p-sm rounded bg-surface-container-low border border-[#30363d]/60 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center justify-between text-on-surface-variant mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-outline">Total Findings</span>
-            <span className="material-symbols-outlined text-[16px] text-outline">inventory_2</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md text-on-surface font-bold">40</span>
-            <span className="font-code-sm text-[11px] text-outline">Across 6 CSEs</span>
-          </div>
-          <div className="mt-xs pt-xs bg-surface-container-highest/20 flex items-center justify-between font-code-sm text-[11px] text-primary">
-            <span>CSE-014:</span>
-            <span className="font-bold">8 Scope</span>
-          </div>
-        </div>
-
-        {/* Candidates */}
-        <div className="p-sm rounded bg-surface-container-low border border-[#30363d]/60 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center justify-between text-on-surface-variant mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-outline">Candidates</span>
-            <span className="material-symbols-outlined text-[16px] text-primary">pending_actions</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md text-primary font-bold">18</span>
-            <span className="font-code-sm text-[11px] text-outline">Pending Assign</span>
-          </div>
-          <div className="mt-xs pt-xs bg-surface-container-highest/20 flex items-center justify-between font-code-sm text-[11px] text-on-surface-variant">
-            <span>Unassigned:</span>
-            <span className="font-semibold text-primary">12</span>
-          </div>
-        </div>
-
-        {/* Under Review */}
-        <div className="p-sm rounded bg-surface-container-low border border-[#30363d]/60 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center justify-between text-on-surface-variant mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-outline">Under Review</span>
-            <span className="material-symbols-outlined text-[16px] text-tertiary">query_stats</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md text-tertiary font-bold">10</span>
-            <span className="font-code-sm text-[11px] text-outline">Active Inquiries</span>
-          </div>
-          <div className="mt-xs pt-xs bg-surface-container-highest/20 flex items-center justify-between font-code-sm text-[11px] text-on-surface-variant">
-            <span>FND-0142:</span>
-            <span className="text-tertiary font-semibold">Active</span>
-          </div>
-        </div>
-
-        {/* Validated */}
-        <div className="p-sm rounded bg-surface-container-low border border-[#30363d]/60 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center justify-between text-on-surface-variant mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-outline">Validated</span>
-            <span className="material-symbols-outlined text-[16px] text-secondary">verified</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md text-secondary font-bold">5</span>
-            <span className="font-code-sm text-[11px] text-outline">Formal Record</span>
-          </div>
-          <div className="mt-xs pt-xs bg-surface-container-highest/20 flex items-center justify-between font-code-sm text-[11px] text-on-surface-variant">
-            <span>Remediating:</span>
-            <span className="text-secondary font-semibold">5 / 5</span>
-          </div>
-        </div>
-
-        {/* Qualified */}
-        <div className="p-sm rounded bg-surface-container-low border border-[#30363d]/60 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center justify-between text-on-surface-variant mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-outline">Qualified</span>
-            <span className="material-symbols-outlined text-[16px] text-primary">rule_folder</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md text-on-surface font-bold">3</span>
-            <span className="font-code-sm text-[11px] text-outline">Context Note</span>
-          </div>
-          <div className="mt-xs pt-xs bg-surface-container-highest/20 flex items-center justify-between font-code-sm text-[11px] text-on-surface-variant">
-            <span>Mitigated:</span>
-            <span className="text-on-surface font-semibold">3 Active</span>
-          </div>
-        </div>
-
-        {/* Rejected */}
-        <div className="p-sm rounded bg-surface-container-low border border-[#30363d]/60 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center justify-between text-on-surface-variant mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-outline">Rejected</span>
-            <span className="material-symbols-outlined text-[16px] text-outline">cancel</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md text-on-surface-variant font-bold">2</span>
-            <span className="font-code-sm text-[11px] text-outline">False Anomaly</span>
-          </div>
-          <div className="mt-xs pt-xs bg-surface-container-highest/20 flex items-center justify-between font-code-sm text-[11px] text-on-surface-variant">
-            <span>Audit Trail:</span>
-            <span className="text-outline font-semibold">Signed</span>
-          </div>
-        </div>
-
-        {/* Overridden */}
-        <div className="p-sm rounded bg-surface-container-low border border-[#30363d]/60 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center justify-between text-on-surface-variant mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-outline">Overridden</span>
-            <span className="material-symbols-outlined text-[16px] text-tertiary">admin_panel_settings</span>
-          </div>
-          <div className="flex items-baseline gap-xs">
-            <span className="font-headline-md text-headline-md text-on-surface font-bold">2</span>
-            <span className="font-code-sm text-[11px] text-outline">Director Exemption</span>
-          </div>
-          <div className="mt-xs pt-xs bg-surface-container-highest/20 flex items-center justify-between font-code-sm text-[11px] text-on-surface-variant">
-            <span>Policy Waiver:</span>
-            <span className="text-tertiary font-semibold">FIPS-02</span>
-          </div>
-        </div>
-
-        {/* Severity Profile */}
-        <div className="p-sm rounded bg-surface-container-low border border-[#30363d]/60 shadow-sm flex flex-col justify-between">
-          <div className="flex items-center justify-between text-on-surface-variant mb-xs">
-            <span className="font-label-caps text-label-caps uppercase text-outline">Severity Profile</span>
-            <span className="material-symbols-outlined text-[16px] text-error">warning</span>
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-baseline justify-between">
-              <span className="font-code-md text-code-md text-error font-bold">4 Crit</span>
-              <span className="font-code-md text-code-md text-tertiary font-bold">12 High</span>
-            </div>
-            <div className="w-full bg-surface-container-highest rounded-full h-1.5 mt-1 flex overflow-hidden">
-              <div className="bg-error h-full" style={{ width: '10%' }}></div>
-              <div className="bg-tertiary h-full" style={{ width: '30%' }}></div>
-              <div className="bg-primary h-full" style={{ width: '45%' }}></div>
-              <div className="bg-secondary h-full" style={{ width: '15%' }}></div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#64748b] font-mono pt-0.5">
+              <span>Standard: <strong className="text-[#cbd5e1]">NCIIPC Guidelines Sec 70B</strong></span>
+              <span>•</span>
+              <span>Assessment Scope: <strong className="text-[#60a5fa]">{uniqueCses.length} Entities Enrolled</strong></span>
+              <span>•</span>
+              <span>Examiner Node: <strong className="text-[#cbd5e1]">NC-8802 (Lead Examiner)</strong></span>
             </div>
           </div>
-          <div className="mt-xs pt-xs bg-surface-container-highest/20 flex items-center justify-between font-code-sm text-[10px] text-outline">
-            <span>CSE-014: 1C 3H 3M 1L</span>
-          </div>
-        </div>
-      </div>
 
-      {/* STATUS PILLS & COMPREHENSIVE FILTER ENGINE */}
-      <div className="flex flex-col gap-sm p-md rounded bg-surface-container-low mb-lg shadow-sm border border-[#30363d]/60">
-        
-        {/* Quick Status Pill Tabs */}
-        <div className="flex items-center justify-between flex-wrap gap-sm">
-          <div className="flex items-center gap-xs overflow-x-auto pb-1 max-w-full">
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm font-semibold flex items-center gap-xs transition-colors ${
-                selectedStatusTab === 'ALL' 
-                  ? 'bg-primary-container text-on-primary-container' 
-                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-              }`}
-              onClick={() => setSelectedStatusTab('ALL')}
-            >
-              <span>All Findings</span>
-              <span className="px-1.5 py-0.2 rounded bg-on-primary-container/20 text-[10px]">{allFindings.length}</span>
-            </button>
-
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm transition-colors flex items-center gap-xs ${
-                selectedStatusTab === 'CANDIDATE' 
-                  ? 'bg-primary-container text-on-primary-container font-semibold' 
-                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-              }`}
-              onClick={() => setSelectedStatusTab('CANDIDATE')}
-            >
-              <span>Candidates</span>
-              <span className="px-1.5 py-0.2 rounded bg-surface-container-highest text-primary text-[10px]">
-                {allFindings.filter(f => f.status === 'CANDIDATE').length}
-              </span>
-            </button>
-
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm transition-colors flex items-center gap-xs ${
-                selectedStatusTab === 'UNDER_REVIEW' 
-                  ? 'bg-surface-container-high text-tertiary font-bold border border-tertiary/40' 
-                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-              }`}
-              onClick={() => setSelectedStatusTab('UNDER_REVIEW')}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
-              <span>Under Review</span>
-              <span className="px-1.5 py-0.2 rounded bg-surface-container-highest text-tertiary text-[10px]">
-                {allFindings.filter(f => f.status === 'UNDER_REVIEW').length}
-              </span>
-            </button>
-
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm transition-colors flex items-center gap-xs ${
-                selectedStatusTab === 'VALIDATED' 
-                  ? 'bg-surface-container-high text-secondary font-bold border border-secondary/40' 
-                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-              }`}
-              onClick={() => setSelectedStatusTab('VALIDATED')}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-              <span>Validated</span>
-              <span className="px-1.5 py-0.2 rounded bg-surface-container-highest text-secondary text-[10px]">
-                {allFindings.filter(f => f.status === 'VALIDATED').length}
-              </span>
-            </button>
-
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm transition-colors flex items-center gap-xs ${
-                selectedStatusTab === 'QUALIFIED' 
-                  ? 'bg-surface-container-high text-primary font-bold border border-primary/40' 
-                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-              }`}
-              onClick={() => setSelectedStatusTab('QUALIFIED')}
-            >
-              <span>Qualified</span>
-              <span className="px-1.5 py-0.2 rounded bg-surface-container-highest text-outline text-[10px]">
-                {allFindings.filter(f => f.status === 'QUALIFIED').length}
-              </span>
-            </button>
-
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm transition-colors flex items-center gap-xs ${
-                selectedStatusTab === 'REJECTED' 
-                  ? 'bg-surface-container-high text-error font-bold border border-error/40' 
-                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-              }`}
-              onClick={() => setSelectedStatusTab('REJECTED')}
-            >
-              <span>Rejected</span>
-              <span className="px-1.5 py-0.2 rounded bg-surface-container-highest text-outline text-[10px]">
-                {allFindings.filter(f => f.status === 'REJECTED').length}
-              </span>
-            </button>
-
-            <button 
-              className={`px-sm py-xs rounded font-code-sm text-code-sm transition-colors flex items-center gap-xs ${
-                selectedStatusTab === 'OVERRIDDEN' 
-                  ? 'bg-surface-container-high text-on-surface font-bold border border-outline' 
-                  : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
-              }`}
-              onClick={() => setSelectedStatusTab('OVERRIDDEN')}
-            >
-              <span>Overridden</span>
-              <span className="px-1.5 py-0.2 rounded bg-surface-container-highest text-outline text-[10px]">
-                {allFindings.filter(f => f.status === 'OVERRIDDEN').length}
-              </span>
-            </button>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex items-center gap-sm">
-            <button 
-              className="px-sm py-xs rounded bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors font-body-sm text-body-sm flex items-center gap-xs"
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#212c3d]">
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleResetFilters}
+              icon={<RotateCcw className="w-3.5 h-3.5" />}
             >
-              <span className="material-symbols-outlined text-[16px]">restart_alt</span>
-              <span>Reset Filters</span>
-            </button>
-            <Link 
-              to="/findings/FND-0142"
-              className="px-sm py-xs rounded bg-primary text-on-primary hover:bg-primary-fixed transition-colors font-body-sm text-body-sm font-semibold flex items-center gap-xs shadow-sm"
-            >
-              <span className="material-symbols-outlined text-[16px]">assignment_ind</span>
-              <span>Open Lead Candidate (FND-0142)</span>
+              Reset Filters
+            </Button>
+            <Link to="/remediation">
+              <Button
+                variant="secondary"
+                size="sm"
+                iconRight={<ExternalLink className="w-3.5 h-3.5" />}
+              >
+                Remediation Workspace
+              </Button>
             </Link>
           </div>
         </div>
+      </div>
 
-        {/* Filter Input Controls */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-sm pt-xs">
-          <div className="relative lg:col-span-2">
-            <span className="material-symbols-outlined absolute left-2.5 top-2.5 text-outline text-[18px]">search</span>
-            <input 
+      {/* 2. ACTUAL SUMMARY STRIP */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-4">
+        {/* Open */}
+        <div 
+          onClick={() => setFilterStatus(filterStatus === 'OPEN' ? 'ALL' : 'OPEN')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterStatus === 'OPEN' 
+              ? 'bg-[#1d4ed8]/20 border-[#3b82f6]' 
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">Open</span>
+            <Activity className="w-3.5 h-3.5 text-[#60a5fa]" />
+          </div>
+          <div className="text-xl font-bold font-mono text-[#60a5fa]">{summaryCounts.open}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">Pending review</div>
+        </div>
+
+        {/* High */}
+        <div 
+          onClick={() => setFilterPriority(filterPriority === 'HIGH' ? 'ALL' : 'HIGH')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterPriority === 'HIGH' 
+              ? 'bg-rose-500/15 border-rose-500/40 text-rose-300' 
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">High / Crit</span>
+            <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+          </div>
+          <div className="text-xl font-bold font-mono text-rose-400">{summaryCounts.high}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">Elevated risk posture</div>
+        </div>
+
+        {/* Medium */}
+        <div 
+          onClick={() => setFilterPriority(filterPriority === 'MEDIUM' ? 'ALL' : 'MEDIUM')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterPriority === 'MEDIUM' 
+              ? 'bg-amber-500/15 border-amber-500/40 text-amber-300' 
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">Medium</span>
+            <span className="w-2 h-2 rounded-full bg-amber-400" />
+          </div>
+          <div className="text-xl font-bold font-mono text-amber-400">{summaryCounts.medium}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">Standard deviations</div>
+        </div>
+
+        {/* Low */}
+        <div 
+          onClick={() => setFilterPriority(filterPriority === 'LOW' ? 'ALL' : 'LOW')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterPriority === 'LOW' 
+              ? 'bg-slate-500/20 border-slate-400 text-slate-200' 
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">Low</span>
+            <span className="w-2 h-2 rounded-full bg-slate-400" />
+          </div>
+          <div className="text-xl font-bold font-mono text-[#cbd5e1]">{summaryCounts.low}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">Minor observations</div>
+        </div>
+
+        {/* Confirmed */}
+        <div 
+          onClick={() => setFilterStatus(filterStatus === 'CONFIRMED' ? 'ALL' : 'CONFIRMED')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterStatus === 'CONFIRMED' 
+              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300' 
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">Confirmed</span>
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+          </div>
+          <div className="text-xl font-bold font-mono text-emerald-400">{summaryCounts.confirmed}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">Validated by examiner</div>
+        </div>
+
+        {/* Remediation Pending */}
+        <div 
+          onClick={() => setFilterStatus(filterStatus === 'REMEDIATION_PENDING' ? 'ALL' : 'REMEDIATION_PENDING')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterStatus === 'REMEDIATION_PENDING' 
+              ? 'bg-purple-500/15 border-purple-500/40 text-purple-300' 
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">Rem. Pending</span>
+            <Clock className="w-3.5 h-3.5 text-purple-400" />
+          </div>
+          <div className="text-xl font-bold font-mono text-purple-400">{summaryCounts.remediationPending}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">Mandate ongoing</div>
+        </div>
+
+        {/* Closed */}
+        <div 
+          onClick={() => setFilterStatus(filterStatus === 'CLOSED' ? 'ALL' : 'CLOSED')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterStatus === 'CLOSED' 
+              ? 'bg-slate-700/40 border-slate-500 text-slate-200' 
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">Closed</span>
+            <Check className="w-3.5 h-3.5 text-slate-400" />
+          </div>
+          <div className="text-xl font-bold font-mono text-[#cbd5e1]">{summaryCounts.closed}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">Rejected or sealed</div>
+        </div>
+      </div>
+
+      {/* 3. FILTERS BAR */}
+      <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] mb-4 space-y-3">
+        <div className="flex items-center justify-between gap-2 flex-wrap pb-2 border-b border-[#212c3d] text-xs">
+          <div className="flex items-center gap-2 text-[#94a3b8] font-mono">
+            <Filter className="w-3.5 h-3.5 text-[#3b82f6]" />
+            <span className="uppercase font-semibold tracking-wider text-[11px]">Supervisory Filters</span>
+            <span>({filteredFindings.length} matching)</span>
+          </div>
+
+          <div className="relative w-full sm:w-64">
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#64748b]" />
+            <input
               type="text"
-              className="w-full pl-9 pr-sm py-xs bg-surface-container text-on-surface font-code-sm text-code-sm rounded focus:bg-surface-container-high focus:outline-none placeholder:text-outline border border-[#30363d]/40"
-              placeholder="Search finding ID, CSE, docket..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search finding ID, control, CSE..."
+              className="w-full pl-8 pr-3 py-1.5 bg-[#131922] border border-[#212c3d] rounded-md text-xs text-[#f1f5f9] placeholder-[#64748b] focus:outline-none focus:border-[#3b82f6] font-mono"
             />
           </div>
+        </div>
 
-          <div className="flex flex-col">
-            <select 
-              className="w-full px-sm py-xs bg-surface-container text-on-surface font-code-sm text-code-sm rounded focus:bg-surface-container-high focus:outline-none border border-[#30363d]/40"
-              value={signalTypeFilter}
-              onChange={(e) => setSignalTypeFilter(e.target.value)}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+          {/* Priority Filter */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono uppercase text-[#64748b]">Priority</label>
+            <select
+              value={filterPriority}
+              onChange={(e) => setFilterPriority(e.target.value)}
+              className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
             >
-              <option value="">All Signal Types</option>
-              <option value="EXECUTION_GAP">Execution Gap (Primary)</option>
-              <option value="NEGATIVE_SPACE">Negative Space</option>
-              <option value="PROCESS_DEVIATION">Process Deviation</option>
-              <option value="HISTORICAL_RECURRENCE">Historical Recurrence</option>
-              <option value="CROSS_SOURCE_CONSISTENCY">Evidence Inconsistency</option>
-              <option value="COVERAGE_GAP">Coverage Gap</option>
+              <option value="ALL">All Priorities</option>
+              <option value="CRITICAL">Critical</option>
+              <option value="HIGH">High</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LOW">Low</option>
             </select>
           </div>
 
-          <div className="flex flex-col">
-            <select 
-              className="w-full px-sm py-xs bg-surface-container text-on-surface font-code-sm text-code-sm rounded focus:bg-surface-container-high focus:outline-none border border-[#30363d]/40"
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
+          {/* Status Filter */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono uppercase text-[#64748b]">Status</label>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
             >
-              <option value="">All Priorities</option>
-              <option value="CRITICAL">Critical Priority</option>
-              <option value="HIGH">High Priority</option>
-              <option value="MEDIUM">Medium Priority</option>
-              <option value="LOW">Low Priority</option>
+              <option value="ALL">All Statuses</option>
+              <option value="OPEN">Open (Active)</option>
+              <option value="CANDIDATE">Candidate</option>
+              <option value="UNDER_REVIEW">Under Review</option>
+              <option value="CONFIRMED">Confirmed (Validated)</option>
+              <option value="REMEDIATION_PENDING">Remediation Pending</option>
+              <option value="QUALIFIED">Qualified</option>
+              <option value="REJECTED">Rejected</option>
+              <option value="OVERRIDDEN">Overridden</option>
+              <option value="CLOSED">Closed</option>
             </select>
           </div>
 
-          <div className="flex flex-col">
-            <select 
-              className="w-full px-sm py-xs bg-surface-container text-on-surface font-code-sm text-code-sm rounded focus:bg-surface-container-high focus:outline-none border border-[#30363d]/40"
-              value={evidenceStrengthFilter}
-              onChange={(e) => setEvidenceStrengthFilter(e.target.value)}
+          {/* Control Filter */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono uppercase text-[#64748b]">Control</label>
+            <select
+              value={filterControl}
+              onChange={(e) => setFilterControl(e.target.value)}
+              className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
             >
-              <option value="">Evidence Strength</option>
-              <option value="HIGH">Strong (≥ 80%)</option>
-              <option value="MEDIUM">Moderate (60-79%)</option>
-              <option value="LOW">Weak (&lt; 60%)</option>
+              <option value="ALL">All Controls</option>
+              {uniqueControls.map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
             </select>
           </div>
 
-          <div className="flex flex-col">
-            <select 
-              className="w-full px-sm py-xs bg-surface-container text-on-surface font-code-sm text-code-sm rounded focus:bg-surface-container-high focus:outline-none border border-[#30363d]/40"
-              value={controlFilter}
-              onChange={(e) => setControlFilter(e.target.value)}
+          {/* CSE Filter */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono uppercase text-slate-400">CSE</label>
+            <select
+              value={filterCse}
+              onChange={(e) => setFilterCse(e.target.value)}
+              className="w-full h-8 px-2 bg-slate-950 border border-slate-800 rounded text-xs text-slate-300 focus:outline-none focus:border-blue-500"
             >
-              <option value="">All Controls</option>
-              <option value="CTRL-07">CTRL-07 (Boundary / Escalation)</option>
-              <option value="CTRL-12">CTRL-12 (Log Integrity &amp; SIEM)</option>
-              <option value="CTRL-04">CTRL-04 (Access &amp; Identity)</option>
-              <option value="CTRL-09">CTRL-09 (Patch Verification)</option>
-              <option value="CTRL-11">CTRL-11 (Telemetry Coverage)</option>
-              <option value="CTRL-15">CTRL-15 (Malware &amp; Endpoint)</option>
+              <option value="ALL">All CSEs</option>
+              {uniqueCses.map(cse => (
+                <option key={cse.id} value={cse.id}>{cse.id} - {cse.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Finding Type (Signal Type) Filter */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono uppercase text-slate-400">Finding Type</label>
+            <select
+              value={filterSignalType}
+              onChange={(e) => setFilterSignalType(e.target.value)}
+              className="w-full h-8 px-2 bg-slate-950 border border-slate-800 rounded text-xs text-slate-300 focus:outline-none focus:border-blue-500"
+            >
+              <option value="ALL">All Finding Types</option>
+              {uniqueFindingTypes.map(t => (
+                <option key={t} value={t}>{t.replace(/_/g, ' ')}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Assigned Examiner Filter */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono uppercase text-slate-400">Assigned Examiner</label>
+            <select
+              value={filterExaminer}
+              onChange={(e) => setFilterExaminer(e.target.value)}
+              className="w-full h-8 px-2 bg-slate-950 border border-slate-800 rounded text-xs text-slate-300 focus:outline-none focus:border-blue-500"
+            >
+              <option value="ALL">All Examiners</option>
+              {uniqueExaminers.map(ex => (
+                <option key={ex} value={ex}>{ex}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Date / Assessment Cycle Filter */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono uppercase text-[#64748b]">Date / Period</label>
+            <select
+              value={filterDate}
+              onChange={(e) => setFilterDate(e.target.value)}
+              className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
+            >
+              <option value="ALL">All Periods</option>
+              {uniqueDates.map(d => (
+                <option key={d} value={d}>{d}</option>
+              ))}
             </select>
           </div>
         </div>
       </div>
 
-      {/* SPLIT SCREEN INSPECTION LAYOUT (Table 7 Cols : Detail Drawer 5 Cols) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-lg items-start mb-xl">
+      {/* MAIN TWO-COLUMN SPLIT: 2. Findings Table (Left) & 4. Finding Detail (Right) */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
         
-        {/* LEFT PANEL: PRIMARY FINDINGS TABLE (7 Cols) */}
-        <div className="lg:col-span-7 flex flex-col gap-sm">
-          <div className="flex items-center justify-between p-sm rounded bg-surface-container-low border border-[#30363d]/60">
-            <div className="flex items-center gap-xs font-label-caps text-label-caps uppercase text-on-surface-variant font-bold tracking-wider">
-              <span className="material-symbols-outlined text-[16px] text-primary">format_list_bulleted</span>
-              <span>Corroborated Supervisory Candidates (Filtered: {filteredFindings.length} Total)</span>
+        {/* 2. FINDINGS TABLE (7 Cols on xl) */}
+        <div className="xl:col-span-7 flex flex-col gap-3">
+          <div className="flex items-center justify-between px-1">
+            <div className="text-xs font-mono text-[#94a3b8]">
+              Showing <span className="text-[#f1f5f9] font-bold">{filteredFindings.length}</span> Findings
             </div>
-            <div className="flex items-center gap-xs font-code-sm text-[11px] text-outline">
-              <span>Sort: Risk Rank DESC</span>
+            <div className="text-xs font-mono text-[#64748b]">
+              Click row to inspect details
             </div>
           </div>
 
-          {/* TABLE CONTAINER */}
-          <div className="w-full overflow-x-auto rounded bg-surface-container-low shadow-sm border border-[#30363d]/60">
-            <table className="w-full text-left font-body-sm text-body-sm text-on-surface">
-              <thead className="bg-surface-container font-label-caps text-label-caps text-outline uppercase tracking-wider">
+          <div className="overflow-x-auto rounded-lg border border-[#212c3d] bg-[#111622] shadow-sm">
+            <table className="w-full text-left text-xs font-sans">
+              <thead className="bg-[#0d121c] text-[#94a3b8] font-mono text-[11px] uppercase border-b border-[#212c3d] select-none">
                 <tr>
-                  <th className="py-sm px-sm">Finding ID</th>
-                  <th className="py-sm px-sm">CSE &amp; Sector</th>
-                  <th className="py-sm px-sm">Control</th>
-                  <th className="py-sm px-sm">Signals</th>
-                  <th className="py-sm px-sm">Priority</th>
-                  <th className="py-sm px-sm">Strength</th>
-                  <th className="py-sm px-sm">Status</th>
-                  <th className="py-sm px-sm text-right">Inspect</th>
+                  <th className="py-2.5 px-3">Finding ID</th>
+                  <th className="py-2.5 px-3">Control</th>
+                  <th className="py-2.5 px-3">Issue</th>
+                  <th className="py-2.5 px-2 text-center">Priority</th>
+                  <th className="py-2.5 px-2 text-center">Score</th>
+                  <th className="py-2.5 px-2 text-center">Evidence</th>
+                  <th className="py-2.5 px-3">Status</th>
+                  <th className="py-2.5 px-3">Assigned</th>
+                  <th className="py-2.5 px-3 text-right">Updated</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#30363d]/40">
-                {filteredFindings.map((finding) => {
-                  const isSelected = finding.id === selectedFindingId;
-                  return (
-                    <tr 
-                      key={finding.id}
-                      className={`hover:bg-surface-container transition-colors cursor-pointer relative ${
-                        isSelected ? 'bg-surface-container font-medium' : ''
-                      }`}
-                      onClick={() => setSelectedFindingId(finding.id)}
-                    >
-                      <td className="py-sm px-sm font-code-md text-code-md font-bold text-primary flex items-center gap-xs">
-                        {isSelected && (
-                          <span className="w-1.5 h-6 rounded-full bg-primary absolute left-0 top-2.5"></span>
-                        )}
-                        <span>{finding.id}</span>
-                      </td>
+              <tbody className="divide-y divide-[#212c3d]">
+                {filteredFindings.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="py-12 text-center text-[#64748b] font-mono text-xs">
+                      No findings match the current filter criteria.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredFindings.map((finding) => {
+                    const isSelected = activeFinding && finding.id === activeFinding.id;
+                    const linkedRem = remediations.find(r => r.findingId?.toLowerCase() === finding.id.toLowerCase());
+                    const assignedExaminer = finding.decidedBy || 'NC-8802';
+                    const updatedDate = finding.decidedAt 
+                      ? new Date(finding.decidedAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+                      : finding.provenance?.assessmentPeriod || 'Q3 2026';
 
-                      <td className="py-sm px-sm">
-                        <div className="font-semibold text-on-surface">{finding.cseId}</div>
-                        <div className="font-code-sm text-[11px] text-outline">{finding.sector}</div>
-                      </td>
+                    return (
+                      <tr
+                        key={finding.id}
+                        onClick={() => setSelectedFindingId(finding.id)}
+                        className={`cursor-pointer transition-colors ${
+                          isSelected
+                            ? 'bg-[#1d4ed8]/20 text-[#f1f5f9] font-medium border-l-2 border-l-[#3b82f6]'
+                            : 'hover:bg-[#161e29] text-[#cbd5e1]'
+                        }`}
+                      >
+                        {/* 1. Finding ID */}
+                        <td className="py-2.5 px-3 font-mono font-bold text-[#60a5fa] shrink-0">
+                          {finding.id}
+                        </td>
 
-                      <td className="py-sm px-sm">
-                        <span className="px-xs py-0.5 rounded bg-surface-container-highest font-code-sm text-code-sm text-on-surface">
-                          {finding.controlId}
-                        </span>
-                      </td>
-
-                      <td className="py-sm px-sm">
-                        <div className="flex flex-col gap-0.5">
-                          <span className={`font-code-sm text-[11px] font-medium ${
-                            finding.signalType === 'EXECUTION_GAP' ? 'text-error' :
-                            finding.signalType === 'NEGATIVE_SPACE' ? 'text-tertiary' :
-                            finding.signalType === 'PROCESS_DEVIATION' ? 'text-primary' :
-                            'text-on-surface'
-                          }`}>
-                            {finding.primarySignalLabel}
+                        {/* 2. Control */}
+                        <td className="py-2.5 px-3 font-mono">
+                          <span className="px-1.5 py-0.5 rounded bg-[#131922] border border-[#212c3d] text-[#cbd5e1]">
+                            {finding.controlId}
                           </span>
-                          {finding.secondarySignalLabel && (
-                            <span className="font-code-sm text-[10px] text-outline">{finding.secondarySignalLabel}</span>
+                        </td>
+
+                        {/* 3. Issue */}
+                        <td className="py-3 px-3 max-w-[200px]">
+                          <div className="font-semibold text-slate-200 truncate" title={finding.title}>
+                            {finding.title}
+                          </div>
+                          <div className="text-[11px] text-slate-400 truncate" title={finding.cseName}>
+                            {finding.cseId} • {finding.signalType.replace(/_/g, ' ')}
+                          </div>
+                        </td>
+
+                        {/* 4. Priority */}
+                        <td className="py-3 px-2 text-center font-mono">
+                          {finding.priority === 'CRITICAL' && (
+                            <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-400 font-bold border border-rose-500/30 text-[10px]">
+                              CRIT
+                            </span>
                           )}
-                        </div>
-                      </td>
+                          {finding.priority === 'HIGH' && (
+                            <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 font-semibold border border-amber-500/30 text-[10px]">
+                              HIGH
+                            </span>
+                          )}
+                          {finding.priority === 'MEDIUM' && (
+                            <span className="px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px]">
+                              MED
+                            </span>
+                          )}
+                          {finding.priority === 'LOW' && (
+                            <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 text-[10px]">
+                              LOW
+                            </span>
+                          )}
+                        </td>
 
-                      <td className="py-sm px-sm">
-                        {finding.priority === 'CRITICAL' && (
-                          <span className="px-xs py-0.5 rounded bg-error-container/30 text-error font-code-sm text-[11px] font-bold inline-flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-error"></span>CRIT
-                          </span>
-                        )}
-                        {finding.priority === 'HIGH' && (
-                          <span className="px-xs py-0.5 rounded bg-tertiary-container/20 text-tertiary font-code-sm text-[11px] font-semibold inline-flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-tertiary"></span>HIGH
-                          </span>
-                        )}
-                        {finding.priority === 'MEDIUM' && (
-                          <span className="px-xs py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-code-sm text-[11px] inline-flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>MED
-                          </span>
-                        )}
-                        {finding.priority === 'LOW' && (
-                          <span className="px-xs py-0.5 rounded bg-surface-container-highest text-outline font-code-sm text-[11px] inline-flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>LOW
-                          </span>
-                        )}
-                      </td>
+                        {/* 5. Score */}
+                        <td className="py-3 px-2 text-center font-mono">
+                          <div className="font-bold text-slate-200">
+                            {finding.completeness}%
+                          </div>
+                          <div className="text-[10px] text-slate-500">
+                            {finding.uncertainty === 'LOW' ? 'High Conf' : finding.uncertainty === 'MEDIUM' ? 'Med Conf' : 'Low Conf'}
+                          </div>
+                        </td>
 
-                      <td className="py-sm px-sm">
-                        <div className="flex flex-col">
-                          <span className="font-code-sm text-code-sm font-bold text-secondary">{finding.completeness}%</span>
-                          <span className="font-label-caps text-[9px] uppercase text-outline">{finding.uncLabel}</span>
-                        </div>
-                      </td>
+                        {/* 6. Evidence */}
+                        <td className="py-3 px-2 text-center font-mono">
+                          <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[11px]">
+                            {finding.sourceEvidence?.length || 0}
+                          </span>
+                        </td>
 
-                      <td className="py-sm px-sm">
-                        {finding.status === 'UNDER_REVIEW' && (
-                          <span className="px-xs py-0.5 rounded bg-tertiary-container/30 text-tertiary font-code-sm text-[11px] font-semibold uppercase">
-                            Under Review
-                          </span>
-                        )}
-                        {finding.status === 'VALIDATED' && (
-                          <span className="px-xs py-0.5 rounded bg-secondary-container/20 text-secondary font-code-sm text-[11px] font-bold">
-                            VALIDATED
-                          </span>
-                        )}
-                        {finding.status === 'CANDIDATE' && (
-                          <span className="px-xs py-0.5 rounded bg-surface-container text-on-surface-variant font-code-sm text-[11px]">
-                            CANDIDATE
-                          </span>
-                        )}
-                        {finding.status === 'QUALIFIED' && (
-                          <span className="px-xs py-0.5 rounded bg-primary-container/20 text-primary font-code-sm text-[11px]">
-                            QUALIFIED
-                          </span>
-                        )}
-                        {finding.status === 'REJECTED' && (
-                          <span className="px-xs py-0.5 rounded bg-surface-container text-outline font-code-sm text-[11px]">
-                            REJECTED
-                          </span>
-                        )}
-                        {finding.status === 'OVERRIDDEN' && (
-                          <span className="px-xs py-0.5 rounded bg-surface-container-highest text-tertiary font-code-sm text-[11px]">
-                            OVERRIDDEN
-                          </span>
-                        )}
-                      </td>
+                        {/* 7. Status */}
+                        <td className="py-3 px-3">
+                          {finding.status === 'VALIDATED' && (
+                            <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
+                              CONFIRMED
+                            </span>
+                          )}
+                          {finding.status === 'UNDER_REVIEW' && (
+                            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[10px] font-semibold border border-amber-500/30">
+                              UNDER REVIEW
+                            </span>
+                          )}
+                          {finding.status === 'CANDIDATE' && (
+                            <span className="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-[10px] border border-blue-500/30">
+                              CANDIDATE
+                            </span>
+                          )}
+                          {finding.status === 'QUALIFIED' && (
+                            <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[10px] border border-purple-500/30">
+                              QUALIFIED
+                            </span>
+                          )}
+                          {finding.status === 'REJECTED' && (
+                            <span className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 font-mono text-[10px] border border-slate-700">
+                              REJECTED
+                            </span>
+                          )}
+                          {finding.status === 'OVERRIDDEN' && (
+                            <span className="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono text-[10px] border border-rose-500/30">
+                              OVERRIDDEN
+                            </span>
+                          )}
+                          {linkedRem && (
+                            <div className="text-[10px] text-purple-400 font-mono mt-0.5">
+                              Rem: {linkedRem.status}
+                            </div>
+                          )}
+                        </td>
 
-                      <td className="py-sm px-sm text-right">
-                        <Link 
-                          to={`/findings/${finding.id}`}
-                          className={`p-xs rounded transition-colors inline-flex items-center justify-center ${
-                            isSelected 
-                              ? 'bg-primary text-on-primary' 
-                              : 'hover:bg-surface-container-highest text-outline hover:text-on-surface'
-                          }`}
-                        >
-                          <span className="material-symbols-outlined text-[16px]">visibility</span>
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
+                        {/* 8. Assigned */}
+                        <td className="py-3 px-3 text-slate-300 font-mono text-[11px] truncate max-w-[100px]" title={assignedExaminer}>
+                          {assignedExaminer}
+                        </td>
+
+                        {/* 9. Updated */}
+                        <td className="py-3 px-3 text-right font-mono text-[11px] text-slate-400">
+                          {updatedDate}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
-
-          {/* PAGINATION & METADATA FOOTER */}
-          <div className="flex items-center justify-between p-sm rounded bg-surface-container-low font-code-sm text-code-sm text-outline border border-[#30363d]/60">
-            <div>Showing 1 - {filteredFindings.length} of 40 Total Findings (CSE-014: 8 candidates)</div>
-            <div className="flex items-center gap-xs">
-              <button className="px-sm py-xs rounded bg-surface-container text-on-surface hover:bg-surface-container-high disabled:opacity-40" disabled>Previous</button>
-              <span className="px-sm py-xs rounded bg-surface-container-high text-primary font-bold">1</span>
-              <button className="px-sm py-xs rounded bg-surface-container text-on-surface hover:bg-surface-container-high">2</button>
-              <button className="px-sm py-xs rounded bg-surface-container text-on-surface hover:bg-surface-container-high">Next</button>
-            </div>
-          </div>
-
-          {/* CORRELATED SOC ARCHITECTURE CONTEXT */}
-          <div className="p-md rounded bg-surface-container-low shadow-sm border border-[#30363d]/60 mt-xs">
-            <div className="flex items-center justify-between mb-sm">
-              <span className="font-label-caps text-label-caps uppercase text-outline font-bold tracking-wider">Supervisory Entity Telemetry Profile</span>
-              <span className="font-code-sm text-code-sm text-secondary">Status: AIR-GAP CONNECTED</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-sm">
-              <div className="p-sm rounded bg-surface-container border border-[#30363d]/40">
-                <span className="font-label-caps text-[10px] uppercase text-outline block mb-0.5">Entity Monitored</span>
-                <span className="font-body-md text-body-md font-bold text-on-surface">{activeFinding.cseName}</span>
-                <span className="font-code-sm text-[11px] text-primary block mt-0.5">{activeFinding.cseId} (Sector: {activeFinding.sector})</span>
-              </div>
-              <div className="p-sm rounded bg-surface-container border border-[#30363d]/40">
-                <span className="font-label-caps text-[10px] uppercase text-outline block mb-0.5">Telemetry Integrity</span>
-                <span className="font-body-md text-body-md font-bold text-secondary">96.8% Validated</span>
-                <span className="font-code-sm text-[11px] text-outline block mt-0.5">384 Logs Parsed / Q3</span>
-              </div>
-              <div className="p-sm rounded bg-surface-container border border-[#30363d]/40">
-                <span className="font-label-caps text-[10px] uppercase text-outline block mb-0.5">Assigned Examiner</span>
-                <span className="font-body-md text-body-md font-bold text-on-surface">Lead Examiner NC-8802</span>
-                <span className="font-code-sm text-[11px] text-outline block mt-0.5">NCIIPC Sub-Division 4</span>
-              </div>
-            </div>
-          </div>
         </div>
 
-        {/* RIGHT PANEL: ACTIVE FINDING DETAIL DRAWER (5 Cols) */}
-        <div className="lg:col-span-5 flex flex-col gap-sm">
-          
-          {/* DRAWER HEADER & ACTION STRIP */}
-          <div className="p-md rounded bg-surface-container-low shadow-md border border-[#30363d]/60">
-            <div className="flex items-center justify-between mb-xs">
-              <div className="flex items-center gap-xs">
-                {activeFinding.priority === 'CRITICAL' && (
-                  <span className="px-xs py-0.5 rounded bg-error-container/30 text-error font-code-sm text-code-sm font-bold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
-                    CRITICAL PRIORITY
-                  </span>
-                )}
-                {activeFinding.priority === 'HIGH' && (
-                  <span className="px-xs py-0.5 rounded bg-tertiary-container/30 text-tertiary font-code-sm text-code-sm font-bold flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
-                    HIGH PRIORITY
-                  </span>
-                )}
-                <span className="px-xs py-0.5 rounded bg-tertiary-container/30 text-tertiary font-code-sm text-code-sm font-semibold uppercase">
-                  {activeFinding.status.replace('_', ' ')}
-                </span>
-              </div>
-              <span className="font-code-sm text-code-sm text-outline">SYNTH: R-2.4 (AN-1.8)</span>
-            </div>
-
-            <div className="flex items-baseline justify-between mt-sm">
-              <div>
-                <span className="font-label-caps text-label-caps uppercase text-outline font-bold tracking-wider">Candidate Record</span>
-                <h2 className="font-headline-md text-headline-md text-on-surface font-bold tracking-tight">{activeFinding.id}</h2>
-              </div>
-              <div className="text-right">
-                <span className="font-label-caps text-label-caps uppercase text-outline font-bold tracking-wider">Linked Case Docket</span>
-                <div className="font-code-md text-code-md text-primary font-bold">{activeFinding.caseDocket}</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-md mt-sm pt-sm bg-surface-container-highest/20 font-body-sm text-body-sm text-on-surface-variant flex-wrap">
-              <div>Entity: <span className="font-semibold text-on-surface">{activeFinding.cseId}</span> ({activeFinding.cseName})</div>
-              <div>•</div>
-              <div>Control: <span className="font-mono text-primary font-semibold">{activeFinding.controlId}</span></div>
-              <div>•</div>
-              <div>Period: <span className="font-mono text-on-surface">Q3 2026</span></div>
-            </div>
-          </div>
-
-          {/* PRIMARY CALL TO ACTION: EXAMINER WORKSPACE DIRECT */}
-          <div className="p-md rounded bg-surface-container shadow-sm flex flex-col gap-sm border border-primary/30">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-xs">
-                <span className="material-symbols-outlined text-[20px] text-primary">security</span>
-                <span className="font-body-md text-body-md font-bold text-on-surface">Examiner Decision Engine</span>
-              </div>
-              <span className="font-code-sm text-code-sm text-secondary">Active Session</span>
-            </div>
-            <p className="font-body-sm text-body-sm text-on-surface-variant">
-              Submit human qualification, formal validation into the statutory record, or override with justification.
-            </p>
-            <Link 
-              to={`/findings/${activeFinding.id}`}
-              className="w-full py-sm px-md rounded bg-primary text-on-primary hover:bg-primary-fixed transition-colors font-body-md text-body-md font-bold flex items-center justify-center gap-sm shadow-md"
-            >
-              <span className="material-symbols-outlined text-[20px]">assignment_turned_in</span>
-              <span>Open Examiner Workspace (/findings/{activeFinding.id})</span>
-            </Link>
-
-            <div className="grid grid-cols-3 gap-xs pt-xs">
-              <Link 
-                to="/analytics/execution-gaps" 
-                className="py-xs px-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-code-sm text-[11px] text-center transition-colors border border-[#30363d]/40"
-              >
-                GAP-0071 View
-              </Link>
-              <Link 
-                to="/analytics/negative-space" 
-                className="py-xs px-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-code-sm text-[11px] text-center transition-colors border border-[#30363d]/40"
-              >
-                NS-0041 Audit
-              </Link>
-              <Link 
-                to="/analytics/historical-intelligence" 
-                className="py-xs px-xs rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-code-sm text-[11px] text-center transition-colors border border-[#30363d]/40"
-              >
-                Historic Diff
-              </Link>
-            </div>
-          </div>
-
-          {/* FINDING REASONING CHAIN (Multi-Signal Evidence Fusion) */}
-          <div className="p-md rounded bg-surface-container-low shadow-sm flex flex-col gap-md border border-[#30363d]/60">
-            <div className="flex items-center justify-between">
-              <span className="font-label-caps text-label-caps uppercase text-outline font-bold tracking-wider">Finding Reasoning Chain &amp; Synthesis</span>
-              <span className="px-xs py-0.5 rounded bg-primary-container/20 text-primary font-code-sm text-[10px]">Deterministic Logic</span>
-            </div>
-
-            {/* Expected vs Observed Contrast Box */}
-            <div className="flex flex-col gap-xs p-sm rounded bg-surface-container border border-[#30363d]/40">
-              <div className="flex flex-col gap-0.5">
-                <span className="font-label-caps text-[10px] uppercase text-outline font-bold">Mandated Baseline (CTRL-07 v3.2)</span>
-                <div className="font-body-sm text-body-sm text-on-surface">
-                  {activeFinding.expectedState}
-                </div>
-              </div>
-              <div className="flex flex-col gap-0.5 pt-xs border-t border-[#30363d]/40 mt-xs">
-                <span className="font-label-caps text-[10px] uppercase text-error font-bold">Observed Supervisory Telemetry</span>
-                <div className="font-body-sm text-body-sm text-error">
-                  {activeFinding.observedState}
-                </div>
-              </div>
-            </div>
-
-            {/* 4-Signal Fusion Grid */}
-            <div className="flex flex-col gap-xs">
-              <span className="font-label-caps text-[10px] uppercase text-outline font-bold">Corroborating Signal Fusion (4 Vectors)</span>
+        {/* 4. FINDING DETAIL SECTION (5 Cols on xl) */}
+        <div className="xl:col-span-5 flex flex-col gap-4">
+          {activeFinding ? (
+            <div className="rounded-lg border border-[#212c3d] bg-[#111622] p-4 md:p-5 shadow-sm space-y-4">
               
-              <div className="p-xs rounded bg-surface-container flex items-start gap-sm border border-error/30">
-                <div className="p-1 rounded bg-error-container/40 text-error mt-0.5">
-                  <span className="material-symbols-outlined text-[14px]">rule_folder</span>
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-xs">
-                    <span className="font-code-sm text-code-sm text-error font-bold">Primary: GAP-0071</span>
-                    <span className="font-code-sm text-[10px] text-outline">• Execution Gap</span>
+              {/* DETAIL HEADER */}
+              <div className="flex items-start justify-between gap-3 pb-3 border-b border-[#212c3d]">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-base font-bold text-[#60a5fa]">{activeFinding.id}</span>
+                    <span className="px-2 py-0.5 rounded bg-[#131922] font-mono text-[11px] text-[#cbd5e1] border border-[#212c3d]">
+                      {activeFinding.controlId}
+                    </span>
+                    <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold border ${
+                      activeFinding.priority === 'CRITICAL' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' :
+                      activeFinding.priority === 'HIGH' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
+                      'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                    }`}>
+                      {activeFinding.priority}
+                    </span>
                   </div>
-                  <span className="font-body-sm text-[12px] text-on-surface-variant">Step 4 (Escalate to Tier-2 CERT) completely omitted in workflow run.</span>
-                </div>
-              </div>
-
-              <div className="p-xs rounded bg-surface-container flex items-start gap-sm border border-tertiary/30">
-                <div className="p-1 rounded bg-tertiary-container/40 text-tertiary mt-0.5">
-                  <span className="material-symbols-outlined text-[14px]">contrast</span>
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-xs">
-                    <span className="font-code-sm text-code-sm text-tertiary font-bold">Supporting: NS-0041</span>
-                    <span className="font-code-sm text-[10px] text-outline">• Negative Space</span>
+                  <h2 className="text-base font-bold text-[#f1f5f9] mt-1 leading-snug">
+                    {activeFinding.title}
+                  </h2>
+                  <div className="text-xs text-[#94a3b8] mt-0.5">
+                    {activeFinding.cseName} ({activeFinding.cseId})
                   </div>
-                  <span className="font-body-sm text-[12px] text-on-surface-variant">Expected artifact ESC-221 was not generated during incident lifecycle.</span>
                 </div>
-              </div>
 
-              <div className="p-xs rounded bg-surface-container flex items-start gap-sm border border-[#30363d]/40">
-                <div className="p-1 rounded bg-primary-container/40 text-primary mt-0.5">
-                  <span className="material-symbols-outlined text-[14px]">history</span>
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-xs">
-                    <span className="font-code-sm text-code-sm text-primary font-bold">Supporting: HIST-REC</span>
-                    <span className="font-code-sm text-[10px] text-outline">• Historical Recurrence</span>
+                <div className="text-right shrink-0">
+                  <div className="text-[10px] font-mono uppercase text-[#64748b]">Status</div>
+                  <div className="font-mono text-xs font-bold text-emerald-400 mt-0.5">
+                    {activeFinding.status}
                   </div>
-                  <span className="font-body-sm text-[12px] text-on-surface-variant">Identical escalation gaps observed in Q2 2025 (GAP-0032) and Q4 2025 (GAP-0051).</span>
                 </div>
               </div>
 
-              <div className="p-xs rounded bg-surface-container flex items-start gap-sm border border-[#30363d]/40">
-                <div className="p-1 rounded bg-surface-container-highest text-on-surface mt-0.5">
-                  <span className="material-symbols-outlined text-[14px]">account_tree</span>
+              {/* SECTION: WHAT (Finding description) */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-blue-400 tracking-wider">
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>WHAT — Finding Description</span>
                 </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-xs">
-                    <span className="font-code-sm text-code-sm text-on-surface font-bold">Supporting: PD-0031</span>
-                    <span className="font-code-sm text-[10px] text-outline">• Process Deviation</span>
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 text-xs text-slate-300 leading-relaxed">
+                  <p className="font-medium text-white mb-1.5">
+                    "{activeFinding.whyFlagged}"
+                  </p>
+                  <p className="text-slate-400">
+                    {activeFinding.gapSummary || 'Supervisory deviation detected across regulatory evidence trails and operational activity logs.'}
+                  </p>
+                </div>
+              </div>
+
+              {/* SECTION: WHY (Expected vs Observed) */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-amber-400 tracking-wider">
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>WHY — Expected vs Observed</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="p-3 rounded-lg bg-slate-950/70 border border-emerald-500/30">
+                    <span className="text-[10px] font-mono uppercase text-emerald-400 font-bold block mb-1">
+                      Expected Requirement
+                    </span>
+                    <p className="text-slate-300 leading-relaxed font-mono text-[11px]">
+                      {activeFinding.expectedState || 'Strict adherence to prescribed regulatory cadence and mandatory artifact submission within statutory window.'}
+                    </p>
                   </div>
-                  <span className="font-body-sm text-[12px] text-on-surface-variant">Premature jump from initial investigation directly to case closure at 17:42.</span>
+                  <div className="p-3 rounded-lg bg-slate-950/70 border border-rose-500/30">
+                    <span className="text-[10px] font-mono uppercase text-rose-400 font-bold block mb-1">
+                      Observed Reality
+                    </span>
+                    <p className="text-slate-300 leading-relaxed font-mono text-[11px]">
+                      {activeFinding.observedState || 'Telemetry indicates omission or gap in expected escalation pathway and milestone documentation.'}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* EVIDENCE STRENGTH & QUALITY METRICS */}
-          <div className="p-md rounded bg-surface-container-low shadow-sm flex flex-col gap-sm border border-[#30363d]/60">
-            <div className="flex items-center justify-between">
-              <span className="font-label-caps text-label-caps uppercase text-outline font-bold tracking-wider">Evidence Quality &amp; Confidence</span>
-              <span className="px-xs py-0.5 rounded bg-secondary-container/20 text-secondary font-code-sm text-[10px] font-bold">Uncertainty: LOW</span>
-            </div>
-            <div className="grid grid-cols-4 gap-xs text-center py-xs">
-              <div className="p-xs rounded bg-surface-container border border-[#30363d]/30">
-                <span className="font-label-caps text-[9px] uppercase text-outline block">Strength</span>
-                <span className="font-code-md text-code-md font-bold text-secondary">Strong</span>
-              </div>
-              <div className="p-xs rounded bg-surface-container border border-[#30363d]/30">
-                <span className="font-label-caps text-[9px] uppercase text-outline block">Complete</span>
-                <span className="font-code-md text-code-md font-bold text-primary">{activeFinding.completeness}%</span>
-              </div>
-              <div className="p-xs rounded bg-surface-container border border-[#30363d]/30">
-                <span className="font-label-caps text-[9px] uppercase text-outline block">Traceable</span>
-                <span className="font-code-md text-code-md font-bold text-secondary">91%</span>
-              </div>
-              <div className="p-xs rounded bg-surface-container border border-[#30363d]/30">
-                <span className="font-label-caps text-[9px] uppercase text-outline block">Integrity</span>
-                <span className="font-code-md text-code-md font-bold text-secondary">96%</span>
-              </div>
-            </div>
-            <p className="font-body-sm text-[11px] text-on-surface-variant bg-surface-container p-xs rounded border border-[#30363d]/40">
-              <span className="text-on-surface font-semibold">Integrity Proof:</span> Primary telemetry traceable with SHA-256 notarization across 3 corroborating systems (ITSM, Syslog-NG, and SIEM Ingest).
-            </p>
-          </div>
+              {/* SECTION: SIGNALS (Analytical signals) */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-purple-400 tracking-wider">
+                  <Activity className="w-3.5 h-3.5" />
+                  <span>SIGNALS — Analytical Signals</span>
+                </div>
+                <div className="space-y-2">
+                  <div className="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 text-xs flex items-start gap-2.5">
+                    <div className="p-1 rounded bg-purple-500/20 text-purple-400 mt-0.5">
+                      <GitBranch className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <div className="font-mono font-semibold text-purple-300">
+                        Primary Signal: {activeFinding.signalType.replace(/_/g, ' ')}
+                      </div>
+                      <div className="text-slate-400 text-[11px] mt-0.5 leading-snug">
+                        Confidence {activeFinding.completeness}% • Uncertainty {activeFinding.uncertainty} • Strength {activeFinding.evidenceStrength}
+                      </div>
+                    </div>
+                  </div>
 
-          {/* CORRELATED EVIDENCE ARTIFACTS TABLE */}
-          <div className="p-md rounded bg-surface-container-low shadow-sm flex flex-col gap-sm border border-[#30363d]/60">
-            <div className="flex items-center justify-between">
-              <span className="font-label-caps text-label-caps uppercase text-outline font-bold tracking-wider">Correlated Dossier Artifacts</span>
-              <span className="font-code-sm text-[11px] text-outline">4 Required Elements</span>
-            </div>
-            <div className="w-full overflow-x-auto">
-              <table className="w-full text-left font-body-sm text-[12px]">
-                <thead className="bg-surface-container font-label-caps text-[10px] text-outline uppercase">
-                  <tr>
-                    <th className="py-xs px-xs">Artifact ID</th>
-                    <th className="py-xs px-xs">Type</th>
-                    <th className="py-xs px-xs">Source</th>
-                    <th className="py-xs px-xs">Status</th>
-                    <th className="py-xs px-xs text-right">Verification</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#30363d]/30">
-                  <tr className="hover:bg-surface-container/40">
-                    <td className="py-xs px-xs font-mono font-bold text-primary">ALR-8821</td>
-                    <td className="py-xs px-xs text-on-surface">Alert Log</td>
-                    <td className="py-xs px-xs text-outline">SIEM Ingest</td>
-                    <td className="py-xs px-xs"><span className="px-1 rounded bg-secondary-container/20 text-secondary text-[10px] font-bold">PRESENT</span></td>
-                    <td className="py-xs px-xs text-right font-mono text-[10px] text-secondary">SHA-256 OK</td>
-                  </tr>
-                  <tr className="hover:bg-surface-container/40">
-                    <td className="py-xs px-xs font-mono font-bold text-primary">CASE-1042</td>
-                    <td className="py-xs px-xs text-on-surface">Docket Record</td>
-                    <td className="py-xs px-xs text-outline">ITSM Core</td>
-                    <td className="py-xs px-xs"><span className="px-1 rounded bg-secondary-container/20 text-secondary text-[10px] font-bold">PRESENT</span></td>
-                    <td className="py-xs px-xs text-right font-mono text-[10px] text-secondary">SHA-256 OK</td>
-                  </tr>
-                  <tr className="hover:bg-surface-container/40">
-                    <td className="py-xs px-xs font-mono font-bold text-primary">INV-338</td>
-                    <td className="py-xs px-xs text-on-surface">Analyst Notes</td>
-                    <td className="py-xs px-xs text-outline">SOC Desk</td>
-                    <td className="py-xs px-xs"><span className="px-1 rounded bg-secondary-container/20 text-secondary text-[10px] font-bold">PRESENT</span></td>
-                    <td className="py-xs px-xs text-right font-mono text-[10px] text-secondary">SHA-256 OK</td>
-                  </tr>
-                  <tr className="bg-error-container/10">
-                    <td className="py-xs px-xs font-mono font-bold text-error">ESC-221</td>
-                    <td className="py-xs px-xs text-error font-medium">Escalation Rec</td>
-                    <td className="py-xs px-xs text-outline">SOC Workflow</td>
-                    <td className="py-xs px-xs"><span className="px-1 rounded bg-error-container/40 text-error text-[10px] font-bold">NOT SUBMITTED</span></td>
-                    <td className="py-xs px-xs text-right font-mono text-[10px] text-error font-bold">MISSING</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+                  {activeFinding.supportingSignals && activeFinding.supportingSignals.length > 0 && (
+                    <div className="grid grid-cols-1 gap-1.5">
+                      {activeFinding.supportingSignals.map((sig, idx) => (
+                        <div key={idx} className="p-2 rounded bg-slate-950/50 border border-slate-800/80 text-[11px] flex justify-between items-center">
+                          <span className="font-mono text-blue-400 font-semibold">{sig.label}</span>
+                          <span className="text-slate-400 truncate max-w-[240px]">{sig.description}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
 
+              {/* SECTION: PROOF (Evidence) */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-emerald-400 tracking-wider">
+                    <Shield className="w-3.5 h-3.5" />
+                    <span>PROOF — Evidence ({activeFinding.sourceEvidence?.length || 0})</span>
+                  </div>
+                  <Link
+                    to="/evidence"
+                    className="text-[11px] font-mono text-blue-400 hover:underline flex items-center gap-1"
+                  >
+                    <span>Evidence Vault</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                </div>
+                <div className="overflow-x-auto rounded-lg border border-slate-800 bg-slate-950/70">
+                  <table className="w-full text-left text-[11px] font-mono">
+                    <thead className="bg-slate-900/80 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+                      <tr>
+                        <th className="py-2 px-2.5">Record ID</th>
+                        <th className="py-2 px-2">Type</th>
+                        <th className="py-2 px-2">Description</th>
+                        <th className="py-2 px-2.5 text-right">Timestamp</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/60">
+                      {activeFinding.sourceEvidence && activeFinding.sourceEvidence.length > 0 ? (
+                        activeFinding.sourceEvidence.map((ev) => (
+                          <tr key={ev.recordId} className="hover:bg-slate-900/40">
+                            <td className="py-2 px-2.5 font-bold text-blue-400">{ev.recordId}</td>
+                            <td className="py-2 px-2 text-slate-300">{ev.recordType}</td>
+                            <td className="py-2 px-2 text-slate-400 truncate max-w-[150px]" title={ev.title}>
+                              {ev.title}
+                            </td>
+                            <td className="py-2 px-2.5 text-right text-slate-500">{ev.timestamp}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="py-3 px-2.5 text-center text-slate-500">
+                            No direct evidence records mapped.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* SECTION: TRACEABILITY (Control / Rule / Analysis version) */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-slate-400 tracking-wider">
+                  <Info className="w-3.5 h-3.5 text-blue-400" />
+                  <span>TRACEABILITY — Control / Rule / Analysis Version</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 font-mono text-[11px]">
+                  <div>
+                    <div className="text-[10px] text-slate-500 uppercase">Control Ver</div>
+                    <div className="text-white font-semibold mt-0.5">
+                      {activeFinding.provenance?.controlVersion || 'CTRL-v3.2'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-slate-500 uppercase">Rule Ver</div>
+                    <div className="text-blue-400 font-semibold mt-0.5">
+                      {activeFinding.provenance?.ruleVersion || 'RULE-2026.4'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-slate-500 uppercase">Engine Ver</div>
+                    <div className="text-emerald-400 font-semibold mt-0.5">
+                      {activeFinding.provenance?.analyticsEngineVersion || 'AN-v1.8.2'}
+                    </div>
+                  </div>
+                </div>
+                {activeFinding.provenance?.sha256 && (
+                  <div className="p-2 rounded bg-slate-950/50 border border-slate-800 text-[10px] font-mono text-slate-400 break-all">
+                    <span className="text-slate-500 font-bold uppercase mr-1">SHA256:</span>
+                    {activeFinding.provenance.sha256}
+                  </div>
+                )}
+              </div>
+
+              {/* SECTION: DECISION (Examiner action) */}
+              <div className="space-y-2 pt-2 border-t border-slate-800">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-blue-400 tracking-wider">
+                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <span>DECISION — Examiner Action</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-slate-500">
+                    Lead Examiner NC-8802
+                  </span>
+                </div>
+
+                <div className="p-3 rounded-lg bg-blue-950/20 border border-blue-500/30 space-y-2">
+                  <div className="text-xs text-slate-300">
+                    Execute binding supervisory determination for <strong className="text-white font-mono">{activeFinding.id}</strong>:
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="justify-center bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs"
+                      onClick={() => setModalAction('VALIDATED')}
+                    >
+                      <Check className="w-3.5 h-3.5 mr-1" />
+                      Validate / Confirm
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="justify-center border-amber-500/50 text-amber-300 hover:bg-amber-500/10 text-xs"
+                      onClick={() => setModalAction('QUALIFIED')}
+                    >
+                      Qualify Finding
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="justify-center border-rose-500/50 text-rose-300 hover:bg-rose-500/10 text-xs"
+                      onClick={() => setModalAction('REJECTED')}
+                    >
+                      <X className="w-3.5 h-3.5 mr-1" />
+                      Reject (False Pos)
+                    </Button>
+
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="justify-center bg-blue-600 hover:bg-blue-500 text-white text-xs"
+                      onClick={() => setModalAction('REQUEST_EVD')}
+                    >
+                      <Send className="w-3.5 h-3.5 mr-1" />
+                      Demand Evidence
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION: REMEDIATION (Current remediation state) */}
+              <div className="space-y-1.5 pt-2 border-t border-slate-800">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-purple-400 tracking-wider">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>REMEDIATION — Current Remediation State</span>
+                  </div>
+                  <Link
+                    to="/remediation"
+                    className="text-[11px] font-mono text-purple-400 hover:underline flex items-center gap-1"
+                  >
+                    <span>View Mandates</span>
+                    <ChevronRight className="w-3 h-3" />
+                  </Link>
+                </div>
+
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 space-y-2 text-xs">
+                  {activeRemediation ? (
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-mono font-bold text-white">{activeRemediation.id}</span>
+                        <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-mono text-[10px] font-semibold border border-purple-500/30">
+                          {activeRemediation.status}
+                        </span>
+                      </div>
+                      <div className="text-slate-300 text-[11px] leading-snug">
+                        {activeRemediation.actionSummary}
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-800 font-mono text-[11px]">
+                        <div>
+                          <span className="text-slate-500 block text-[10px]">Evidence Verified:</span>
+                          <span className="text-emerald-400 font-bold">{activeRemediation.evidenceProgress}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-500 block text-[10px]">Statutory Deadline:</span>
+                          <span className="text-slate-300">{activeRemediation.dueDate}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-slate-400 flex items-center justify-between py-1">
+                      <span>No active remediation mandate issued for this finding.</span>
+                      <span className="text-slate-500 font-mono text-[11px]">STATE: PENDING ADJUDICATION</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+            </div>
+          ) : (
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-8 text-center text-slate-500 font-mono text-xs">
+              Select a finding to inspect supervisory details.
+            </div>
+          )}
         </div>
 
       </div>
 
-    </div>
+      {/* ADJUDICATION / EVIDENCE DEMAND MODAL */}
+      <Modal
+        isOpen={!!modalAction}
+        onClose={() => setModalAction(null)}
+        title={modalAction === 'REQUEST_EVD' ? `Dispatch Evidence Demand: ${activeFinding?.id}` : `Adjudicate Finding: ${modalAction}`}
+        description="Formal supervisory determinations are cryptographically logged to the statutory audit ledger."
+        footer={
+          <>
+            <Button variant="secondary" size="sm" onClick={() => setModalAction(null)}>
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" onClick={handleExecuteDecision}>
+              Commit Supervisory Action
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3 font-sans text-xs">
+          <div className="space-y-1">
+            <label className="text-[11px] font-mono text-slate-400 uppercase">
+              Statutory Regulatory Citation:
+            </label>
+            <input
+              type="text"
+              value={modalReason}
+              onChange={(e) => setModalReason(e.target.value)}
+              className="w-full h-8 px-3 rounded bg-slate-950 border border-slate-800 font-mono text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[11px] font-mono text-slate-400 uppercase">
+              Examiner Ledger Notes:
+            </label>
+            <textarea
+              value={actionNotes}
+              onChange={(e) => setActionNotes(e.target.value)}
+              placeholder="Record supervisory justification, evidence deficiency reasons, or directions to CSE..."
+              rows={3}
+              className="w-full p-2.5 rounded bg-slate-950 border border-slate-800 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-blue-500 resize-none font-mono"
+            />
+          </div>
+
+          <div className="p-2 rounded bg-slate-950 border border-slate-800 text-[11px] text-slate-400 font-mono flex items-center justify-between">
+            <span>Signatory:</span>
+            <span className="text-white font-semibold">NC-8802 (Lead Examiner, NCIIPC)</span>
+          </div>
+        </div>
+      </Modal>
+
+      {/* TOAST CONFIRMATION */}
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 bg-[#111622] border border-emerald-500/40 text-[#f1f5f9] px-4 py-2.5 rounded-lg shadow-xl text-xs font-mono flex items-center gap-2 z-50 animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span>{toastMsg}</span>
+        </div>
+      )}
+
+    </PageContainer>
   );
 };

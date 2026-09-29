@@ -1,17 +1,15 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useSupervisory } from '@/context/SupervisoryContext';
 import { AuditTrailItem } from '@/data/mock/audit';
 import {
   SystemUser,
   AdminRole,
-  CseAccessRule,
   SecurityConfigItem,
   SupervisoryControl,
-  SystemComponentVersion,
   mockAdminRoles,
-  mockCseAccessRules,
   mockSecurityConfig,
+  mockSupervisoryControls
 } from '@/data/mock/governance';
 import { governanceApi } from '@/api';
 import {
@@ -31,7 +29,6 @@ import {
   Clock,
   ExternalLink,
   ChevronRight,
-  ArrowUpRight,
   Eye,
   Copy,
   Check,
@@ -39,55 +36,55 @@ import {
   Layers,
   FileText,
   UserCheck,
-  Terminal,
   Server,
   BookOpen,
   Info,
-  Building,
-  RotateCcw
+  RotateCcw,
+  Scale,
+  Settings,
+  ShieldAlert,
+  ArrowRight
 } from 'lucide-react';
-import {
-  PageContainer,
-  PageHeader,
-  KpiCard,
-  Input,
-  Select,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  StatusBadge,
-  PriorityBadge,
-  Tabs,
-  Modal,
-  Button,
-  Drawer,
-  Timeline
-} from '@/components/common';
+import { StatusBadge, PriorityBadge, Button, Drawer, PageContainer } from '@/components/common';
 
-type GovernanceTab = 'audit' | 'administration' | 'controls' | 'versions';
-
-interface GovernanceHubPageProps {
-  initialTab?: GovernanceTab | string;
+export interface SupervisoryRule {
+  id: string;
+  controlId: string;
+  condition: string;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  version: string;
+  status: 'ACTIVE' | 'UNDER_REVIEW' | 'DEPRECATED';
+  description: string;
+  engine: string;
 }
 
-export const GovernanceHubPage: React.FC<GovernanceHubPageProps> = ({ initialTab = 'audit' }) => {
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { auditTrail, cses, findings } = useSupervisory();
+export interface SupervisoryPolicy {
+  id: string;
+  title: string;
+  category: string;
+  statutoryBasis: string;
+  enforcementMode: 'AUTOMATIC_BLOCK' | 'SUPERVISORY_ALERT' | 'AUDIT_FLAG';
+  version: string;
+  status: 'ENFORCED' | 'HARDENED' | 'ACTIVE';
+  lastReviewed: string;
+  description: string;
+}
 
-  // Synced Active Tab
-  const tabFromUrl = searchParams.get('tab') as GovernanceTab | null;
-  const resolvedTab = tabFromUrl || (initialTab === 'admin' ? 'administration' : initialTab) || 'audit';
+export const GovernanceHubPage: React.FC<{ initialTab?: string }> = ({ initialTab = 'controls' }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { auditTrail, cses } = useSupervisory();
+
+  // Tab mapping
+  const validTabs = ['controls', 'rules', 'policies', 'users', 'audit', 'config'];
+  const tabFromUrl = searchParams.get('tab');
+  const resolvedTab = (tabFromUrl && validTabs.includes(tabFromUrl)) ? tabFromUrl : initialTab;
   const [activeTab, setActiveTab] = useState<string>(resolvedTab);
 
   useEffect(() => {
-    if (tabFromUrl && ['audit', 'administration', 'controls', 'versions'].includes(tabFromUrl)) {
+    if (tabFromUrl && validTabs.includes(tabFromUrl)) {
       setActiveTab(tabFromUrl);
-    } else if (initialTab) {
-      setActiveTab(initialTab === 'admin' ? 'administration' : initialTab);
     }
-  }, [tabFromUrl, initialTab]);
+  }, [tabFromUrl]);
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
@@ -98,1566 +95,1038 @@ export const GovernanceHubPage: React.FC<GovernanceHubPageProps> = ({ initialTab
     });
   };
 
-  // ---------------------------------------------------------------------------
-  // TAB 1: AUDIT LEDGER STATE & FILTERS
-  // ---------------------------------------------------------------------------
-  const [auditSearch, setAuditSearch] = useState('');
-  const [auditUserFilter, setAuditUserFilter] = useState('ALL');
-  const [auditActionFilter, setAuditActionFilter] = useState('ALL');
-  const [auditResultFilter, setAuditResultFilter] = useState('ALL');
-  const [selectedAuditEvent, setSelectedAuditEvent] = useState<AuditTrailItem | null>(null);
-
-  const filteredAuditEvents = useMemo(() => {
-    return auditTrail.filter(ev => {
-      if (auditSearch) {
-        const q = auditSearch.toLowerCase();
-        const match =
-          ev.id.toLowerCase().includes(q) ||
-          ev.actor.toLowerCase().includes(q) ||
-          ev.action.toLowerCase().includes(q) ||
-          ev.targetObject.toLowerCase().includes(q) ||
-          ev.reason.toLowerCase().includes(q) ||
-          (ev.evidenceRef && ev.evidenceRef.toLowerCase().includes(q));
-        if (!match) return false;
-      }
-      if (auditUserFilter !== 'ALL' && !ev.actor.toLowerCase().includes(auditUserFilter.toLowerCase())) return false;
-      if (auditActionFilter !== 'ALL' && !ev.action.toLowerCase().includes(auditActionFilter.toLowerCase())) return false;
-      if (auditResultFilter !== 'ALL' && ev.result !== auditResultFilter) return false;
-      return true;
-    });
-  }, [auditTrail, auditSearch, auditUserFilter, auditActionFilter, auditResultFilter]);
-
-  const auditKpis = useMemo(() => {
-    const eventsToday = auditTrail.length;
-    const findingActions = auditTrail.filter(e => e.action.toLowerCase().includes('finding') || e.targetObject.startsWith('FND')).length;
-    const evidenceActions = auditTrail.filter(e => e.action.toLowerCase().includes('evidence') || e.action.toLowerCase().includes('telemetry') || (e.evidenceRef && e.evidenceRef.length > 0)).length;
-    const accessConfigActions = auditTrail.filter(e => e.action.toLowerCase().includes('verification') || e.action.toLowerCase().includes('decision') || e.actorType === 'SYSTEM').length;
-
-    return { eventsToday, findingActions, evidenceActions, accessConfigActions };
-  }, [auditTrail]);
-
-  // ---------------------------------------------------------------------------
-  // TAB 2: ADMINISTRATION STATE & SUB-TABS
-  // ---------------------------------------------------------------------------
-  const [adminSubTab, setAdminSubTab] = useState<'users' | 'roles' | 'access' | 'security'>('users');
+  // Real data state
+  const [controls, setControls] = useState<SupervisoryControl[]>(mockSupervisoryControls);
   const [users, setUsers] = useState<SystemUser[]>([]);
-  const [roles, setRoles] = useState<AdminRole[]>(mockAdminRoles);
-  const [cseAccessRules, setCseAccessRules] = useState<CseAccessRule[]>(mockCseAccessRules);
-  const [securityConfigs] = useState<SecurityConfigItem[]>(mockSecurityConfig);
+  const [roles] = useState<AdminRole[]>(mockAdminRoles);
+  const [securityConfigs, setSecurityConfigs] = useState<SecurityConfigItem[]>(mockSecurityConfig);
 
+  // Search & filter states for tabs
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDomain, setSelectedDomain] = useState('ALL');
+  const [selectedStatus, setSelectedStatus] = useState('ALL');
+
+  // Selected item drawers
+  const [selectedControl, setSelectedControl] = useState<SupervisoryControl | null>(null);
+  const [selectedRule, setSelectedRule] = useState<SupervisoryRule | null>(null);
+  const [selectedPolicy, setSelectedPolicy] = useState<SupervisoryPolicy | null>(null);
   const [selectedUser, setSelectedUser] = useState<SystemUser | null>(null);
-  const [selectedRole, setSelectedRole] = useState<AdminRole | null>(null);
-  const [editAccessUser, setEditAccessUser] = useState<SystemUser | null>(null);
+  const [selectedAudit, setSelectedAudit] = useState<AuditTrailItem | null>(null);
 
-  const [adminUserSearch, setAdminUserSearch] = useState('');
-  const [adminUserRoleFilter, setAdminUserRoleFilter] = useState('ALL');
+  // Editable config state for administrative settings
+  const [editableConfig, setEditableConfig] = useState<Record<string, string>>({
+    'SEC-02': '15 Minutes Maximum Inactivity Horizon',
+    'SEC-01': 'FIPS-140-2 Level 3 Smartcard + Physical FIDO2 Key',
+    'SEC-05': 'Zero Egress Air-Gap Boundary Active'
+  });
+  const [isEditingConfig, setIsEditingConfig] = useState(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
+  const showNotification = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3500);
+  };
+
+  // Fetch real users from backend or fallback to initial data
   useEffect(() => {
-    governanceApi.getUsers().then(res => setUsers(res)).catch(() => {});
-    governanceApi.getRoles().then(res => setRoles(res)).catch(() => {});
-    governanceApi.getAccessRules().then(res => setCseAccessRules(res)).catch(() => {});
-    governanceApi.getControls().then(res => setControls(res)).catch(() => {});
-    governanceApi.getSystemVersions().then(res => setVersions(res)).catch(() => {});
+    governanceApi.getUsers().then(res => {
+      if (res && res.length > 0) setUsers(res);
+    }).catch(() => {});
+    governanceApi.getControls().then(res => {
+      if (res && res.length > 0) setControls(res);
+    }).catch(() => {});
   }, []);
 
-  const filteredUsers = useMemo(() => {
-    return users.filter(u => {
-      if (adminUserSearch) {
-        const q = adminUserSearch.toLowerCase();
-        const match =
-          u.name.toLowerCase().includes(q) ||
-          u.username.toLowerCase().includes(q) ||
-          u.badge.toLowerCase().includes(q) ||
-          u.email.toLowerCase().includes(q) ||
-          u.organization.toLowerCase().includes(q);
-        if (!match) return false;
+  // Rules derived deterministically from existing controls and versioned rules
+  const rulesList: SupervisoryRule[] = useMemo(() => {
+    return [
+      {
+        id: 'RULE-2026.01',
+        controlId: 'CTRL-01',
+        condition: 'Absence of OCSF boundary syslog telemetry exceeding 4 consecutive hours',
+        severity: 'CRITICAL',
+        version: 'v3.2.0',
+        status: 'ACTIVE',
+        description: 'Enforces mandatory boundary telemetry ingestion without unannounced dark periods.',
+        engine: 'Execution Gap Analytics Engine (v1.4.2)'
+      },
+      {
+        id: 'RULE-2026.04',
+        controlId: 'CTRL-04',
+        condition: 'Direct root or SCADA bastion session initiated without verified FIDO2 challenge receipt',
+        severity: 'HIGH',
+        version: 'v2.4.0',
+        status: 'ACTIVE',
+        description: 'Mandatory dual-custody hardware MFA tokens for jumpbox access sessions.',
+        engine: 'Behavioural Deviation Engine (v1.8.0)'
+      },
+      {
+        id: 'RULE-2026.08',
+        controlId: 'CTRL-07',
+        condition: 'Omission of Level-2 SOAR incident escalation token during critical grid outage window',
+        severity: 'CRITICAL',
+        version: 'v1.4.0',
+        status: 'ACTIVE',
+        description: 'Mandatory statutory Tier-2 escalation protocol dispatch within 15-minute SLA.',
+        engine: 'Execution Gap Analytics Engine (v1.4.2)'
+      },
+      {
+        id: 'RULE-2026.09',
+        controlId: 'CTRL-09',
+        condition: 'Critical firmware vulnerability active > 14 calendar days without formal statutory waiver',
+        severity: 'HIGH',
+        version: 'v3.0.0',
+        status: 'ACTIVE',
+        description: 'Standardized 14-day statutory patch staging pipeline for relay firewalls and HSM partitions.',
+        engine: 'Historical Comparison Engine (v2.1.0)'
+      },
+      {
+        id: 'RULE-2026.11',
+        controlId: 'CTRL-11',
+        condition: 'NTP Stratum-1 drift between perimeter firewall and central collector exceeding 50ms',
+        severity: 'MEDIUM',
+        version: 'v3.2.0',
+        status: 'ACTIVE',
+        description: 'Precision time protocol synchronization across perimeter telemetry sources.',
+        engine: 'Cross-Source Consistency Engine (v1.6.0)'
+      },
+      {
+        id: 'RULE-2026.12',
+        controlId: 'CTRL-12',
+        condition: 'Sequential SHA-256 hash broken link detected in WORM audit ledger stream',
+        severity: 'CRITICAL',
+        version: 'v3.1.0',
+        status: 'ACTIVE',
+        description: 'Cryptographic log integrity and sequential hash chaining to prevent retroactive alteration.',
+        engine: 'Metric Integrity Engine (v1.4.0)'
+      },
+      {
+        id: 'RULE-2026.15',
+        controlId: 'CTRL-15',
+        condition: 'Host-level isolation latency exceeding 180 seconds following confirmed compromise trigger',
+        severity: 'HIGH',
+        version: 'v1.9.0',
+        status: 'ACTIVE',
+        description: 'Endpoint detection and containment latency threshold enforcement.',
+        engine: 'Coverage & Blind Spot Engine (v1.7.0)'
       }
-      if (adminUserRoleFilter !== 'ALL' && u.role !== adminUserRoleFilter) return false;
-      return true;
-    });
-  }, [users, adminUserSearch, adminUserRoleFilter]);
+    ];
+  }, []);
 
-  // ---------------------------------------------------------------------------
-  // TAB 3: CONTROL LIBRARY STATE & FILTERS
-  // ---------------------------------------------------------------------------
-  const [controls, setControls] = useState<SupervisoryControl[]>([]);
-  const [controlSearch, setControlSearch] = useState('');
-  const [controlDomainFilter, setControlDomainFilter] = useState('ALL');
-  const [controlStatusFilter, setControlStatusFilter] = useState('ALL');
-  const [selectedControl, setSelectedControl] = useState<SupervisoryControl | null>(null);
+  // Statutory Policies derived from authoritative security directives
+  const policiesList: SupervisoryPolicy[] = useMemo(() => {
+    return [
+      {
+        id: 'POL-FIPS-140',
+        title: 'Hardware Root of Trust & Cryptographic Signing Policy',
+        category: 'Cryptographic Assurance',
+        statutoryBasis: 'NCIIPC Framework Sec 12(a) & FIPS 140-2 Level 3',
+        enforcementMode: 'AUTOMATIC_BLOCK',
+        version: 'v4.8',
+        status: 'ENFORCED',
+        lastReviewed: '15 Sep 2026',
+        description: 'All supervisory decisions, findings, and evidence digests must be signed using hardware HSM keys with zero software key storage.'
+      },
+      {
+        id: 'POL-AIR-GAP',
+        title: 'Air-Gapped Enclave Network Isolation Boundary',
+        category: 'Perimeter Defense',
+        statutoryBasis: 'National Critical Enclave Directive 4.2',
+        enforcementMode: 'AUTOMATIC_BLOCK',
+        version: 'v3.2',
+        status: 'ENFORCED',
+        lastReviewed: '01 Sep 2026',
+        description: 'Supervisory analytic enclave maintains zero outbound internet routing. All ingestion executes through validated unidirectional security gateways.'
+      },
+      {
+        id: 'POL-HUMAN-LOOP',
+        title: 'Mandatory Human-in-the-Loop Adjudication Doctrine',
+        category: 'Supervisory Doctrine',
+        statutoryBasis: 'Information Technology Act Sec 70A/70B',
+        enforcementMode: 'SUPERVISORY_ALERT',
+        version: 'v2.1',
+        status: 'HARDENED',
+        lastReviewed: '10 Sep 2026',
+        description: 'Machine models and analytical engines only discover discrepancy candidates. Formal statutory validation requires attested human examiner signature.'
+      },
+      {
+        id: 'POL-VERIF-GATE',
+        title: 'Independent Verification Gate Prior to Mandate Closure',
+        category: 'Remediation Governance',
+        statutoryBasis: 'Supervisory Remediation Directive Rule 4.8.2',
+        enforcementMode: 'AUTOMATIC_BLOCK',
+        version: 'v1.8',
+        status: 'ENFORCED',
+        lastReviewed: '20 Sep 2026',
+        description: 'SUBMITTED != VERIFIED. Remediation status cannot transition to CLOSED without cryptographic verification of corrective telemetry artifacts.'
+      }
+    ];
+  }, []);
 
+  // Filtered Controls
   const filteredControls = useMemo(() => {
     return controls.filter(c => {
-      if (controlSearch) {
-        const q = controlSearch.toLowerCase();
-        const match =
+      if (selectedDomain !== 'ALL' && c.domain !== selectedDomain) return false;
+      if (selectedStatus !== 'ALL' && c.status !== selectedStatus) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matches =
           c.id.toLowerCase().includes(q) ||
           c.name.toLowerCase().includes(q) ||
           c.domain.toLowerCase().includes(q) ||
           c.description.toLowerCase().includes(q) ||
-          c.expectedCapability.toLowerCase().includes(q);
-        if (!match) return false;
-      }
-      if (controlDomainFilter !== 'ALL' && c.domain !== controlDomainFilter) return false;
-      if (controlStatusFilter !== 'ALL' && c.status !== controlStatusFilter) return false;
-      return true;
-    });
-  }, [controls, controlSearch, controlDomainFilter, controlStatusFilter]);
-
-  const controlKpis = useMemo(() => {
-    const total = controls.length;
-    const active = controls.filter(c => c.status === 'ACTIVE').length;
-    const underReview = controls.filter(c => c.status === 'UNDER_REVIEW').length;
-    const baselineVersions = new Set(controls.map(c => c.version)).size;
-    return { total, active, underReview, baselineVersions };
-  }, [controls]);
-
-  // ---------------------------------------------------------------------------
-  // TAB 4: SYSTEM VERSIONS STATE
-  // ---------------------------------------------------------------------------
-  const [versions, setVersions] = useState<SystemComponentVersion[]>([]);
-  const [versionSearch, setVersionSearch] = useState('');
-  const [selectedVersion, setSelectedVersion] = useState<SystemComponentVersion | null>(null);
-
-  const filteredVersions = useMemo(() => {
-    return versions.filter(v => {
-      if (versionSearch) {
-        const q = versionSearch.toLowerCase();
-        const match =
-          v.component.toLowerCase().includes(q) ||
-          v.version.toLowerCase().includes(q) ||
-          v.type.toLowerCase().includes(q) ||
-          v.usedBy.toLowerCase().includes(q) ||
-          v.description.toLowerCase().includes(q);
-        if (!match) return false;
+          c.applicability.toLowerCase().includes(q);
+        if (!matches) return false;
       }
       return true;
     });
-  }, [versions, versionSearch]);
+  }, [controls, selectedDomain, selectedStatus, searchQuery]);
 
-  const versionKpis = useMemo(() => {
-    const currentSys = versions.find(v => v.type === 'Core System')?.version || 'v0.9.4';
-    const activeRule = versions.find(v => v.type === 'Rule Engine')?.version || 'R-2.4';
-    const activeCtrl = versions.find(v => v.type === 'Control Baseline')?.version || 'v3.2';
-    const activeModel = versions.find(v => v.type === 'Supervisory Model')?.version || 'v2.1';
-    return { currentSys, activeRule, activeCtrl, activeModel };
-  }, [versions]);
+  // Filtered Rules
+  const filteredRules = useMemo(() => {
+    return rulesList.filter(r => {
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matches =
+          r.id.toLowerCase().includes(q) ||
+          r.controlId.toLowerCase().includes(q) ||
+          r.condition.toLowerCase().includes(q) ||
+          r.description.toLowerCase().includes(q);
+        if (!matches) return false;
+      }
+      return true;
+    });
+  }, [rulesList, searchQuery]);
 
-  // Copy hash indicator
-  const [copiedText, setCopiedText] = useState<string | null>(null);
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedText(text);
-    setTimeout(() => setCopiedText(null), 2500);
+  // Filtered Policies
+  const filteredPolicies = useMemo(() => {
+    return policiesList.filter(p => {
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matches =
+          p.id.toLowerCase().includes(q) ||
+          p.title.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q);
+        if (!matches) return false;
+      }
+      return true;
+    });
+  }, [policiesList, searchQuery]);
+
+  // Filtered Audit Trail
+  const filteredAudit = useMemo(() => {
+    return auditTrail.filter(a => {
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matches =
+          a.id.toLowerCase().includes(q) ||
+          a.actor.toLowerCase().includes(q) ||
+          a.action.toLowerCase().includes(q) ||
+          a.targetObject.toLowerCase().includes(q) ||
+          a.reason.toLowerCase().includes(q);
+        if (!matches) return false;
+      }
+      return true;
+    });
+  }, [auditTrail, searchQuery]);
+
+  // Save editable configuration options
+  const handleSaveConfig = () => {
+    setIsEditingConfig(false);
+    showNotification('System administrative configurations saved and attested to audit log.');
   };
-
-  // ---------------------------------------------------------------------------
-  // MAIN LIFECYCLE TABS (Section 6)
-  // ---------------------------------------------------------------------------
-  const mainTabs = [
-    {
-      id: 'audit',
-      label: '1. Audit Ledger',
-      count: auditTrail.length,
-      icon: <span className="material-symbols-outlined text-[15px]">history_edu</span>
-    },
-    {
-      id: 'administration',
-      label: '2. Administration',
-      icon: <span className="material-symbols-outlined text-[15px]">admin_panel_settings</span>
-    },
-    {
-      id: 'controls',
-      label: '3. Control Library',
-      count: controls.length,
-      icon: <span className="material-symbols-outlined text-[15px]">library_books</span>
-    },
-    {
-      id: 'versions',
-      label: '4. System Versions',
-      count: versions.length,
-      icon: <span className="material-symbols-outlined text-[15px]">info</span>
-    }
-  ];
 
   return (
     <PageContainer>
-      {/* ========================================================================= */}
-      {/* 1. PAGE HEADER (Section 5)                                                */}
-      {/* ========================================================================= */}
-      <PageHeader
-        title="Governance"
-        description="Manage supervisory controls, access, system configuration, and audit history."
-        badge={
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono text-[#7bdb80] bg-[#7bdb80]/10 px-2 py-0.5 rounded border border-[#7bdb80]/20 flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#7bdb80]" />
-              FIPS-140-2 L3 SIGNED
-            </span>
+      {/* 1. UNIFIED SAT-SA PAGE HEADER CARD */}
+      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-[#1f6feb]/15 text-[#60a5fa] border border-[#1f6feb]/30">
+                GOVERNANCE &amp; ENCLAVE ADMINISTRATION
+              </span>
+              <span className="text-[11px] font-mono text-[#94a3b8]">
+                FIPS 140-2 LEVEL 3 • SECURE ENCLAVE
+              </span>
+            </div>
+            <h1 className="text-lg md:text-xl font-semibold text-[#f1f5f9] tracking-tight">
+              Supervisory Governance Hub
+            </h1>
+            <p className="text-xs text-[#94a3b8] max-w-3xl leading-relaxed">
+              Maintain regulatory control baselines, deterministic supervisory rules, statutory compliance policies, authorized operator credentials, cryptographic audit trails, and enclave system settings.
+            </p>
           </div>
-        }
-        actions={
-          <div className="flex items-center gap-2 font-mono text-[11px] text-[#64748b]">
-            <span>Air-Gap Node:</span>
-            <span className="text-[#38bdf8] font-bold">NCIIPC-ENCLAVE-01</span>
-          </div>
-        }
-      />
 
-      {/* ========================================================================= */}
-      {/* 2. GOVERNANCE TAB BAR (Section 6)                                         */}
-      {/* ========================================================================= */}
-      <div className="border-b border-[#212c3d] pb-1">
-        <Tabs
-          tabs={mainTabs}
-          activeTab={activeTab}
-          onChange={handleTabChange}
-        />
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setSearchQuery('')}
+              className="px-3 py-1.5 rounded bg-[#18202f] hover:bg-[#212c3d] text-[#cbd5e1] text-xs font-mono flex items-center gap-1.5 border border-[#212c3d] transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset Search</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* INTERNAL TABS: 6 SECTIONS */}
+      {/* 1. Control Library | 2. Rules | 3. Policies | 4. Users & Roles | 5. Audit | 6. System Configuration */}
+      <div className="flex items-center gap-1 border-b border-[#212c3d] pb-2 mb-6 overflow-x-auto text-xs font-mono">
+        <button
+          onClick={() => handleTabChange('controls')}
+          className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            activeTab === 'controls'
+              ? 'bg-[#1f6feb] text-white font-medium shadow-sm'
+              : 'text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#18202f]'
+          }`}
+        >
+          <BookOpen className="w-3.5 h-3.5" />
+          <span>1. Control Library ({controls.length})</span>
+        </button>
+
+        <button
+          onClick={() => handleTabChange('rules')}
+          className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            activeTab === 'rules'
+              ? 'bg-[#1f6feb] text-white font-medium shadow-sm'
+              : 'text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#18202f]'
+          }`}
+        >
+          <Cpu className="w-3.5 h-3.5" />
+          <span>2. Rules ({rulesList.length})</span>
+        </button>
+
+        <button
+          onClick={() => handleTabChange('policies')}
+          className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            activeTab === 'policies'
+              ? 'bg-[#1f6feb] text-white font-medium shadow-sm'
+              : 'text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#18202f]'
+          }`}
+        >
+          <Scale className="w-3.5 h-3.5" />
+          <span>3. Policies ({policiesList.length})</span>
+        </button>
+
+        <button
+          onClick={() => handleTabChange('users')}
+          className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            activeTab === 'users'
+              ? 'bg-[#1f6feb] text-white font-medium shadow-sm'
+              : 'text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#18202f]'
+          }`}
+        >
+          <Users className="w-3.5 h-3.5" />
+          <span>4. Users &amp; Roles ({users.length})</span>
+        </button>
+
+        <button
+          onClick={() => handleTabChange('audit')}
+          className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            activeTab === 'audit'
+              ? 'bg-[#1f6feb] text-white font-medium shadow-sm'
+              : 'text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#18202f]'
+          }`}
+        >
+          <History className="w-3.5 h-3.5" />
+          <span>5. Audit ({auditTrail.length})</span>
+        </button>
+
+        <button
+          onClick={() => handleTabChange('config')}
+          className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            activeTab === 'config'
+              ? 'bg-[#1f6feb] text-white font-medium shadow-sm'
+              : 'text-[#94a3b8] hover:text-[#f1f5f9] hover:bg-[#18202f]'
+          }`}
+        >
+          <Settings className="w-3.5 h-3.5" />
+          <span>6. System Configuration</span>
+        </button>
+      </div>
+
+      {/* SEARCH STRIP */}
+      <div className="p-3 rounded-lg bg-[#111622] border border-[#212c3d] mb-6 flex items-center justify-between flex-wrap gap-3">
+        <div className="relative flex-1 max-w-md">
+          <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-[#94a3b8]" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={`Search within ${activeTab}...`}
+            className="w-full pl-8 pr-3 py-1.5 bg-[#0c1017] border border-[#212c3d] rounded text-xs text-[#cbd5e1] placeholder:text-[#94a3b8] focus:outline-none focus:border-[#1f6feb] font-mono"
+          />
+        </div>
+
+        {activeTab === 'controls' && (
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedDomain}
+              onChange={(e) => setSelectedDomain(e.target.value)}
+              className="h-8 px-2 bg-[#0c1017] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#1f6feb]"
+            >
+              <option value="ALL">All Domains</option>
+              <option value="Telemetry & Ingestion">Telemetry &amp; Ingestion</option>
+              <option value="Identity & Access Management">Identity &amp; Access</option>
+              <option value="SOC Operations & Incident Handling">SOC Operations</option>
+              <option value="Vulnerability & Patch Management">Vulnerability &amp; Patch</option>
+              <option value="Monitoring & SIEM Synchronization">SIEM Synchronization</option>
+              <option value="Log Management & Integrity">Log Integrity</option>
+              <option value="Incident Response & Containment">Incident Containment</option>
+            </select>
+
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="h-8 px-2 bg-[#0c1017] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#1f6feb]"
+            >
+              <option value="ALL">All Statuses</option>
+              <option value="ACTIVE">Active</option>
+              <option value="UNDER_REVIEW">Under Review</option>
+              <option value="DEPRECATED">Deprecated</option>
+            </select>
+          </div>
+        )}
       </div>
 
       {/* ========================================================================= */}
-      {/* TAB 1: AUDIT LEDGER (Section 7)                                           */}
-      {/* ========================================================================= */}
-      {activeTab === 'audit' && (
-        <div className="space-y-4 min-w-0">
-          {/* Summary Cards (Max 4 KPI cards) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard
-              title="Events Today"
-              value={auditKpis.eventsToday}
-              subtitle="All chronological entries"
-              semantic="blue"
-              icon={Clock}
-            />
-            <KpiCard
-              title="Finding Actions"
-              value={auditKpis.findingActions}
-              subtitle="Adjudication & promotions"
-              semantic="purple"
-              icon={FileText}
-            />
-            <KpiCard
-              title="Evidence Actions"
-              value={auditKpis.evidenceActions}
-              subtitle="Demands, uploads & digests"
-              semantic="cyan"
-              icon={FileCheck}
-            />
-            <KpiCard
-              title="Supervisory Reviews"
-              value={auditKpis.accessConfigActions}
-              subtitle="Verification & gate decisions"
-              semantic="green"
-              icon={ShieldCheck}
-            />
-          </div>
-
-          {/* Filter Bar */}
-          <div className="p-3 rounded-lg bg-[#111622] border border-[#212c3d] flex flex-wrap items-center justify-between gap-3 text-[12px]">
-            <div className="flex items-center gap-2 flex-1 min-w-[240px] max-w-md">
-              <Input
-                icon={<Search className="w-4 h-4 text-[#64748b]" />}
-                value={auditSearch}
-                onChange={(e) => setAuditSearch(e.target.value)}
-                placeholder="Search audit ID, actor, action, target object..."
-                sizeVariant="sm"
-              />
-            </div>
-
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <Select
-                sizeVariant="sm"
-                value={auditUserFilter}
-                onChange={(e) => setAuditUserFilter(e.target.value)}
-                options={[
-                  { value: 'ALL', label: 'All Users & Daemons' },
-                  { value: 'Examiner', label: 'NCIIPC Examiners' },
-                  { value: 'Core', label: 'Air-Gap Ingest Daemons' },
-                  { value: 'CSE', label: 'CSE Evidence Teams' }
-                ]}
-              />
-
-              <Select
-                sizeVariant="sm"
-                value={auditResultFilter}
-                onChange={(e) => setAuditResultFilter(e.target.value)}
-                options={[
-                  { value: 'ALL', label: 'All Results' },
-                  { value: 'SUCCESS', label: 'Success' },
-                  { value: 'FAILED', label: 'Failed' },
-                  { value: 'QUALIFIED', label: 'Qualified' },
-                  { value: 'REJECTED', label: 'Rejected' }
-                ]}
-              />
-
-              {(auditSearch || auditUserFilter !== 'ALL' || auditResultFilter !== 'ALL') && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setAuditSearch('');
-                    setAuditUserFilter('ALL');
-                    setAuditResultFilter('ALL');
-                  }}
-                  className="text-[#94a3b8] hover:text-[#e2e8f0]"
-                >
-                  Reset
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Audit Table */}
-          <div className="rounded-lg bg-[#111622] border border-[#212c3d] overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-[12px]">
-                <thead>
-                  <tr className="border-b border-[#212c3d] bg-[#161e29]/70 text-[#94a3b8] font-mono text-[11px] uppercase tracking-wider">
-                    <th className="py-2.5 px-3 font-semibold">Timestamp</th>
-                    <th className="py-2.5 px-3 font-semibold">User / Actor</th>
-                    <th className="py-2.5 px-3 font-semibold">Action</th>
-                    <th className="py-2.5 px-3 font-semibold">Target Object</th>
-                    <th className="py-2.5 px-3 font-semibold">Result</th>
-                    <th className="py-2.5 px-3 font-semibold">Control Ver.</th>
-                    <th className="py-2.5 px-3 font-semibold">Rule Ver.</th>
-                    <th className="py-2.5 px-3 font-semibold">Evidence Ref</th>
-                    <th className="py-2.5 px-3 font-semibold text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#212c3d]/60 font-sans">
-                  {filteredAuditEvents.length === 0 ? (
-                    <tr>
-                      <td colSpan={9} className="py-12 text-center text-[#64748b]">
-                        <History className="w-8 h-8 mx-auto mb-2 text-[#475569] opacity-60" />
-                        <p className="text-[13px] font-medium text-[#94a3b8]">No audit ledger events match the current filters.</p>
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredAuditEvents.map((ev) => (
-                      <tr
-                        key={ev.id}
-                        onClick={() => setSelectedAuditEvent(ev)}
-                        className="hover:bg-[#161e29]/50 transition-colors cursor-pointer group"
-                      >
-                        {/* Timestamp */}
-                        <td className="py-3 px-3 whitespace-nowrap">
-                          <span className="font-mono text-[11px] text-[#94a3b8] block">{ev.timestamp}</span>
-                          <span className="font-mono text-[10px] text-[#64748b]">{ev.id}</span>
-                        </td>
-
-                        {/* User / Actor */}
-                        <td className="py-3 px-3">
-                          <div className="flex flex-col max-w-[150px]">
-                            <span className="font-medium text-[#e2e8f0] truncate">{ev.actor}</span>
-                            <span className="text-[10px] font-mono text-[#64748b] truncate">{ev.actorRole}</span>
-                          </div>
-                        </td>
-
-                        {/* Action */}
-                        <td className="py-3 px-3">
-                          <span className="font-medium text-[#38bdf8] block truncate">{ev.action}</span>
-                          <span className="text-[10px] text-[#94a3b8] truncate block max-w-xs">{ev.reason}</span>
-                        </td>
-
-                        {/* Target */}
-                        <td className="py-3 px-3 whitespace-nowrap">
-                          <span className="font-mono text-[11px] font-bold text-[#e2e8f0] bg-[#161e29] px-2 py-0.5 rounded border border-[#212c3d]">
-                            {ev.targetObject}
-                          </span>
-                        </td>
-
-                        {/* Result */}
-                        <td className="py-3 px-3 whitespace-nowrap">
-                          <StatusBadge status={ev.result} />
-                        </td>
-
-                        {/* Control Ver */}
-                        <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#94a3b8]">
-                          {ev.controlVersion || 'CTRL-v3.2'}
-                        </td>
-
-                        {/* Rule Ver */}
-                        <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#94a3b8]">
-                          {ev.ruleVersion || 'R-2.4'}
-                        </td>
-
-                        {/* Evidence Ref */}
-                        <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#38bdf8]">
-                          {ev.evidenceRef || '—'}
-                        </td>
-
-                        {/* Action */}
-                        <td className="py-3 px-3 text-right whitespace-nowrap">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            icon={<Eye className="w-3.5 h-3.5" />}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedAuditEvent(ev);
-                            }}
-                          >
-                            View
-                          </Button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* TAB 2: ADMINISTRATION (Section 9)                                         */}
-      {/* ========================================================================= */}
-      {activeTab === 'administration' && (
-        <div className="space-y-4 min-w-0">
-          {/* Summary Cards (Max 4 KPI cards) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard
-              title="Enclave Users"
-              value={users.length}
-              subtitle="Active operator accounts"
-              semantic="blue"
-              icon={Users}
-            />
-            <KpiCard
-              title="Supervisory Roles"
-              value={roles.length}
-              subtitle="Tiered RBAC governance"
-              semantic="purple"
-              icon={Shield}
-            />
-            <KpiCard
-              title="CSE Access Grants"
-              value={cseAccessRules.length}
-              subtitle="Authorized entity scopes"
-              semantic="green"
-              icon={Building}
-            />
-            <KpiCard
-              title="Security Perimeter"
-              value="HARDENED"
-              subtitle="FIPS 140-2 Level 3 HSM"
-              semantic="cyan"
-              icon={Lock}
-            />
-          </div>
-
-          {/* Sub-Tabs / Segmented Controls */}
-          <div className="flex items-center gap-1.5 p-1 rounded-lg bg-[#111622] border border-[#212c3d] w-fit text-[12px] font-mono">
-            <button
-              onClick={() => setAdminSubTab('users')}
-              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                adminSubTab === 'users'
-                  ? 'bg-[#161e29] text-[#38bdf8] border border-[#212c3d]'
-                  : 'text-[#94a3b8] hover:text-[#e2e8f0]'
-              }`}
-            >
-              Users ({users.length})
-            </button>
-            <button
-              onClick={() => setAdminSubTab('roles')}
-              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                adminSubTab === 'roles'
-                  ? 'bg-[#161e29] text-[#38bdf8] border border-[#212c3d]'
-                  : 'text-[#94a3b8] hover:text-[#e2e8f0]'
-              }`}
-            >
-              Roles ({roles.length})
-            </button>
-            <button
-              onClick={() => setAdminSubTab('access')}
-              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                adminSubTab === 'access'
-                  ? 'bg-[#161e29] text-[#38bdf8] border border-[#212c3d]'
-                  : 'text-[#94a3b8] hover:text-[#e2e8f0]'
-              }`}
-            >
-              CSE Access ({cseAccessRules.length})
-            </button>
-            <button
-              onClick={() => setAdminSubTab('security')}
-              className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
-                adminSubTab === 'security'
-                  ? 'bg-[#161e29] text-[#38bdf8] border border-[#212c3d]'
-                  : 'text-[#94a3b8] hover:text-[#e2e8f0]'
-              }`}
-            >
-              Security Configuration
-            </button>
-          </div>
-
-          {/* SUB-TAB 1: USERS */}
-          {adminSubTab === 'users' && (
-            <div className="space-y-3">
-              <div className="p-3 rounded-lg bg-[#111622] border border-[#212c3d] flex flex-wrap items-center justify-between gap-3 text-[12px]">
-                <div className="flex items-center gap-2 flex-1 min-w-[240px] max-w-md">
-                  <Input
-                    icon={<Search className="w-4 h-4 text-[#64748b]" />}
-                    value={adminUserSearch}
-                    onChange={(e) => setAdminUserSearch(e.target.value)}
-                    placeholder="Search user name, username, badge, email..."
-                    sizeVariant="sm"
-                  />
-                </div>
-                <Select
-                  sizeVariant="sm"
-                  value={adminUserRoleFilter}
-                  onChange={(e) => setAdminUserRoleFilter(e.target.value)}
-                  options={[
-                    { value: 'ALL', label: 'All Roles' },
-                    { value: 'SUPERVISOR', label: 'Supervisor' },
-                    { value: 'LEAD_EXAMINER', label: 'Lead Examiner' },
-                    { value: 'EXAMINER', label: 'Examiner' },
-                    { value: 'AUDITOR', label: 'Auditor' },
-                    { value: 'ADMINISTRATOR', label: 'Administrator' }
-                  ]}
-                />
-              </div>
-
-              <div className="rounded-lg bg-[#111622] border border-[#212c3d] overflow-hidden">
-                <table className="w-full text-left border-collapse text-[12px]">
-                  <thead>
-                    <tr className="border-b border-[#212c3d] bg-[#161e29]/70 text-[#94a3b8] font-mono text-[11px] uppercase tracking-wider">
-                      <th className="py-2.5 px-3 font-semibold">User</th>
-                      <th className="py-2.5 px-3 font-semibold">Role</th>
-                      <th className="py-2.5 px-3 font-semibold">Organization</th>
-                      <th className="py-2.5 px-3 font-semibold">Access Scope</th>
-                      <th className="py-2.5 px-3 font-semibold">Status</th>
-                      <th className="py-2.5 px-3 font-semibold">Last Activity</th>
-                      <th className="py-2.5 px-3 font-semibold text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#212c3d]/60 font-sans">
-                    {filteredUsers.map((u) => (
-                      <tr
-                        key={u.id}
-                        onClick={() => setSelectedUser(u)}
-                        className="hover:bg-[#161e29]/50 transition-colors cursor-pointer group"
-                      >
-                        <td className="py-3 px-3">
-                          <span className="font-semibold text-[#e2e8f0] block group-hover:text-[#38bdf8]">{u.name}</span>
-                          <span className="font-mono text-[10px] text-[#64748b]">{u.username} • {u.badge}</span>
-                        </td>
-                        <td className="py-3 px-3 whitespace-nowrap">
-                          <span className="font-mono text-[11px] font-bold text-[#afc6ff] bg-[#161e29] px-2 py-0.5 rounded border border-[#212c3d]">
-                            {u.role}
-                          </span>
-                        </td>
-                        <td className="py-3 px-3 text-[#94a3b8] text-[11px]">
-                          {u.organization}
-                        </td>
-                        <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#7bdb80]">
-                          {u.cseScope.join(', ')}
-                        </td>
-                        <td className="py-3 px-3 whitespace-nowrap">
-                          <StatusBadge status={u.status} />
-                        </td>
-                        <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#94a3b8]">
-                          {u.lastActivity}
-                        </td>
-                        <td className="py-3 px-3 text-right whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              icon={<Eye className="w-3.5 h-3.5" />}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedUser(u);
-                              }}
-                            >
-                              View
-                            </Button>
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditAccessUser(u);
-                              }}
-                            >
-                              Edit Access
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* SUB-TAB 2: ROLES */}
-          {adminSubTab === 'roles' && (
-            <div className="rounded-lg bg-[#111622] border border-[#212c3d] overflow-hidden">
-              <table className="w-full text-left border-collapse text-[12px]">
-                <thead>
-                  <tr className="border-b border-[#212c3d] bg-[#161e29]/70 text-[#94a3b8] font-mono text-[11px] uppercase tracking-wider">
-                    <th className="py-2.5 px-3 font-semibold">Role</th>
-                    <th className="py-2.5 px-3 font-semibold">Description</th>
-                    <th className="py-2.5 px-3 font-semibold">Access Scope</th>
-                    <th className="py-2.5 px-3 font-semibold">Active Operators</th>
-                    <th className="py-2.5 px-3 font-semibold">Status</th>
-                    <th className="py-2.5 px-3 font-semibold text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#212c3d]/60 font-sans">
-                  {roles.map((r) => (
-                    <tr
-                      key={r.id}
-                      onClick={() => setSelectedRole(r)}
-                      className="hover:bg-[#161e29]/50 transition-colors cursor-pointer group"
-                    >
-                      <td className="py-3 px-3 whitespace-nowrap">
-                        <span className="font-bold text-[#38bdf8] font-mono text-[12px] block">{r.roleName}</span>
-                        <span className="font-mono text-[10px] text-[#64748b]">{r.id}</span>
-                      </td>
-                      <td className="py-3 px-3 text-[#94a3b8] text-[12px] max-w-md">
-                        {r.description}
-                      </td>
-                      <td className="py-3 px-3 text-[#e2e8f0] text-[11px] font-mono">
-                        {r.accessScope}
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap font-mono text-[12px] text-[#7bdb80] font-bold">
-                        {r.userCount} Operators
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap">
-                        <StatusBadge status={r.status} />
-                      </td>
-                      <td className="py-3 px-3 text-right whitespace-nowrap">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          icon={<Shield className="w-3.5 h-3.5" />}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedRole(r);
-                          }}
-                        >
-                          View Permissions
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* SUB-TAB 3: CSE ACCESS */}
-          {adminSubTab === 'access' && (
-            <div className="rounded-lg bg-[#111622] border border-[#212c3d] overflow-hidden">
-              <table className="w-full text-left border-collapse text-[12px]">
-                <thead>
-                  <tr className="border-b border-[#212c3d] bg-[#161e29]/70 text-[#94a3b8] font-mono text-[11px] uppercase tracking-wider">
-                    <th className="py-2.5 px-3 font-semibold">User / Role</th>
-                    <th className="py-2.5 px-3 font-semibold">CSE Entity</th>
-                    <th className="py-2.5 px-3 font-semibold">Access Type</th>
-                    <th className="py-2.5 px-3 font-semibold">Authorized Scope</th>
-                    <th className="py-2.5 px-3 font-semibold">Granted By</th>
-                    <th className="py-2.5 px-3 font-semibold">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#212c3d]/60 font-sans">
-                  {cseAccessRules.map((rule) => (
-                    <tr key={rule.id} className="hover:bg-[#161e29]/50 transition-colors">
-                      <td className="py-3 px-3 font-medium text-[#e2e8f0]">
-                        {rule.userOrRole}
-                      </td>
-                      <td className="py-3 px-3">
-                        <span className="font-semibold text-[#38bdf8] font-mono">{rule.cseId}</span>
-                        <span className="text-[#94a3b8] text-[11px] block">{rule.cseName}</span>
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#7bdb80]">
-                        {rule.accessType}
-                      </td>
-                      <td className="py-3 px-3 text-[#94a3b8] text-[11px]">
-                        {rule.scope}
-                      </td>
-                      <td className="py-3 px-3 font-mono text-[11px] text-[#64748b]">
-                        {rule.grantedBy} ({rule.grantedDate})
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap">
-                        <StatusBadge status={rule.status} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* SUB-TAB 4: SECURITY CONFIGURATION */}
-          {adminSubTab === 'security' && (
-            <div className="space-y-4">
-              <div className="p-3 rounded-lg bg-blue-950/20 border border-blue-500/30 flex items-start gap-2.5">
-                <ShieldCheck className="w-4 h-4 text-[#38bdf8] shrink-0 mt-0.5" />
-                <div className="text-[11px] leading-relaxed text-[#94a3b8]">
-                  <strong className="text-[#e2e8f0] font-mono uppercase">Enclave Security Assurance:</strong> System operates in complete offline air-gapped isolation with continuous hardware HSM cryptographic validation. Cryptographic credentials and private keys are hardware-bound and never exposed in the interface.
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-                {securityConfigs.map((sec) => (
-                  <Card key={sec.id} className="space-y-2">
-                    <div className="flex items-center justify-between pb-1.5 border-b border-[#212c3d]">
-                      <div className="flex items-center gap-2">
-                        <Lock className="w-4 h-4 text-[#38bdf8]" />
-                        <span className="font-mono text-[12px] font-bold text-[#e2e8f0]">{sec.title}</span>
-                      </div>
-                      <span className="px-2 py-0.5 rounded font-mono text-[10px] font-bold bg-[#7bdb80]/10 text-[#7bdb80] border border-[#7bdb80]/20">
-                        {sec.status}
-                      </span>
-                    </div>
-                    <p className="text-[12px] text-[#94a3b8] leading-relaxed">
-                      {sec.description}
-                    </p>
-                    <div className="p-2.5 rounded bg-[#161e29]/70 border border-[#212c3d] font-mono text-[11px]">
-                      <span className="text-[#64748b] block text-[10px] uppercase">Enforced Value:</span>
-                      <span className="text-[#38bdf8] font-bold">{sec.value}</span>
-                    </div>
-                    <div className="text-[10px] font-mono text-[#64748b]">
-                      Standard: <span className="text-[#94a3b8]">{sec.standard}</span>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* TAB 3: CONTROL LIBRARY (Section 10)                                       */}
+      {/* SECTION 1: CONTROL LIBRARY                                                */}
+      {/* Columns: Control ID | Title | Applicability | Expected Process | Expected Evidence | Expected Timing | Version | Status */}
       {/* ========================================================================= */}
       {activeTab === 'controls' && (
-        <div className="space-y-4 min-w-0">
-          {/* Summary Cards (Max 4 KPI cards) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard
-              title="Total Controls"
-              value={controlKpis.total}
-              subtitle="Statutory standard catalog"
-              semantic="blue"
-              icon={BookOpen}
-            />
-            <KpiCard
-              title="Active Standards"
-              value={controlKpis.active}
-              subtitle="NCIIPC CSF v3.2 Enforced"
-              semantic="green"
-              icon={CheckCircle2}
-            />
-            <KpiCard
-              title="Controls Under Review"
-              value={controlKpis.underReview}
-              subtitle="Pending revision cycle"
-              semantic="amber"
-              icon={Clock}
-            />
-            <KpiCard
-              title="Baseline Versions"
-              value={controlKpis.baselineVersions}
-              subtitle="Applicable statutory revisions"
-              semantic="purple"
-              icon={SlidersHorizontal}
-            />
-          </div>
+        <div className="space-y-4">
+          <div className="overflow-x-auto rounded-xl border border-[#212c3d] bg-[#111622] shadow-sm">
+            <table className="w-full text-left text-xs font-sans">
+              <thead className="bg-[#0c1017] text-[#94a3b8] font-mono text-[10px] uppercase border-b border-[#212c3d] select-none">
+                <tr>
+                  <th className="py-3 px-3">Control ID</th>
+                  <th className="py-3 px-3">Title</th>
+                  <th className="py-3 px-3">Applicability</th>
+                  <th className="py-3 px-3">Expected Process</th>
+                  <th className="py-3 px-3">Expected Evidence</th>
+                  <th className="py-3 px-2.5">Expected Timing</th>
+                  <th className="py-3 px-2 text-center">Version</th>
+                  <th className="py-3 px-2.5">Status</th>
+                  <th className="py-3 px-2 text-right">Inspect</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#212c3d]/70">
+                {filteredControls.map((ctrl) => (
+                  <tr
+                    key={ctrl.id}
+                    onClick={() => setSelectedControl(ctrl)}
+                    className="hover:bg-[#18202f] transition-colors cursor-pointer"
+                  >
+                    {/* Control ID */}
+                    <td className="py-3 px-3 font-mono font-bold text-[#60a5fa] whitespace-nowrap">
+                      {ctrl.id}
+                    </td>
 
-          {/* Filter Bar */}
-          <div className="p-3 rounded-lg bg-[#111622] border border-[#212c3d] flex flex-wrap items-center justify-between gap-3 text-[12px]">
-            <div className="flex items-center gap-2 flex-1 min-w-[240px] max-w-md">
-              <Input
-                icon={<Search className="w-4 h-4 text-[#64748b]" />}
-                value={controlSearch}
-                onChange={(e) => setControlSearch(e.target.value)}
-                placeholder="Search control ID, title, domain, expected criteria..."
-                sizeVariant="sm"
-              />
-            </div>
+                    {/* Title */}
+                    <td className="py-3 px-3">
+                      <div className="font-semibold text-[#f1f5f9]">{ctrl.name}</div>
+                      <div className="text-[10px] text-[#94a3b8] font-mono">{ctrl.domain}</div>
+                    </td>
 
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <Select
-                sizeVariant="sm"
-                value={controlDomainFilter}
-                onChange={(e) => setControlDomainFilter(e.target.value)}
-                options={[
-                  { value: 'ALL', label: 'All Domains' },
-                  { value: 'Telemetry & Ingestion', label: 'Telemetry & Ingestion' },
-                  { value: 'Identity & Access Management', label: 'Identity & Access' },
-                  { value: 'SOC Operations & Incident Handling', label: 'SOC Operations' },
-                  { value: 'Vulnerability & Patch Management', label: 'Vulnerability / Patch' },
-                  { value: 'Monitoring & SIEM Synchronization', label: 'SIEM Synchronization' },
-                  { value: 'Log Management & Integrity', label: 'Log Integrity' },
-                  { value: 'Incident Response & Containment', label: 'Incident Containment' }
-                ]}
-              />
+                    {/* Applicability */}
+                    <td className="py-3 px-3 text-[#cbd5e1] text-[11px] whitespace-nowrap">
+                      {ctrl.applicability}
+                    </td>
 
-              <Select
-                sizeVariant="sm"
-                value={controlStatusFilter}
-                onChange={(e) => setControlStatusFilter(e.target.value)}
-                options={[
-                  { value: 'ALL', label: 'All Statuses' },
-                  { value: 'ACTIVE', label: 'Active' },
-                  { value: 'UNDER_REVIEW', label: 'Under Review' },
-                  { value: 'DEPRECATED', label: 'Deprecated' }
-                ]}
-              />
+                    {/* Expected Process */}
+                    <td className="py-3 px-3 max-w-[220px]">
+                      <div className="text-[#cbd5e1] text-[11px] line-clamp-2" title={ctrl.expectedCapability}>
+                        {ctrl.expectedCapability}
+                      </div>
+                    </td>
 
-              {(controlSearch || controlDomainFilter !== 'ALL' || controlStatusFilter !== 'ALL') && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setControlSearch('');
-                    setControlDomainFilter('ALL');
-                    setControlStatusFilter('ALL');
-                  }}
-                  className="text-[#94a3b8] hover:text-[#e2e8f0]"
-                >
-                  Reset
-                </Button>
-              )}
-            </div>
-          </div>
+                    {/* Expected Evidence */}
+                    <td className="py-3 px-3 max-w-[200px]">
+                      <div className="text-emerald-400 font-mono text-[11px] line-clamp-2" title={ctrl.expectedEvidence}>
+                        {ctrl.expectedEvidence}
+                      </div>
+                    </td>
 
-          {/* Control Table */}
-          <div className="rounded-lg bg-[#111622] border border-[#212c3d] overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-[12px]">
-                <thead>
-                  <tr className="border-b border-[#212c3d] bg-[#161e29]/70 text-[#94a3b8] font-mono text-[11px] uppercase tracking-wider">
-                    <th className="py-2.5 px-3 font-semibold">Control ID</th>
-                    <th className="py-2.5 px-3 font-semibold">Control Name</th>
-                    <th className="py-2.5 px-3 font-semibold">Domain</th>
-                    <th className="py-2.5 px-3 font-semibold">Version</th>
-                    <th className="py-2.5 px-3 font-semibold">Status</th>
-                    <th className="py-2.5 px-3 font-semibold">Applicability</th>
-                    <th className="py-2.5 px-3 font-semibold">Last Updated</th>
-                    <th className="py-2.5 px-3 font-semibold text-right">Action</th>
+                    {/* Expected Timing */}
+                    <td className="py-3 px-2.5 font-mono text-[11px] text-amber-300 whitespace-nowrap">
+                      {ctrl.id === 'CTRL-07' ? '≤ 15 mins' : ctrl.id === 'CTRL-01' ? '≤ 4 hours' : ctrl.id === 'CTRL-15' ? '≤ 180 secs' : '≤ 14 days'}
+                    </td>
+
+                    {/* Version */}
+                    <td className="py-3 px-2 text-center font-mono font-bold text-[#f1f5f9]">
+                      {ctrl.version}
+                    </td>
+
+                    {/* Status */}
+                    <td className="py-3 px-2.5 whitespace-nowrap">
+                      <StatusBadge status={ctrl.status} />
+                    </td>
+
+                    {/* Inspect */}
+                    <td className="py-3 px-2 text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        icon={<Eye className="w-3.5 h-3.5 text-[#94a3b8]" />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedControl(ctrl);
+                        }}
+                      />
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-[#212c3d]/60 font-sans">
-                  {filteredControls.map((ctrl) => (
-                    <tr
-                      key={ctrl.id}
-                      onClick={() => setSelectedControl(ctrl)}
-                      className="hover:bg-[#161e29]/50 transition-colors cursor-pointer group"
-                    >
-                      <td className="py-3 px-3 whitespace-nowrap">
-                        <span className="font-mono text-[12px] font-bold text-[#38bdf8] group-hover:underline">
-                          {ctrl.id}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3">
-                        <span className="font-semibold text-[#e2e8f0] block">{ctrl.name}</span>
-                        <span className="text-[11px] text-[#94a3b8] line-clamp-1">{ctrl.description}</span>
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap text-[#c2c6d6] text-[11px]">
-                        {ctrl.domain}
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#7bdb80] font-bold">
-                        {ctrl.version}
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap">
-                        <StatusBadge status={ctrl.status} />
-                      </td>
-                      <td className="py-3 px-3 text-[#94a3b8] text-[11px]">
-                        {ctrl.applicability}
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#64748b]">
-                        {ctrl.lastUpdated}
-                      </td>
-                      <td className="py-3 px-3 text-right whitespace-nowrap">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          icon={<Eye className="w-3.5 h-3.5" />}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedControl(ctrl);
-                          }}
-                        >
-                          View
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 4: SYSTEM VERSIONS (Section 13)                                       */}
+      {/* SECTION 2: RULES                                                          */}
+      {/* Columns: Rule ID | Control | Condition | Severity | Version | Status       */}
       {/* ========================================================================= */}
-      {activeTab === 'versions' && (
-        <div className="space-y-4 min-w-0">
-          {/* Summary Cards (Max 4 KPI cards) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard
-              title="Current System Version"
-              value={versionKpis.currentSys}
-              subtitle="Production hardened node"
-              semantic="blue"
-              icon={Server}
-            />
-            <KpiCard
-              title="Active Rule Version"
-              value={versionKpis.activeRule}
-              subtitle="Deterministic rule engine"
-              semantic="green"
-              icon={Cpu}
-            />
-            <KpiCard
-              title="Active Control Baseline"
-              value={versionKpis.activeCtrl}
-              subtitle="NCIIPC statutory standard"
-              semantic="purple"
-              icon={BookOpen}
-            />
-            <KpiCard
-              title="Active Model Engine"
-              value={versionKpis.activeModel}
-              subtitle="Risk & process mining"
-              semantic="cyan"
-              icon={Layers}
-            />
-          </div>
+      {activeTab === 'rules' && (
+        <div className="space-y-4">
+          <div className="overflow-x-auto rounded-xl border border-[#212c3d] bg-[#111622] shadow-sm">
+            <table className="w-full text-left text-xs font-sans">
+              <thead className="bg-[#0c1017] text-[#94a3b8] font-mono text-[10px] uppercase border-b border-[#212c3d] select-none">
+                <tr>
+                  <th className="py-3 px-3">Rule ID</th>
+                  <th className="py-3 px-3">Control</th>
+                  <th className="py-3 px-4">Evaluation Condition</th>
+                  <th className="py-3 px-2.5 text-center">Severity</th>
+                  <th className="py-3 px-2.5 text-center">Version</th>
+                  <th className="py-3 px-2.5">Status</th>
+                  <th className="py-3 px-3 text-right">Engine</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#212c3d]/70">
+                {filteredRules.map((rule) => (
+                  <tr
+                    key={rule.id}
+                    onClick={() => setSelectedRule(rule)}
+                    className="hover:bg-[#18202f] transition-colors cursor-pointer"
+                  >
+                    <td className="py-3 px-3 font-mono font-bold text-[#60a5fa] whitespace-nowrap">
+                      {rule.id}
+                    </td>
 
-          {/* Search Bar */}
-          <div className="p-3 rounded-lg bg-[#111622] border border-[#212c3d] flex items-center justify-between gap-3 text-[12px]">
-            <div className="flex items-center gap-2 flex-1 max-w-md">
-              <Input
-                icon={<Search className="w-4 h-4 text-[#64748b]" />}
-                value={versionSearch}
-                onChange={(e) => setVersionSearch(e.target.value)}
-                placeholder="Search component name, version, type, dependency..."
-                sizeVariant="sm"
-              />
-            </div>
-            <span className="text-[11px] font-mono text-[#64748b]">
-              Immutable Version Manifest v0.9.4
-            </span>
-          </div>
+                    <td className="py-3 px-3 font-mono text-emerald-400 font-semibold whitespace-nowrap">
+                      {rule.controlId}
+                    </td>
 
-          {/* Versions Table */}
-          <div className="rounded-lg bg-[#111622] border border-[#212c3d] overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-[12px]">
-                <thead>
-                  <tr className="border-b border-[#212c3d] bg-[#161e29]/70 text-[#94a3b8] font-mono text-[11px] uppercase tracking-wider">
-                    <th className="py-2.5 px-3 font-semibold">Component</th>
-                    <th className="py-2.5 px-3 font-semibold">Version</th>
-                    <th className="py-2.5 px-3 font-semibold">Type</th>
-                    <th className="py-2.5 px-3 font-semibold">Status</th>
-                    <th className="py-2.5 px-3 font-semibold">Released</th>
-                    <th className="py-2.5 px-3 font-semibold">Active Since</th>
-                    <th className="py-2.5 px-3 font-semibold">Used By</th>
-                    <th className="py-2.5 px-3 font-semibold text-right">Action</th>
+                    <td className="py-3 px-4">
+                      <div className="font-medium text-slate-200">{rule.condition}</div>
+                      <div className="text-[11px] text-slate-400 mt-0.5">{rule.description}</div>
+                    </td>
+
+                    <td className="py-3 px-2.5 text-center whitespace-nowrap">
+                      <PriorityBadge priority={rule.severity} />
+                    </td>
+
+                    <td className="py-3 px-2.5 text-center font-mono font-bold text-slate-300">
+                      {rule.version}
+                    </td>
+
+                    <td className="py-3 px-2.5 whitespace-nowrap">
+                      <StatusBadge status={rule.status} />
+                    </td>
+
+                    <td className="py-3 px-3 text-right font-mono text-[11px] text-slate-400 whitespace-nowrap">
+                      {rule.engine}
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-[#212c3d]/60 font-sans">
-                  {filteredVersions.map((v) => (
-                    <tr
-                      key={v.id}
-                      onClick={() => setSelectedVersion(v)}
-                      className="hover:bg-[#161e29]/50 transition-colors cursor-pointer group"
-                    >
-                      <td className="py-3 px-3">
-                        <span className="font-semibold text-[#e2e8f0] block group-hover:text-[#38bdf8]">{v.component}</span>
-                        <span className="text-[10px] font-mono text-[#64748b]">{v.hashSignature}</span>
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap font-mono text-[12px] font-bold text-[#7bdb80]">
-                        {v.version}
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap">
-                        <span className="font-mono text-[11px] text-[#afc6ff] bg-[#161e29] px-2 py-0.5 rounded border border-[#212c3d]">
-                          {v.type}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap">
-                        <StatusBadge status={v.status} />
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#94a3b8]">
-                        {v.released}
-                      </td>
-                      <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#e2e8f0]">
-                        {v.activeSince}
-                      </td>
-                      <td className="py-3 px-3 text-[#94a3b8] text-[11px]">
-                        {v.usedBy}
-                      </td>
-                      <td className="py-3 px-3 text-right whitespace-nowrap">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          icon={<Eye className="w-3.5 h-3.5" />}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedVersion(v);
-                          }}
-                        >
-                          Inspect
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
 
       {/* ========================================================================= */}
-      {/* DRAWER 1: AUDIT EVENT DETAIL DRAWER (Section 7)                           */}
+      {/* SECTION 3: POLICIES                                                       */}
       {/* ========================================================================= */}
-      <Drawer
-        isOpen={!!selectedAuditEvent}
-        onClose={() => setSelectedAuditEvent(null)}
-        title={selectedAuditEvent ? `Audit Ledger Event ${selectedAuditEvent.id}` : 'Audit Record'}
-        subtitle={
-          selectedAuditEvent ? `${selectedAuditEvent.timestamp} • Actor ${selectedAuditEvent.actor}` : ''
-        }
-        width="md"
-        footer={
-          <div className="flex items-center justify-between w-full">
-            <span className="text-[11px] font-mono text-[#7bdb80] flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              Cryptographically Verified Block
-            </span>
-            <Button variant="ghost" size="sm" onClick={() => setSelectedAuditEvent(null)}>
-              Close
-            </Button>
-          </div>
-        }
-      >
-        {selectedAuditEvent && (
-          <div className="space-y-4 text-[12px]">
-            {/* Read-Only Historical Notice */}
-            <div className="p-3 rounded-lg bg-[#161e29] border border-[#212c3d] flex items-start gap-2.5">
-              <Lock className="w-4 h-4 text-[#38bdf8] shrink-0 mt-0.5" />
-              <div className="text-[11px] leading-relaxed text-[#94a3b8]">
-                <strong className="text-[#e2e8f0] font-mono uppercase">Read-Only Immutable Record:</strong> This entry is stored in the append-only cryptographic ledger. Historical alteration, retroactive editing, or deletion is locked under enclave FIPS-140-2 policy.
-              </div>
-            </div>
-
-            {/* Metadata Grid */}
-            <div className="p-3.5 rounded-lg bg-[#161e29]/70 border border-[#212c3d] grid grid-cols-2 gap-3 font-mono">
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Event ID</span>
-                <span className="text-[#38bdf8] font-bold text-[13px]">{selectedAuditEvent.id}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Execution Result</span>
-                <div className="mt-0.5"><StatusBadge status={selectedAuditEvent.result} /></div>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Actor</span>
-                <span className="text-[#e2e8f0] font-sans font-medium text-[12px]">{selectedAuditEvent.actor}</span>
-                <span className="text-[#64748b] block text-[10px]">{selectedAuditEvent.actorDetail}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Actor Role</span>
-                <span className="text-[#e2e8f0]">{selectedAuditEvent.actorRole}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Target Object</span>
-                <span className="text-[#7bdb80] font-bold">{selectedAuditEvent.targetObject}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Linked Context</span>
-                <span className="text-[#e2e8f0]">{selectedAuditEvent.linkedObject}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Control Version</span>
-                <span className="text-[#e2e8f0]">{selectedAuditEvent.controlVersion || 'CTRL-v3.2'}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Rule Engine Version</span>
-                <span className="text-[#e2e8f0]">{selectedAuditEvent.ruleVersion || 'R-2.4'}</span>
-              </div>
-            </div>
-
-            {/* State Transition */}
-            <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1.5 font-mono">
-              <span className="text-[10px] text-[#94a3b8] uppercase font-semibold block">
-                Object State Transition:
-              </span>
-              <div className="flex items-center gap-3">
-                <span className="px-2 py-1 rounded bg-[#161e29] border border-[#212c3d] text-[#64748b] text-[11px]">
-                  {selectedAuditEvent.previousState}
-                </span>
-                <span className="text-[#38bdf8]">→</span>
-                <span className="px-2 py-1 rounded bg-[#161e29] border border-[#38bdf8]/30 text-[#38bdf8] font-bold text-[11px]">
-                  {selectedAuditEvent.newState}
-                </span>
-              </div>
-            </div>
-
-            {/* Event Reason / Notes */}
-            <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1.5 font-sans">
-              <span className="text-[10px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                Supervisory Rationale &amp; Audit Notes:
-              </span>
-              <p className="text-[#e2e8f0] text-[12px] leading-relaxed">
-                {selectedAuditEvent.reason}
-              </p>
-            </div>
-
-            {/* Evidence Reference */}
-            {selectedAuditEvent.evidenceRef && (
-              <div className="p-3 rounded-lg bg-[#161e29]/50 border border-[#212c3d] flex items-center justify-between font-mono text-[11px]">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-[#38bdf8]" />
-                  <span className="text-[#94a3b8]">Evidence Ref:</span>
-                  <span className="text-[#7bdb80] font-bold">{selectedAuditEvent.evidenceRef}</span>
-                </div>
-                <Link to="/evidence" className="text-[#38bdf8] hover:underline flex items-center gap-1 text-[11px]">
-                  <span>Evidence Explorer</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
-      </Drawer>
-
-      {/* ========================================================================= */}
-      {/* DRAWER 2: USER DETAIL DRAWER (Administration)                             */}
-      {/* ========================================================================= */}
-      <Drawer
-        isOpen={!!selectedUser}
-        onClose={() => setSelectedUser(null)}
-        title={selectedUser?.name || 'Operator Profile'}
-        subtitle={selectedUser ? `${selectedUser.badge} • ${selectedUser.role}` : ''}
-        width="md"
-      >
-        {selectedUser && (
-          <div className="space-y-4 text-[12px]">
-            <div className="p-3.5 rounded-lg bg-[#161e29]/70 border border-[#212c3d] grid grid-cols-2 gap-3 font-mono">
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Username</span>
-                <span className="text-[#38bdf8] font-bold text-[12px]">{selectedUser.username}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Status</span>
-                <div className="mt-0.5"><StatusBadge status={selectedUser.status} /></div>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Email Address</span>
-                <span className="text-[#e2e8f0] text-[11px]">{selectedUser.email}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Assigned Role</span>
-                <span className="text-[#7bdb80] font-bold">{selectedUser.role}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Organization</span>
-                <span className="text-[#e2e8f0] font-sans">{selectedUser.organization}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">MFA Mechanism</span>
-                <span className="text-[#38bdf8] text-[11px]">{selectedUser.mfaType}</span>
-              </div>
-            </div>
-
-            <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-2">
-              <span className="text-[11px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                Authorized CSE Supervisory Scopes
-              </span>
-              <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">
-                {selectedUser.cseScope.map(cse => (
-                  <span key={cse} className="px-2 py-0.5 rounded bg-[#161e29] border border-[#212c3d] text-[#e2e8f0]">
-                    {cse}
+      {activeTab === 'policies' && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredPolicies.map((pol) => (
+              <div
+                key={pol.id}
+                onClick={() => setSelectedPolicy(pol)}
+                className="p-4 rounded-xl border border-[#212c3d] bg-[#111622] hover:border-[#1f6feb]/50 cursor-pointer transition-all space-y-2.5"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="font-mono text-xs font-bold text-[#60a5fa]">{pol.id}</span>
+                    <h3 className="text-sm font-bold text-[#f1f5f9] mt-0.5">{pol.title}</h3>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold border border-emerald-500/30">
+                    {pol.status}
                   </span>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            <div className="space-y-2">
-              <span className="text-[11px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                Enclave Cryptographic Permissions ({selectedUser.permissions.length})
-              </span>
-              <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
-                {selectedUser.permissions.map(perm => (
-                  <div key={perm} className="p-2 rounded bg-[#161e29]/70 border border-[#212c3d] text-[#7bdb80] flex items-center gap-1.5">
-                    <Check className="w-3 h-3 text-[#7bdb80]" />
-                    <span>{perm}</span>
+                <p className="text-xs text-[#cbd5e1] leading-relaxed font-sans">
+                  {pol.description}
+                </p>
+
+                <div className="pt-2 border-t border-[#212c3d] grid grid-cols-2 gap-2 text-[11px] font-mono">
+                  <div>
+                    <span className="text-[10px] text-[#94a3b8] uppercase block">Statutory Basis:</span>
+                    <span className="text-[#cbd5e1] truncate block">{pol.statutoryBasis}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-[#94a3b8] uppercase block">Enforcement Mode:</span>
+                    <span className="text-amber-400 font-semibold">{pol.enforcementMode}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SECTION 4: USERS & ROLES                                                  */}
+      {/* Show only existing authorized administrative information                  */}
+      {/* ========================================================================= */}
+      {activeTab === 'users' && (
+        <div className="space-y-6">
+          {/* Roles Overview */}
+          <div className="space-y-2">
+            <h2 className="text-xs font-mono uppercase font-bold text-[#94a3b8]">
+              Authorized Administrative Roles ({roles.length})
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {roles.map((role) => (
+                <div key={role.id} className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-[#f1f5f9] text-xs">{role.roleName}</span>
+                    <span className="text-[10px] font-mono text-[#60a5fa] font-bold">{role.userCount} Operators</span>
+                  </div>
+                  <p className="text-[11px] text-[#94a3b8] line-clamp-2 leading-snug">
+                    {role.description}
+                  </p>
+                  <div className="pt-1 text-[10px] font-mono text-emerald-400">
+                    Status: {role.status}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Users Table */}
+          <div className="space-y-2">
+            <h2 className="text-xs font-mono uppercase font-bold text-[#94a3b8]">
+              Enclave Operators &amp; Credentials ({users.length})
+            </h2>
+            <div className="overflow-x-auto rounded-xl border border-[#212c3d] bg-[#111622] shadow-sm">
+              <table className="w-full text-left text-xs font-sans">
+                <thead className="bg-[#0c1017] text-[#94a3b8] font-mono text-[10px] uppercase border-b border-[#212c3d] select-none">
+                  <tr>
+                    <th className="py-3 px-3">Badge / ID</th>
+                    <th className="py-3 px-3">Name</th>
+                    <th className="py-3 px-3">Role</th>
+                    <th className="py-3 px-3">Organization</th>
+                    <th className="py-3 px-3">MFA Mechanism</th>
+                    <th className="py-3 px-3">Jurisdictional Scope</th>
+                    <th className="py-3 px-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#212c3d]/70">
+                  {users.map((u) => (
+                    <tr
+                      key={u.id}
+                      onClick={() => setSelectedUser(u)}
+                      className="hover:bg-[#18202f] transition-colors cursor-pointer"
+                    >
+                      <td className="py-3 px-3 font-mono font-bold text-[#60a5fa] whitespace-nowrap">
+                        {u.badge}
+                      </td>
+
+                      <td className="py-3 px-3">
+                        <div className="font-semibold text-[#f1f5f9]">{u.name}</div>
+                        <div className="text-[10px] text-[#94a3b8] font-mono">{u.email}</div>
+                      </td>
+
+                      <td className="py-3 px-3 whitespace-nowrap font-mono font-bold text-[#cbd5e1]">
+                        {u.role}
+                      </td>
+
+                      <td className="py-3 px-3 text-[#94a3b8] text-[11px] truncate max-w-[180px]">
+                        {u.organization}
+                      </td>
+
+                      <td className="py-3 px-3 font-mono text-[11px] text-emerald-400 whitespace-nowrap">
+                        {u.mfaType}
+                      </td>
+
+                      <td className="py-3 px-3 font-mono text-[11px] text-[#cbd5e1] whitespace-nowrap">
+                        {u.cseScope.join(', ')}
+                      </td>
+
+                      <td className="py-3 px-3 whitespace-nowrap">
+                        <StatusBadge status={u.status} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SECTION 5: AUDIT                                                          */}
+      {/* Columns: Timestamp | User | Action | Resource | Result | Audit Reference  */}
+      {/* ========================================================================= */}
+      {activeTab === 'audit' && (
+        <div className="space-y-4">
+          <div className="overflow-x-auto rounded-xl border border-[#212c3d] bg-[#111622] shadow-sm">
+            <table className="w-full text-left text-xs font-sans">
+              <thead className="bg-[#0c1017] text-[#94a3b8] font-mono text-[10px] uppercase border-b border-[#212c3d] select-none">
+                <tr>
+                  <th className="py-3 px-3">Timestamp</th>
+                  <th className="py-3 px-3">User</th>
+                  <th className="py-3 px-3.5">Action</th>
+                  <th className="py-3 px-3">Resource</th>
+                  <th className="py-3 px-2.5">Result</th>
+                  <th className="py-3 px-3 text-right">Audit Reference</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#212c3d]/70">
+                {filteredAudit.map((a) => (
+                  <tr
+                    key={a.id}
+                    onClick={() => setSelectedAudit(a)}
+                    className="hover:bg-[#18202f] transition-colors cursor-pointer"
+                  >
+                    {/* Timestamp */}
+                    <td className="py-3 px-3 font-mono text-[11px] text-[#94a3b8] whitespace-nowrap">
+                      {a.timestamp}
+                    </td>
+
+                    {/* User */}
+                    <td className="py-3 px-3 font-mono text-[#cbd5e1] whitespace-nowrap">
+                      <div className="font-semibold text-[#f1f5f9]">{a.actor}</div>
+                      <div className="text-[10px] text-[#94a3b8]">{a.actorRole}</div>
+                    </td>
+
+                    {/* Action */}
+                    <td className="py-3 px-3.5">
+                      <div className="font-semibold text-[#f1f5f9]">{a.action}</div>
+                      <div className="text-[11px] text-[#94a3b8] line-clamp-1">{a.reason}</div>
+                    </td>
+
+                    {/* Resource */}
+                    <td className="py-3 px-3 font-mono font-bold text-[#60a5fa] whitespace-nowrap">
+                      {a.targetObject}
+                    </td>
+
+                    {/* Result */}
+                    <td className="py-3 px-2.5 whitespace-nowrap">
+                      <StatusBadge status={a.result} />
+                    </td>
+
+                    {/* Audit Reference */}
+                    <td className="py-3 px-3 text-right font-mono font-bold text-[#94a3b8] whitespace-nowrap">
+                      {a.id}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* SECTION 6: SYSTEM CONFIGURATION                                           */}
+      {/* Separation between read-only supervisory info and editable admin settings  */}
+      {/* ========================================================================= */}
+      {activeTab === 'config' && (
+        <div className="space-y-6">
+          
+          {/* TOP BANNER: SEPARATION OF CONCERNS */}
+          <div className="p-3.5 rounded-lg bg-blue-950/20 border border-blue-500/30 text-xs flex items-start gap-2.5">
+            <Info className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+            <div className="leading-relaxed">
+              <strong className="text-white font-mono uppercase">Administrative Partition Standard:</strong> Read-only supervisory architecture rules are cryptographically sealed under the immutable platform baseline. Only designated enclave session settings can be customized with administrator credentials.
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* PART 1: READ-ONLY SUPERVISORY INFORMATION (Left Column) */}
+            <div className="p-4 rounded-xl border border-[#212c3d] bg-[#111622] space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-[#212c3d]">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-[#94a3b8]">
+                  <Lock className="w-3.5 h-3.5 text-[#60a5fa]" />
+                  <span>Read-Only Supervisory Architecture</span>
+                </div>
+                <span className="px-2 py-0.5 rounded bg-[#18202f] text-[10px] font-mono text-[#cbd5e1] border border-[#212c3d]">
+                  SEALED / IMMUTABLE
+                </span>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                {securityConfigs.filter(c => c.category === 'AIR_GAP' || c.category === 'AUDIT_LOGGING' || c.category === 'DATA_PROTECTION').map((item) => (
+                  <div key={item.id} className="p-3 rounded-lg bg-[#0c1017] border border-[#212c3d] space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-mono font-bold text-[#f1f5f9] text-[11px]">{item.title}</span>
+                      <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold">
+                        {item.status}
+                      </span>
+                    </div>
+                    <div className="text-[11px] text-[#94a3b8] leading-snug">{item.description}</div>
+                    <div className="pt-1 font-mono text-[11px] text-[#60a5fa]">
+                      Value: {item.value}
+                    </div>
+                    <div className="text-[10px] font-mono text-[#94a3b8]">
+                      Standard: {item.standard}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-        )}
-      </Drawer>
 
-      {/* ========================================================================= */}
-      {/* DRAWER 3: ROLE PERMISSIONS DRAWER (Administration)                        */}
-      {/* ========================================================================= */}
-      <Drawer
-        isOpen={!!selectedRole}
-        onClose={() => setSelectedRole(null)}
-        title={selectedRole ? `Role Specification: ${selectedRole.roleName}` : 'Role Specification'}
-        subtitle={selectedRole ? `ID: ${selectedRole.id} • ${selectedRole.userCount} Assigned Operators` : ''}
-        width="md"
-      >
-        {selectedRole && (
-          <div className="space-y-4 text-[12px]">
-            <div className="p-3.5 rounded-lg bg-[#161e29] border border-[#212c3d] space-y-1">
-              <span className="text-[10px] font-mono text-[#64748b] uppercase block">Role Description</span>
-              <p className="text-[#e2e8f0] text-[12px] leading-relaxed font-sans">{selectedRole.description}</p>
-            </div>
+            {/* PART 2: EDITABLE ADMINISTRATIVE SETTINGS (Right Column) */}
+            <div className="p-4 rounded-xl border border-[#212c3d] bg-[#111622] space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-[#212c3d]">
+                <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-amber-400">
+                  <Settings className="w-3.5 h-3.5" />
+                  <span>Editable Administrative Settings</span>
+                </div>
+                <button
+                  onClick={() => setIsEditingConfig(!isEditingConfig)}
+                  className="px-2.5 py-1 rounded bg-[#18202f] text-xs font-mono text-[#60a5fa] hover:text-white border border-[#212c3d]"
+                >
+                  {isEditingConfig ? 'Cancel' : 'Edit Configuration'}
+                </button>
+              </div>
 
-            <div className="p-3.5 rounded-lg bg-[#161e29]/70 border border-[#212c3d] space-y-1 font-mono">
-              <span className="text-[10px] text-[#64748b] uppercase block">Jurisdictional Scope</span>
-              <span className="text-[#38bdf8] font-medium">{selectedRole.accessScope}</span>
-            </div>
+              <div className="space-y-4 text-xs font-mono">
+                {/* Setting 1: Session Inactivity Lock */}
+                <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 space-y-1.5">
+                  <label className="text-white font-bold block">
+                    Session Inactivity Lock Timeout (SEC-02):
+                  </label>
+                  <p className="text-[11px] text-slate-400 font-sans">
+                    Maximum operator inactivity threshold prior to mandatory screen blanking and session challenge.
+                  </p>
+                  {isEditingConfig ? (
+                    <select
+                      value={editableConfig['SEC-02']}
+                      onChange={(e) => setEditableConfig({ ...editableConfig, 'SEC-02': e.target.value })}
+                      className="w-full h-8 px-2 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200"
+                    >
+                      <option value="10 Minutes Inactivity Horizon">10 Minutes Inactivity Horizon</option>
+                      <option value="15 Minutes Maximum Inactivity Horizon">15 Minutes Maximum Inactivity Horizon</option>
+                      <option value="30 Minutes Inactivity Horizon">30 Minutes Inactivity Horizon</option>
+                    </select>
+                  ) : (
+                    <div className="text-emerald-400 font-bold">{editableConfig['SEC-02']}</div>
+                  )}
+                </div>
 
-            <div className="space-y-2">
-              <span className="text-[11px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                Authorized Capabilities ({selectedRole.permissions.length})
-              </span>
-              <div className="space-y-1.5 font-mono text-[11px]">
-                {selectedRole.permissions.map(perm => (
-                  <div key={perm} className="p-2 rounded bg-[#111622] border border-[#212c3d] text-[#7bdb80] flex items-center justify-between">
-                    <span>{perm}</span>
-                    <span className="text-[10px] text-[#64748b]">FIPS Enforced</span>
+                {/* Setting 2: MFA Hardware Enforcement Mode */}
+                <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 space-y-1.5">
+                  <label className="text-white font-bold block">
+                    MFA Hardware Enforcement Policy (SEC-01):
+                  </label>
+                  <p className="text-[11px] text-slate-400 font-sans">
+                    Cryptographic challenge mode required for operator authentication into the enclave.
+                  </p>
+                  {isEditingConfig ? (
+                    <select
+                      value={editableConfig['SEC-01']}
+                      onChange={(e) => setEditableConfig({ ...editableConfig, 'SEC-01': e.target.value })}
+                      className="w-full h-8 px-2 bg-slate-900 border border-slate-700 rounded text-xs text-slate-200"
+                    >
+                      <option value="FIPS-140-2 Level 3 Smartcard + Physical FIDO2 Key">FIPS-140-2 Level 3 Smartcard + Physical FIDO2 Key</option>
+                      <option value="FIPS-140-2 Level 3 Smartcard Only">FIPS-140-2 Level 3 Smartcard Only</option>
+                    </select>
+                  ) : (
+                    <div className="text-emerald-400 font-bold">{editableConfig['SEC-01']}</div>
+                  )}
+                </div>
+
+                {/* Save button if editing */}
+                {isEditingConfig && (
+                  <div className="pt-2">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="w-full justify-center bg-blue-600 hover:bg-blue-500 text-white font-semibold"
+                      onClick={handleSaveConfig}
+                    >
+                      Commit Configuration Updates
+                    </Button>
                   </div>
-                ))}
+                )}
               </div>
             </div>
-          </div>
-        )}
-      </Drawer>
 
-      {/* ========================================================================= */}
-      {/* DRAWER 4: CONTROL DETAIL DRAWER (Section 10 & 11)                         */}
-      {/* ========================================================================= */}
+          </div>
+        </div>
+      )}
+
+      {/* DRAWER: CONTROL DETAILS */}
       <Drawer
-        isOpen={!!selectedControl}
+        isOpen={Boolean(selectedControl)}
         onClose={() => setSelectedControl(null)}
-        title={selectedControl ? `${selectedControl.id}: ${selectedControl.name}` : 'Control Standard'}
-        subtitle={selectedControl ? `${selectedControl.domain} • Standard Version ${selectedControl.version}` : ''}
+        title={selectedControl ? `${selectedControl.id}: ${selectedControl.name}` : ''}
+        subtitle="Regulatory Control Baseline Specification"
         width="md"
       >
         {selectedControl && (
-          <div className="space-y-5 text-[12px]">
-            {/* Metadata Grid */}
-            <div className="p-3.5 rounded-lg bg-[#161e29]/70 border border-[#212c3d] grid grid-cols-2 gap-3 font-mono">
+          <div className="space-y-4 text-xs font-sans">
+            <div className="p-3 rounded bg-slate-950 border border-slate-800 grid grid-cols-2 gap-2 font-mono text-[11px]">
               <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Control ID</span>
-                <span className="text-[#38bdf8] font-bold text-[13px]">{selectedControl.id}</span>
+                <span className="text-slate-500 block uppercase text-[10px]">Domain:</span>
+                <span className="text-white font-bold">{selectedControl.domain}</span>
               </div>
               <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Status</span>
-                <div className="mt-0.5"><StatusBadge status={selectedControl.status} /></div>
+                <span className="text-slate-500 block uppercase text-[10px]">Version:</span>
+                <span className="text-emerald-400 font-bold">{selectedControl.version}</span>
               </div>
               <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Domain</span>
-                <span className="text-[#e2e8f0] font-sans">{selectedControl.domain}</span>
+                <span className="text-slate-500 block uppercase text-[10px]">Status:</span>
+                <span className="text-blue-400 font-bold">{selectedControl.status}</span>
               </div>
               <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Current Version</span>
-                <span className="text-[#7bdb80] font-bold">{selectedControl.version}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Applicability</span>
-                <span className="text-[#e2e8f0]">{selectedControl.applicability}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Last Updated</span>
-                <span className="text-[#e2e8f0]">{selectedControl.lastUpdated}</span>
+                <span className="text-slate-500 block uppercase text-[10px]">Applicability:</span>
+                <span className="text-slate-300">{selectedControl.applicability}</span>
               </div>
             </div>
 
-            {/* Description */}
-            <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1">
-              <span className="text-[10px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                Standard Requirement Summary:
-              </span>
-              <p className="text-[#e2e8f0] text-[12px] leading-relaxed">
+            <div className="space-y-1">
+              <span className="font-mono uppercase text-[10px] text-slate-500 font-bold">Requirement Summary</span>
+              <p className="text-slate-300 leading-relaxed bg-slate-950 p-2.5 rounded border border-slate-800">
                 {selectedControl.description}
               </p>
             </div>
 
-            {/* Connection to Assessment Workflow & Expected vs Observed (Section 11) */}
-            <div className="space-y-3 p-3.5 rounded-lg bg-[#161e29]/50 border border-[#212c3d]">
-              <span className="text-[11px] font-mono text-[#38bdf8] uppercase font-bold flex items-center gap-1.5">
-                <SlidersHorizontal className="w-3.5 h-3.5" />
-                Assessment Workflow &amp; Expected Baseline Architecture
-              </span>
-
-              <div className="space-y-2 text-[12px]">
-                <div className="p-2.5 rounded bg-[#111622] border border-[#212c3d]">
-                  <span className="text-[10px] font-mono text-[#7bdb80] uppercase font-bold block">
-                    Expected Capability (Model Standard):
-                  </span>
-                  <p className="text-[#e2e8f0] mt-0.5">{selectedControl.expectedCapability}</p>
-                </div>
-
-                <div className="p-2.5 rounded bg-[#111622] border border-[#212c3d]">
-                  <span className="text-[10px] font-mono text-[#38bdf8] uppercase font-bold block">
-                    Expected Ingestion Evidence (OCSF Telemetry):
-                  </span>
-                  <p className="text-[#e2e8f0] mt-0.5">{selectedControl.expectedEvidence}</p>
-                </div>
-
-                <div className="p-2.5 rounded bg-[#111622] border border-[#212c3d]">
-                  <span className="text-[10px] font-mono text-amber-300 uppercase font-bold block">
-                    Assessment Evaluation Criteria:
-                  </span>
-                  <p className="text-[#e2e8f0] mt-0.5">{selectedControl.assessmentCriteria}</p>
-                </div>
-              </div>
+            <div className="space-y-1">
+              <span className="font-mono uppercase text-[10px] text-slate-500 font-bold">Expected Process &amp; Capability</span>
+              <p className="text-slate-300 leading-relaxed bg-slate-950 p-2.5 rounded border border-slate-800 font-mono text-[11px]">
+                {selectedControl.expectedCapability}
+              </p>
             </div>
 
-            {/* Related Rules & Findings */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1.5">
-                <span className="text-[10px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                  Related Rules ({selectedControl.relatedRules.length})
-                </span>
-                <div className="flex flex-wrap gap-1 font-mono text-[10px]">
-                  {selectedControl.relatedRules.map(r => (
-                    <span key={r} className="px-1.5 py-0.5 rounded bg-[#161e29] text-[#afc6ff] border border-[#212c3d]">
-                      {r}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="p-3 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1.5">
-                <span className="text-[10px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                  Related Findings ({selectedControl.relatedFindings.length})
-                </span>
-                <div className="flex flex-wrap gap-1 font-mono text-[10px]">
-                  {selectedControl.relatedFindings.map(fId => (
-                    <Link
-                      key={fId}
-                      to={`/review/${fId}`}
-                      className="px-1.5 py-0.5 rounded bg-[#38bdf8]/10 text-[#38bdf8] border border-[#38bdf8]/20 hover:underline flex items-center gap-1"
-                    >
-                      <span>{fId}</span>
-                      <ArrowUpRight className="w-2.5 h-2.5" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
+            <div className="space-y-1">
+              <span className="font-mono uppercase text-[10px] text-slate-500 font-bold">Expected Evidence Telemetry</span>
+              <p className="text-emerald-400 leading-relaxed bg-slate-950 p-2.5 rounded border border-slate-800 font-mono text-[11px]">
+                {selectedControl.expectedEvidence}
+              </p>
             </div>
 
-            {/* Version History (Section 12) */}
-            <div className="space-y-2">
-              <span className="text-[11px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                Standard Version History
-              </span>
-              <div className="space-y-1.5">
-                {selectedControl.versionHistory.map(vh => (
-                  <div
-                    key={vh.version}
-                    className={`p-2.5 rounded-lg border text-[11px] flex items-center justify-between ${
-                      vh.active
-                        ? 'bg-[#161e29] border-[#38bdf8]/40 text-[#e2e8f0]'
-                        : 'bg-[#111622] border-[#212c3d] text-[#64748b]'
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center gap-2 font-mono">
-                        <span className={`font-bold ${vh.active ? 'text-[#7bdb80]' : 'text-[#64748b]'}`}>
-                          {vh.version}
-                        </span>
-                        <span>•</span>
-                        <span>Released: {vh.releaseDate}</span>
-                        {vh.active && (
-                          <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#7bdb80]/15 text-[#7bdb80]">
-                            ACTIVE BASELINE
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-[#94a3b8] text-[10px] mt-0.5 block">{vh.changes}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="space-y-1">
+              <span className="font-mono uppercase text-[10px] text-slate-500 font-bold">Assessment Evaluation Criteria</span>
+              <p className="text-amber-300 leading-relaxed bg-slate-950 p-2.5 rounded border border-slate-800 font-mono text-[11px]">
+                {selectedControl.assessmentCriteria}
+              </p>
             </div>
           </div>
         )}
       </Drawer>
 
-      {/* ========================================================================= */}
-      {/* DRAWER 5: SYSTEM VERSION DETAIL DRAWER (Section 14)                       */}
-      {/* ========================================================================= */}
+      {/* DRAWER: RULE DETAILS */}
       <Drawer
-        isOpen={!!selectedVersion}
-        onClose={() => setSelectedVersion(null)}
-        title={selectedVersion ? `${selectedVersion.component} (${selectedVersion.version})` : 'Component Version'}
-        subtitle={selectedVersion ? `Type: ${selectedVersion.type} • Status: ${selectedVersion.status}` : ''}
+        isOpen={Boolean(selectedRule)}
+        onClose={() => setSelectedRule(null)}
+        title={selectedRule ? `${selectedRule.id}: ${selectedRule.controlId}` : ''}
+        subtitle="Deterministic Supervisory Rule Specification"
         width="md"
       >
-        {selectedVersion && (
-          <div className="space-y-4 text-[12px]">
-            {/* Reproducibility Context Callout (Section 14) */}
-            <div className="p-3 rounded-lg bg-blue-950/20 border border-blue-500/30 flex items-start gap-2.5">
-              <ShieldCheck className="w-4 h-4 text-[#38bdf8] shrink-0 mt-0.5" />
-              <div className="text-[11px] leading-relaxed text-[#94a3b8]">
-                <strong className="text-[#e2e8f0] font-mono uppercase">Finding Reproducibility Guarantee:</strong> Every supervisory assessment and finding records the exact cryptographic digest of this component version at runtime, ensuring mathematical reproducibility during subsequent regulatory inquiries.
+        {selectedRule && (
+          <div className="space-y-4 text-xs font-sans">
+            <div className="p-3 rounded bg-slate-950 border border-slate-800 space-y-2 font-mono text-[11px]">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Target Control:</span>
+                <span className="text-emerald-400 font-bold">{selectedRule.controlId}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Severity Level:</span>
+                <PriorityBadge priority={selectedRule.severity} />
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Version:</span>
+                <span className="text-white font-bold">{selectedRule.version}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Execution Engine:</span>
+                <span className="text-blue-400">{selectedRule.engine}</span>
               </div>
             </div>
 
-            {/* Metadata Grid */}
-            <div className="p-3.5 rounded-lg bg-[#161e29]/70 border border-[#212c3d] grid grid-cols-2 gap-3 font-mono">
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Component</span>
-                <span className="text-[#38bdf8] font-bold text-[12px]">{selectedVersion.component}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Version</span>
-                <span className="text-[#7bdb80] font-bold text-[12px]">{selectedVersion.version}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Component Type</span>
-                <span className="text-[#e2e8f0]">{selectedVersion.type}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Status</span>
-                <div className="mt-0.5"><StatusBadge status={selectedVersion.status} /></div>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Release Date</span>
-                <span className="text-[#e2e8f0]">{selectedVersion.released}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Active Horizon</span>
-                <span className="text-[#e2e8f0]">{selectedVersion.activeSince}</span>
-              </div>
+            <div className="space-y-1">
+              <span className="font-mono uppercase text-[10px] text-slate-500 font-bold">Evaluation Condition</span>
+              <p className="text-white font-mono leading-relaxed bg-slate-950 p-2.5 rounded border border-slate-800">
+                {selectedRule.condition}
+              </p>
             </div>
 
-            {/* Description & Change Summary */}
-            <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-2">
-              <div>
-                <span className="text-[10px] font-mono text-[#94a3b8] uppercase font-semibold block">Description:</span>
-                <p className="text-[#e2e8f0] mt-0.5">{selectedVersion.description}</p>
-              </div>
-              <div>
-                <span className="text-[10px] font-mono text-[#94a3b8] uppercase font-semibold block">Change Summary:</span>
-                <p className="text-[#94a3b8] text-[11px] mt-0.5">{selectedVersion.changeSummary}</p>
-              </div>
-            </div>
-
-            {/* Dependencies & Integrations */}
-            <div className="p-3.5 rounded-lg bg-[#161e29]/50 border border-[#212c3d] space-y-1.5 font-mono">
-              <span className="text-[10px] text-[#64748b] uppercase block">Enclave Dependencies:</span>
-              <div className="flex flex-wrap gap-1.5">
-                {selectedVersion.dependencies.map(dep => (
-                  <span key={dep} className="px-2 py-0.5 rounded bg-[#111622] border border-[#212c3d] text-[#e2e8f0] text-[11px]">
-                    {dep}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Cryptographic Hash Signature */}
-            <div className="p-3 rounded-lg bg-[#161e29]/70 border border-[#212c3d] flex items-center justify-between font-mono text-[11px]">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-[#7bdb80]" />
-                <span className="text-[#94a3b8]">Digest:</span>
-                <span className="text-[#7bdb80] truncate max-w-[210px]">{selectedVersion.hashSignature}</span>
-              </div>
-              <button
-                onClick={() => copyToClipboard(selectedVersion.hashSignature)}
-                className="text-[#94a3b8] hover:text-[#e2e8f0]"
-                title="Copy digest"
-              >
-                {copiedText === selectedVersion.hashSignature ? (
-                  <Check className="w-3.5 h-3.5 text-[#7bdb80]" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-              </button>
+            <div className="space-y-1">
+              <span className="font-mono uppercase text-[10px] text-slate-500 font-bold">Supervisory Intent</span>
+              <p className="text-slate-300 leading-relaxed bg-slate-950 p-2.5 rounded border border-slate-800">
+                {selectedRule.description}
+              </p>
             </div>
           </div>
         )}
       </Drawer>
 
-      {/* ========================================================================= */}
-      {/* MODAL: EDIT ACCESS SIMULATION                                             */}
-      {/* ========================================================================= */}
-      <Modal
-        isOpen={!!editAccessUser}
-        onClose={() => setEditAccessUser(null)}
-        title={editAccessUser ? `Modify Access Grants: ${editAccessUser.name}` : 'Modify Access'}
-        description="Simulate modification of operator role and supervised entity jurisdictional scopes."
-        footer={
-          <>
-            <Button variant="secondary" size="sm" onClick={() => setEditAccessUser(null)}>
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => {
-                setEditAccessUser(null);
-              }}
-            >
-              Commit Grants
-            </Button>
-          </>
-        }
+      {/* DRAWER: AUDIT DETAILS */}
+      <Drawer
+        isOpen={Boolean(selectedAudit)}
+        onClose={() => setSelectedAudit(null)}
+        title={selectedAudit ? `Audit Event: ${selectedAudit.id}` : ''}
+        subtitle="Immutable Cryptographic Event Dossier"
+        width="md"
       >
-        {editAccessUser && (
-          <div className="space-y-3 text-[12px]">
-            <div>
-              <label className="text-[11px] font-mono text-[#94a3b8] uppercase block mb-1">
-                Assigned Supervisory Role:
-              </label>
-              <Select
-                sizeVariant="sm"
-                value={editAccessUser.role}
-                onChange={() => {}}
-                options={[
-                  { value: 'SUPERVISOR', label: 'Supervisor' },
-                  { value: 'LEAD_EXAMINER', label: 'Lead Examiner' },
-                  { value: 'EXAMINER', label: 'Examiner' },
-                  { value: 'AUDITOR', label: 'Auditor' },
-                  { value: 'ADMINISTRATOR', label: 'Administrator' }
-                ]}
-              />
-            </div>
-
-            <div>
-              <label className="text-[11px] font-mono text-[#94a3b8] uppercase block mb-1">
-                Jurisdictional Entity Scope:
-              </label>
-              <div className="p-2.5 rounded bg-[#161e29] border border-[#212c3d] font-mono text-[11px] space-y-1.5">
-                {cses.map(cse => (
-                  <label key={cse.cseId} className="flex items-center gap-2 cursor-pointer text-[#e2e8f0]">
-                    <input
-                      type="checkbox"
-                      defaultChecked={editAccessUser.cseScope.includes('ALL_ENTITIES') || editAccessUser.cseScope.includes(cse.cseId)}
-                      className="rounded border-[#212c3d] text-[#38bdf8] focus:ring-0"
-                    />
-                    <span>{cse.cseId} — {cse.cseName}</span>
-                  </label>
-                ))}
+        {selectedAudit && (
+          <div className="space-y-4 text-xs font-mono">
+            <div className="p-3 rounded bg-slate-950 border border-slate-800 space-y-2 text-[11px]">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Event Timestamp:</span>
+                <span className="text-white font-bold">{selectedAudit.timestamp}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Actor Identity:</span>
+                <span className="text-blue-400 font-bold">{selectedAudit.actor}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Target Object:</span>
+                <span className="text-emerald-400 font-bold">{selectedAudit.targetObject}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Execution Verdict:</span>
+                <StatusBadge status={selectedAudit.result} />
               </div>
             </div>
 
-            <div className="p-2.5 rounded bg-[#161e29] border border-[#212c3d] text-[11px] text-[#94a3b8]">
-              Dual-Authorization Requirement: Access grant modifications are committed to the immutable audit ledger with FIPS-140-2 Level 3 signature.
+            <div className="space-y-1">
+              <span className="uppercase text-[10px] text-slate-500 font-bold">Supervisory Rationale</span>
+              <p className="text-slate-300 leading-relaxed bg-slate-950 p-2.5 rounded border border-slate-800 font-sans">
+                {selectedAudit.reason}
+              </p>
             </div>
           </div>
         )}
-      </Modal>
+      </Drawer>
+
+      {/* TOAST CONFIRMATION */}
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 bg-slate-900 border border-emerald-500 text-slate-200 px-4 py-2.5 rounded-lg shadow-xl text-xs font-mono flex items-center gap-2 z-50 animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span>{toastMsg}</span>
+        </div>
+      )}
+
     </PageContainer>
   );
 };

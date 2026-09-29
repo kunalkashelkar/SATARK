@@ -2,14 +2,14 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useSupervisory } from '@/context/SupervisoryContext';
 import { MockEvidenceRecord } from '@/data/mock/evidence';
-import { 
-  Search, 
-  RotateCcw, 
-  Key, 
-  Clock, 
-  FileText, 
-  CheckCircle2, 
-  ShieldCheck, 
+import {
+  Search,
+  RotateCcw,
+  Key,
+  Clock,
+  FileText,
+  CheckCircle2,
+  ShieldCheck,
   ChevronRight,
   ExternalLink,
   Upload,
@@ -18,903 +18,788 @@ import {
   AlertTriangle,
   Database,
   Building2,
-  FileCode,
   Copy,
   Check,
   Eye,
-  X,
-  Workflow
+  Filter,
+  Activity,
+  Workflow,
+  ShieldAlert,
+  Hash,
+  Shield,
+  FileCheck2,
+  History,
+  FileCode,
+  FolderGit2
 } from 'lucide-react';
 import { ImportEvidenceModal } from '@/components/evidence/ImportEvidenceModal';
-import {
-  PageContainer,
-  PageHeader,
-  Card,
-  KpiCard,
-  Input,
-  Select,
-  StatusBadge,
-  PriorityBadge,
-  Button,
-  Drawer,
-  Timeline
-} from '@/components/common';
+import { StatusBadge, Button, PageContainer } from '@/components/common';
 
 export const EvidenceExplorerPage: React.FC = () => {
   const { evidence, cses, findings, setActiveFindingId, setActiveCseId } = useSupervisory();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Search & Filter State
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCse, setSelectedCse] = useState(searchParams.get('cseId') || 'ALL');
-  const [selectedPeriod, setSelectedPeriod] = useState('ALL');
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'ALL');
-  const [selectedStatus, setSelectedStatus] = useState(searchParams.get('status') || 'ALL');
-  const [selectedFinding, setSelectedFinding] = useState(searchParams.get('findingId') || 'ALL');
+  // Search & Filters State
+  const [filterEvidenceId, setFilterEvidenceId] = useState('');
+  const [filterCse, setFilterCse] = useState(searchParams.get('cseId') || 'ALL');
+  const [filterSource, setFilterSource] = useState('ALL');
+  const [filterEvidenceType, setFilterEvidenceType] = useState(searchParams.get('category') || 'ALL');
+  const [filterControl, setFilterControl] = useState('ALL');
+  const [filterDate, setFilterDate] = useState('ALL');
+  const [filterStatus, setFilterStatus] = useState(searchParams.get('status') || 'ALL');
+  const [filterFinding, setFilterFinding] = useState(searchParams.get('findingId') || 'ALL');
+  const [filterSignal, setFilterSignal] = useState('ALL');
 
-  // Pagination State
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  // Selected evidence record for the right-hand inspection panel
+  const [selectedEvidenceId, setSelectedEvidenceId] = useState<string>(() => {
+    return searchParams.get('evidenceId') || 'EV-1042';
+  });
 
-  // Selected item for slide-over drawer
-  const [inspectedEvidence, setInspectedEvidence] = useState<MockEvidenceRecord | null>(null);
-  const [drawerTab, setDrawerTab] = useState<'overview' | 'timeline' | 'provenance'>('overview');
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [copiedHash, setCopiedHash] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
-  // Sync URL search params
+  // Sync incoming URL parameters on mount / changes
   useEffect(() => {
+    const eid = searchParams.get('evidenceId');
+    if (eid) setSelectedEvidenceId(eid);
+
     const cseParam = searchParams.get('cseId');
-    if (cseParam) setSelectedCse(cseParam);
+    if (cseParam) setFilterCse(cseParam);
 
-    const categoryParam = searchParams.get('category');
-    if (categoryParam) setSelectedCategory(categoryParam);
+    const catParam = searchParams.get('category');
+    if (catParam) setFilterEvidenceType(catParam);
 
-    const statusParam = searchParams.get('status');
-    if (statusParam) setSelectedStatus(statusParam);
+    const statParam = searchParams.get('status');
+    if (statParam) setFilterStatus(statParam);
 
-    const findingParam = searchParams.get('findingId');
-    if (findingParam) setSelectedFinding(findingParam);
+    const findParam = searchParams.get('findingId');
+    if (findParam) setFilterFinding(findParam);
   }, [searchParams]);
 
-  // Reset all filters
-  const resetFilters = () => {
-    setSearchTerm('');
-    setSelectedCse('ALL');
-    setSelectedPeriod('ALL');
-    setSelectedCategory('ALL');
-    setSelectedStatus('ALL');
-    setSelectedFinding('ALL');
-    setCurrentPage(1);
-    setSearchParams({});
-  };
-
-  // 1. Dynamic 4 Top Summary Cards (Derived from centralized evidence dataset)
-  const summaryCounts = useMemo(() => {
-    const totalEvidence = evidence.length;
-    const readyEvidence = evidence.filter(e => e.status === 'PRESENT').length;
-    const requiresReview = evidence.filter(e => e.gapOrFinding && e.gapOrFinding.length > 0).length;
-    const missingOrIncomplete = evidence.filter(e => e.status === 'NOT_SUBMITTED' || e.status === 'ABSENT_CONFIRMED').length;
-
-    return {
-      totalEvidence,
-      readyEvidence,
-      requiresReview,
-      missingOrIncomplete
-    };
+  // Derive unique filter dropdown choices from real data
+  const uniqueSources = useMemo(() => {
+    const set = new Set<string>();
+    evidence.forEach(e => {
+      if (e.source) set.add(e.source);
+    });
+    return Array.from(set).sort();
   }, [evidence]);
 
-  // 2. Multi-criteria Filter Logic
+  const uniqueEvidenceTypes = useMemo(() => {
+    const set = new Set<string>();
+    evidence.forEach(e => {
+      if (e.recordType) set.add(e.recordType);
+    });
+    return Array.from(set).sort();
+  }, [evidence]);
+
+  const uniqueControls = useMemo(() => {
+    const set = new Set<string>();
+    findings.forEach(f => {
+      if (f.controlId) set.add(f.controlId);
+    });
+    return Array.from(set).sort();
+  }, [findings]);
+
+  const uniqueDates = useMemo(() => {
+    const set = new Set<string>();
+    evidence.forEach(e => {
+      if (e.timestampDate) set.add(e.timestampDate);
+    });
+    return Array.from(set).sort();
+  }, [evidence]);
+
+  const uniqueFindingRefs = useMemo(() => {
+    const set = new Set<string>();
+    evidence.forEach(e => {
+      if (e.gapOrFinding) set.add(e.gapOrFinding);
+    });
+    findings.forEach(f => {
+      set.add(f.id);
+    });
+    return Array.from(set).sort();
+  }, [evidence, findings]);
+
+  const uniqueSignals = useMemo(() => {
+    const set = new Set<string>();
+    findings.forEach(f => {
+      if (f.signalType) set.add(f.signalType);
+      f.supportingSignals?.forEach(s => set.add(s.type));
+    });
+    return Array.from(set).sort();
+  }, [findings]);
+
+  // Helper to resolve related finding object from finding reference string
+  const getRelatedFinding = (gapOrFinding?: string) => {
+    if (!gapOrFinding) return undefined;
+    const match = gapOrFinding.match(/FND-\d+/i) || gapOrFinding.match(/FG-\d+/i);
+    const fid = match ? match[0] : gapOrFinding;
+    return findings.find(f => f.id.toLowerCase() === fid.toLowerCase());
+  };
+
+  // Helper to extract case docket reference
+  const extractCaseId = (caseRef?: string) => {
+    if (!caseRef) return null;
+    const match = caseRef.match(/CASE-\d+/i);
+    return match ? match[0] : null;
+  };
+
+  // Filtered Evidence list
   const filteredEvidence = useMemo(() => {
-    return evidence.filter((item) => {
-      // Search across ID, title, caseRef, entity, cseId, hash, category, finding reference
-      if (searchTerm) {
-        const q = searchTerm.toLowerCase();
-        const matches = 
-          item.id.toLowerCase().includes(q) ||
-          item.title.toLowerCase().includes(q) ||
-          item.caseRef.toLowerCase().includes(q) ||
-          item.entity.toLowerCase().includes(q) ||
-          item.cseId.toLowerCase().includes(q) ||
-          item.recordType.toLowerCase().includes(q) ||
-          item.source.toLowerCase().includes(q) ||
-          item.hash.toLowerCase().includes(q) ||
-          (item.gapOrFinding && item.gapOrFinding.toLowerCase().includes(q));
-        if (!matches) return false;
+    return evidence.filter(item => {
+      // Evidence ID filter
+      if (filterEvidenceId.trim()) {
+        const query = filterEvidenceId.toLowerCase();
+        const matchesId = item.id.toLowerCase().includes(query) || (item.submissionId && item.submissionId.toLowerCase().includes(query));
+        if (!matchesId) return false;
       }
 
       // CSE Filter
-      if (selectedCse !== 'ALL' && item.cseId.toLowerCase() !== selectedCse.toLowerCase()) return false;
-
-      // Period Filter (if provided in record or defaulted to Q3 2026)
-      if (selectedPeriod !== 'ALL') {
-        const itemPeriod = item.provenance?.enclaveTimestamp ? 'Q3 2026' : 'Q3 2026';
-        if (itemPeriod !== selectedPeriod) return false;
+      if (filterCse !== 'ALL' && item.cseId.toLowerCase() !== filterCse.toLowerCase()) {
+        return false;
       }
 
-      // Category Filter
-      if (selectedCategory !== 'ALL' && item.recordType !== selectedCategory) return false;
+      // Source Filter
+      if (filterSource !== 'ALL' && item.source !== filterSource) {
+        return false;
+      }
+
+      // Evidence Type Filter
+      if (filterEvidenceType !== 'ALL' && item.recordType !== filterEvidenceType) {
+        return false;
+      }
 
       // Status Filter
-      if (selectedStatus !== 'ALL' && item.status !== selectedStatus) return false;
+      if (filterStatus !== 'ALL' && item.status !== filterStatus) {
+        return false;
+      }
 
-      // Related Finding Filter
-      if (selectedFinding !== 'ALL' && (!item.gapOrFinding || !item.gapOrFinding.includes(selectedFinding))) return false;
+      // Date Filter
+      if (filterDate !== 'ALL' && item.timestampDate !== filterDate) {
+        return false;
+      }
+
+      // Finding Filter
+      if (filterFinding !== 'ALL') {
+        const hasDirectFinding = item.gapOrFinding && item.gapOrFinding.toLowerCase().includes(filterFinding.toLowerCase());
+        const mappedFinding = findings.find(f => f.id.toLowerCase() === filterFinding.toLowerCase() && f.sourceEvidence.some(se => se.recordId.toLowerCase() === item.id.toLowerCase()));
+        if (!hasDirectFinding && !mappedFinding) return false;
+      }
+
+      // Control Filter
+      if (filterControl !== 'ALL') {
+        const relFinding = getRelatedFinding(item.gapOrFinding);
+        const controlMatch = relFinding?.controlId === filterControl;
+        const mappedBySource = findings.some(f => f.controlId === filterControl && f.sourceEvidence.some(se => se.recordId.toLowerCase() === item.id.toLowerCase()));
+        if (!controlMatch && !mappedBySource) return false;
+      }
+
+      // Signal Filter
+      if (filterSignal !== 'ALL') {
+        const relFinding = getRelatedFinding(item.gapOrFinding);
+        const signalMatch = relFinding && (relFinding.signalType === filterSignal || relFinding.supportingSignals?.some(s => s.type === filterSignal));
+        if (!signalMatch) return false;
+      }
 
       return true;
-    }).sort((a, b) => {
-      // Sort: PRESENT first, then ID
-      return a.id.localeCompare(b.id);
     });
-  }, [evidence, searchTerm, selectedCse, selectedPeriod, selectedCategory, selectedStatus, selectedFinding]);
+  }, [evidence, filterEvidenceId, filterCse, filterSource, filterEvidenceType, filterStatus, filterDate, filterFinding, filterControl, filterSignal, findings]);
 
-  // Pagination Slice
-  const totalPages = Math.ceil(filteredEvidence.length / pageSize) || 1;
-  const paginatedEvidence = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredEvidence.slice(start, start + pageSize);
-  }, [filteredEvidence, currentPage]);
+  // Selected Evidence record for detail panel
+  const activeRecord = useMemo(() => {
+    return evidence.find(e => e.id.toLowerCase() === selectedEvidenceId.toLowerCase()) || filteredEvidence[0] || evidence[0];
+  }, [evidence, selectedEvidenceId, filteredEvidence]);
 
+  // Correlated Finding for Active Record
+  const activeRelatedFinding = useMemo(() => {
+    if (!activeRecord) return undefined;
+    return getRelatedFinding(activeRecord.gapOrFinding) || findings.find(f => f.sourceEvidence?.some(se => se.recordId.toLowerCase() === activeRecord.id.toLowerCase()));
+  }, [activeRecord, findings]);
+
+  // Copy hash to clipboard
   const handleCopyHash = (hash: string) => {
     navigator.clipboard.writeText(hash);
     setCopiedHash(true);
     setTimeout(() => setCopiedHash(false), 2000);
   };
 
-  const handleOpenFinding = (findingRef: string) => {
-    // Extract finding ID, e.g. "GAP-0071 / FND-0142" -> "FND-0142"
-    const match = findingRef.match(/FND-\d+/i) || findingRef.match(/FG-\d+/i);
-    const fid = match ? match[0] : findingRef;
-    setActiveFindingId(fid);
-    navigate(`/review/${fid}`);
-  };
-
-  // Helper: map recordType to human readable label
-  const getCategoryLabel = (type: string): string => {
-    switch (type) {
-      case 'ALERT': return 'Alerts';
-      case 'CASE': return 'Cases';
-      case 'INVESTIGATION': return 'Investigations';
-      case 'ACTION': return 'Actions';
-      case 'EVIDENCE': return 'Evidence';
-      case 'ESCALATION': return 'Escalations';
-      case 'RESPONSE': return 'Responses';
-      case 'CLOSURE': return 'Closures';
-      case 'ASSET': return 'Assets';
-      case 'EXCEPTION': return 'Exceptions';
-      case 'REMEDIATION': return 'Remediation';
-      default: return type;
-    }
-  };
-
-  // Construct timeline steps for inspected evidence item
-  const getTimelineSteps = (item: MockEvidenceRecord) => {
-    return [
-      {
-        id: '1',
-        timestamp: `${item.timestampDate || '26 Sep 2026'}, 09:12 IST`,
-        title: 'Telemetry Dropped to Ingestion Gateway',
-        description: `Ingested from ${item.source} via air-gapped SFTP drop with initial transport checksum validation.`,
-        actor: `${item.cseId} Submitting Liaison`,
-        status: 'success' as const
-      },
-      {
-        id: '2',
-        timestamp: `${item.timestampDate || '26 Sep 2026'}, 09:14 IST`,
-        title: 'Format & Cryptographic Integrity Confirmed',
-        description: `SHA-256 computed: ${item.hash.slice(0, 24)}... Hardware root of trust verified.`,
-        actor: 'NCIIPC Security Enclave',
-        status: 'success' as const
-      },
-      {
-        id: '3',
-        timestamp: `${item.timestampDate || '26 Sep 2026'}, 09:15 IST`,
-        title: 'Canonical Schema Mapping (OCSF v1.1.0)',
-        description: `Normalized into canonical ${getCategoryLabel(item.recordType)} structure with 0 schema violations.`,
-        actor: 'SAT-SA Ingestion Engine',
-        status: 'success' as const
-      },
-      {
-        id: '4',
-        timestamp: `${item.timestampDate || '26 Sep 2026'}, 09:18 IST`,
-        title: 'Supervisory Model Correlation & Signal Fusion',
-        description: item.gapOrFinding 
-          ? `Telemetry compared against Expected Baseline. Identified discrepancy: ${item.gapOrFinding}.` 
-          : 'Telemetry correlated with operational baseline. Consistent with normative parameters.',
-        actor: 'Supervisory Analytics Engine',
-        status: item.gapOrFinding ? ('warning' as const) : ('success' as const)
-      }
-    ];
+  // Reset Filters handler
+  const handleResetFilters = () => {
+    setFilterEvidenceId('');
+    setFilterCse('ALL');
+    setFilterSource('ALL');
+    setFilterEvidenceType('ALL');
+    setFilterControl('ALL');
+    setFilterDate('ALL');
+    setFilterStatus('ALL');
+    setFilterFinding('ALL');
+    setFilterSignal('ALL');
+    setSearchParams({});
   };
 
   return (
     <PageContainer>
-      {/* ========================================================================= */}
-      {/* 1. PAGE HEADER (Section 4)                                                */}
-      {/* ========================================================================= */}
-      <PageHeader
-        title="Evidence Explorer"
-        description="Review evidence submitted by CSEs and trace it to assessments, controls, findings, and supervisory signals."
-        badge={
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono text-[#93c5fd] bg-[#182335] px-2.5 py-0.5 rounded border border-[#263750] font-medium">
-              Air-Gapped Vault Active
-            </span>
-            <span className="text-[11px] font-mono text-[#7bdb80] bg-[#7bdb80]/10 px-2.5 py-0.5 rounded border border-[#7bdb80]/30 font-medium">
-              FIPS 140-2 Level 3 Verified
-            </span>
+      {/* 1. STANDARDIZED SAT-SA PAGE HEADER */}
+      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1.5 min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-[18px] md:text-[20px] font-semibold text-[#f1f5f9] tracking-tight">
+                Evidence Explorer
+              </h1>
+              <span className="text-[#475569]">•</span>
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-[#1f6feb]/20 text-[#60a5fa] border border-[#1f6feb]/30">
+                {evidence.length} Artifacts in Vault
+              </span>
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
+                Air-Gapped Vault • FIPS 140-2 Level 3
+              </span>
+            </div>
+
+            <p className="text-[12px] text-[#94a3b8]">
+              Cryptographic forensic evidence vault. Primary question: <strong className="text-[#cbd5e1]">&ldquo;What evidence supports this assessment/finding?&rdquo;</strong>
+            </p>
+
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#64748b] font-mono pt-0.5">
+              <span>Security Level: <strong className="text-emerald-400">Air-Gapped Enclave (TLS 1.3 / FIPS-140-2)</strong></span>
+              <span>•</span>
+              <span>Hashing Standard: <strong className="text-[#cbd5e1]">SHA-256 Digest Ledger</strong></span>
+              <span>•</span>
+              <span>Scope: <strong className="text-[#60a5fa]">{cses.length} Critical Sector Entities</strong></span>
+            </div>
           </div>
-        }
-        actions={
-          <div className="flex items-center gap-2">
+
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#212c3d]">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleResetFilters}
+              icon={<RotateCcw className="w-3.5 h-3.5" />}
+            >
+              Reset Filters
+            </Button>
             <Button
               variant="primary"
               size="sm"
-              icon={<Upload className="w-3.5 h-3.5 text-white" />}
+              icon={<Upload className="w-3.5 h-3.5" />}
               onClick={() => setIsImportModalOpen(true)}
-              className="bg-[#1d4ed8] hover:bg-[#2563eb] text-white font-medium"
             >
-              + Add Evidence
+              + Ingest Evidence
             </Button>
           </div>
-        }
-      />
-
-      {/* ========================================================================= */}
-      {/* 2. SUMMARY CARDS (Section 4: Exactly 4 Compact KPI Cards Matching Overview) */}
-      {/* ========================================================================= */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-4 min-w-0">
-        <KpiCard
-          title="Total Evidence"
-          value={summaryCounts.totalEvidence}
-          subtitle="Artifacts in Supervisory Vault"
-          semantic="blue"
-          icon={Database}
-          onClick={() => setSelectedStatus('ALL')}
-        />
-        <KpiCard
-          title="Ready Evidence"
-          value={summaryCounts.readyEvidence}
-          subtitle="Schema & Integrity Verified"
-          semantic="green"
-          icon={CheckCircle2}
-          onClick={() => setSelectedStatus('PRESENT')}
-        />
-        <KpiCard
-          title="Requires Review"
-          value={summaryCounts.requiresReview}
-          subtitle="Linked to Supervisory Signals"
-          semantic="amber"
-          alert={summaryCounts.requiresReview > 0}
-          icon={AlertTriangle}
-          onClick={() => setSelectedFinding('FND')}
-        />
-        <KpiCard
-          title="Missing / Incomplete"
-          value={summaryCounts.missingOrIncomplete}
-          subtitle="Demands / Candidate Voids"
-          semantic="red"
-          alert={summaryCounts.missingOrIncomplete > 0}
-          icon={FileText}
-          onClick={() => setSelectedStatus('NOT_SUBMITTED')}
-        />
+        </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* 3. FILTER BAR (Section 5)                                                 */}
-      {/* ========================================================================= */}
-      <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-3 mb-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
-          {/* Search Input */}
-          <div className="lg:col-span-2">
-            <Input
-              icon={<Search className="w-4 h-4 text-[#64748b]" />}
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              placeholder="Search Evidence ID, File, CSE, Finding..."
-              sizeVariant="sm"
-            />
+      {/* 3-COLUMN PRODUCTION-GRADE EVIDENCE INVESTIGATION WORKSPACE */}
+      {/* LEFT (Filters 3 Cols) | CENTER (Evidence Results 5 Cols) | RIGHT (Selected Details 4 Cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        
+        {/* LEFT COLUMN: FILTERS (3 Cols) */}
+        <div className="lg:col-span-3 flex flex-col gap-3">
+          <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] shadow-sm space-y-3.5">
+            
+            <div className="flex items-center justify-between pb-2 border-b border-[#212c3d]">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase font-bold text-[#60a5fa]">
+                <Filter className="w-3.5 h-3.5" />
+                <span>Filters</span>
+              </div>
+              <button
+                onClick={handleResetFilters}
+                className="text-[10px] font-mono text-[#64748b] hover:text-[#f1f5f9] flex items-center gap-1 cursor-pointer"
+              >
+                <RotateCcw className="w-3 h-3" />
+                <span>Reset</span>
+              </button>
+            </div>
+
+            {/* 1. Evidence ID Filter */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-mono uppercase text-slate-400">Evidence ID / Submission</label>
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-500" />
+                <input
+                  type="text"
+                  value={filterEvidenceId}
+                  onChange={(e) => setFilterEvidenceId(e.target.value)}
+                  placeholder="e.g. EV-1042, EVD-742..."
+                  className="w-full pl-8 pr-2.5 py-1.5 bg-slate-950 border border-slate-800 rounded-md text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-blue-500 font-mono"
+                />
+              </div>
+            </div>
+
+            {/* 2. CSE Filter */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-mono uppercase text-[#64748b]">Critical Sector Entity (CSE)</label>
+              <select
+                value={filterCse}
+                onChange={(e) => setFilterCse(e.target.value)}
+                className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
+              >
+                <option value="ALL">All CSEs</option>
+                {cses.map(cse => (
+                  <option key={cse.cseId} value={cse.cseId}>
+                    {cse.cseId} — {cse.cseName.split(' ')[0]}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* 3. Source Filter */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-mono uppercase text-[#64748b]">Evidence Source</label>
+              <select
+                value={filterSource}
+                onChange={(e) => setFilterSource(e.target.value)}
+                className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
+              >
+                <option value="ALL">All Sources</option>
+                {uniqueSources.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 4. Evidence Type Filter */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-mono uppercase text-[#64748b]">Evidence Type</label>
+              <select
+                value={filterEvidenceType}
+                onChange={(e) => setFilterEvidenceType(e.target.value)}
+                className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
+              >
+                <option value="ALL">All Types</option>
+                {uniqueEvidenceTypes.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 5. Control Filter */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-mono uppercase text-[#64748b]">Regulatory Control</label>
+              <select
+                value={filterControl}
+                onChange={(e) => setFilterControl(e.target.value)}
+                className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
+              >
+                <option value="ALL">All Controls</option>
+                {uniqueControls.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 6. Date Filter */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-mono uppercase text-[#64748b]">Date Timestamp</label>
+              <select
+                value={filterDate}
+                onChange={(e) => setFilterDate(e.target.value)}
+                className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
+              >
+                <option value="ALL">All Dates</option>
+                {uniqueDates.map(d => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 7. Status Filter */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-mono uppercase text-[#64748b]">Evidence Status</label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
+              >
+                <option value="ALL">All Statuses</option>
+                <option value="PRESENT">PRESENT (Verified)</option>
+                <option value="NOT_SUBMITTED">NOT SUBMITTED (Missing)</option>
+                <option value="ABSENT_CONFIRMED">ABSENT CONFIRMED</option>
+                <option value="NOT_APPLICABLE">NOT APPLICABLE</option>
+                <option value="UNKNOWN">UNKNOWN</option>
+              </select>
+            </div>
+
+            {/* 8. Finding Filter */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-mono uppercase text-[#64748b]">Supervisory Finding</label>
+              <select
+                value={filterFinding}
+                onChange={(e) => setFilterFinding(e.target.value)}
+                className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
+              >
+                <option value="ALL">All Findings</option>
+                {uniqueFindingRefs.map(f => (
+                  <option key={f} value={f}>{f}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* 9. Signal Filter */}
+            <div className="space-y-1">
+              <label className="text-[10px] font-mono uppercase text-[#64748b]">Analytical Signal</label>
+              <select
+                value={filterSignal}
+                onChange={(e) => setFilterSignal(e.target.value)}
+                className="w-full h-8 px-2 bg-[#131922] border border-[#212c3d] rounded text-xs text-[#cbd5e1] focus:outline-none focus:border-[#3b82f6]"
+              >
+                <option value="ALL">All Signal Types</option>
+                {uniqueSignals.map(s => (
+                  <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Matching Count Footer */}
+            <div className="pt-2 border-t border-[#212c3d] text-[11px] font-mono text-[#94a3b8] flex items-center justify-between">
+              <span>Matching Artifacts:</span>
+              <span className="font-bold text-[#f1f5f9]">{filteredEvidence.length} / {evidence.length}</span>
+            </div>
+
           </div>
-
-          {/* CSE Selector */}
-          <Select
-            sizeVariant="sm"
-            value={selectedCse}
-            onChange={(e) => {
-              setSelectedCse(e.target.value);
-              setCurrentPage(1);
-            }}
-            options={[
-              { value: 'ALL', label: 'All CSEs Portfolio' },
-              ...cses.map(c => ({ value: c.cseId, label: `${c.cseId} — ${c.cseName.split(' ')[0]}` }))
-            ]}
-          />
-
-          {/* Category Selector */}
-          <Select
-            sizeVariant="sm"
-            value={selectedCategory}
-            onChange={(e) => {
-              setSelectedCategory(e.target.value);
-              setCurrentPage(1);
-            }}
-            options={[
-              { value: 'ALL', label: 'All Categories' },
-              { value: 'ALERT', label: 'Alerts' },
-              { value: 'CASE', label: 'Cases' },
-              { value: 'INVESTIGATION', label: 'Investigations' },
-              { value: 'ACTION', label: 'Actions' },
-              { value: 'EVIDENCE', label: 'Evidence' },
-              { value: 'ESCALATION', label: 'Escalations' },
-              { value: 'RESPONSE', label: 'Responses' },
-              { value: 'CLOSURE', label: 'Closures' },
-              { value: 'ASSET', label: 'Assets' },
-              { value: 'EXCEPTION', label: 'Exceptions' },
-              { value: 'REMEDIATION', label: 'Remediation' }
-            ]}
-          />
-
-          {/* Status Selector */}
-          <Select
-            sizeVariant="sm"
-            value={selectedStatus}
-            onChange={(e) => {
-              setSelectedStatus(e.target.value);
-              setCurrentPage(1);
-            }}
-            options={[
-              { value: 'ALL', label: 'All Statuses' },
-              { value: 'PRESENT', label: 'Present' },
-              { value: 'NOT_SUBMITTED', label: 'Not Submitted' },
-              { value: 'ABSENT_CONFIRMED', label: 'Confirmed Missing' },
-              { value: 'NOT_APPLICABLE', label: 'Not Applicable' },
-              { value: 'UNKNOWN', label: 'Unknown' }
-            ]}
-          />
-
-          {/* Assessment Period */}
-          <Select
-            sizeVariant="sm"
-            value={selectedPeriod}
-            onChange={(e) => {
-              setSelectedPeriod(e.target.value);
-              setCurrentPage(1);
-            }}
-            options={[
-              { value: 'ALL', label: 'All Periods' },
-              { value: 'Q3 2026', label: 'Q3 2026 (Active)' },
-              { value: 'Q2 2026', label: 'Q2 2026 (Baseline)' },
-              { value: 'Q1 2026', label: 'Q1 2026' }
-            ]}
-          />
         </div>
 
-        {/* Filter Summary & Quick Status Links */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#212c3d] text-[11px] font-mono text-[#8c90a0]">
-          <div className="flex items-center gap-2">
-            <span>Filter Status:</span>
-            <div className="flex items-center gap-1">
-              {[
-                { id: 'ALL', label: 'All Evidence' },
-                { id: 'PRESENT', label: 'Present' },
-                { id: 'NOT_SUBMITTED', label: 'Missing' },
-              ].map((st) => (
-                <button
-                  key={st.id}
-                  onClick={() => {
-                    setSelectedStatus(st.id);
-                    setCurrentPage(1);
-                  }}
-                  className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
-                    selectedStatus === st.id
-                      ? 'bg-[#1d4ed8] text-white font-bold'
-                      : 'bg-[#161e29] text-[#94a3b8] hover:text-[#f1f5f9] border border-[#212c3d]'
-                  }`}
-                >
-                  {st.label}
-                </button>
-              ))}
+        {/* CENTER COLUMN: EVIDENCE RESULTS TABLE (5 Cols) */}
+        <div className="lg:col-span-5 flex flex-col gap-3">
+          <div className="flex items-center justify-between px-1 text-xs font-mono text-[#94a3b8]">
+            <div>
+              Results: <span className="text-[#f1f5f9] font-bold">{filteredEvidence.length}</span> artifacts
+            </div>
+            <div className="text-[11px] text-[#64748b]">
+              Click row to inspect full dossier
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span>
-              Showing <strong className="text-[#f1f5f9]">{filteredEvidence.length}</strong> of {evidence.length} Artifacts
-            </span>
-            <button
-              onClick={resetFilters}
-              className="flex items-center gap-1 text-[11px] text-[#8c90a0] hover:text-[#f1f5f9] transition-colors"
-            >
-              <RotateCcw className="w-3 h-3" />
-              <span>Reset</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* ========================================================================= */}
-      {/* 4. MAIN EVIDENCE TABLE (Section 7: Full-Width Clean Table)                */}
-      {/* ========================================================================= */}
-      <Card className="p-0 overflow-hidden">
-        {filteredEvidence.length > 0 ? (
-          <div className="overflow-x-auto min-w-0">
-            <table className="w-full text-left text-[12px] text-[#dfe2eb]">
-              <thead className="bg-[#111722] text-[#8c90a0] font-mono uppercase text-[10px] border-b border-[#212c3d]">
+          <div className="overflow-x-auto rounded-lg border border-[#212c3d] bg-[#111622] shadow-sm">
+            <table className="w-full text-left text-xs font-sans">
+              <thead className="bg-[#0d121c] text-[#94a3b8] font-mono text-[10px] uppercase border-b border-[#212c3d] select-none">
                 <tr>
-                  <th className="py-3 px-3.5">Evidence ID</th>
-                  <th className="py-3 px-3.5">Title & Artifact</th>
-                  <th className="py-3 px-3.5">CSE / Sector</th>
-                  <th className="py-3 px-3.5">Category</th>
-                  <th className="py-3 px-3.5">Status</th>
-                  <th className="py-3 px-3.5">Source Node</th>
-                  <th className="py-3 px-3.5">Related Finding</th>
-                  <th className="py-3 px-3.5">Updated</th>
-                  <th className="py-3 px-3.5 text-right">Action</th>
+                  <th className="py-2.5 px-3">Evidence ID</th>
+                  <th className="py-2.5 px-2.5">Source</th>
+                  <th className="py-2.5 px-2">Type</th>
+                  <th className="py-2.5 px-2.5">Timestamp</th>
+                  <th className="py-2.5 px-2">Status</th>
+                  <th className="py-2.5 px-2">Control</th>
+                  <th className="py-2.5 px-3">Finding</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#212c3d]/60 bg-[#0e131b]">
-                {paginatedEvidence.map((item) => {
-                  const hasFinding = Boolean(item.gapOrFinding);
+              <tbody className="divide-y divide-slate-800/70">
+                {filteredEvidence.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-12 text-center text-slate-500 font-mono text-xs">
+                      No evidence records match the filter criteria.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredEvidence.map((item) => {
+                    const isSelected = activeRecord && item.id === activeRecord.id;
+                    const relFinding = getRelatedFinding(item.gapOrFinding) || findings.find(f => f.sourceEvidence?.some(se => se.recordId.toLowerCase() === item.id.toLowerCase()));
+                    const controlRef = relFinding?.controlId || 'CTRL-07';
+                    const findingLabel = item.gapOrFinding ? (item.gapOrFinding.split('/')[1]?.trim() || item.gapOrFinding) : relFinding ? relFinding.id : '—';
 
-                  return (
-                    <tr 
-                      key={item.id} 
-                      className="hover:bg-[#111722] transition-colors group cursor-pointer"
-                      onClick={() => {
-                        setInspectedEvidence(item);
-                        setDrawerTab('overview');
-                      }}
-                    >
-                      {/* 1. Evidence ID */}
-                      <td className="py-3 px-3.5 whitespace-nowrap">
-                        <span className="font-mono font-bold text-[#60a5fa] group-hover:underline">
+                    return (
+                      <tr
+                        key={item.id}
+                        onClick={() => setSelectedEvidenceId(item.id)}
+                        className={`cursor-pointer transition-colors ${
+                          isSelected
+                            ? 'bg-blue-950/40 text-white font-medium border-l-2 border-l-blue-400'
+                            : 'hover:bg-slate-800/50 text-slate-300'
+                        }`}
+                      >
+                        {/* 1. Evidence ID */}
+                        <td className="py-3 px-3 font-mono font-bold text-blue-400 whitespace-nowrap">
                           {item.id}
-                        </span>
-                        {item.submissionId && (
-                          <div className="text-[10px] text-[#64748b] font-mono mt-0.5">
-                            {item.submissionId}
+                          {item.submissionId && (
+                            <div className="text-[10px] text-slate-500 font-normal">
+                              {item.submissionId}
+                            </div>
+                          )}
+                        </td>
+
+                        {/* 2. Source */}
+                        <td className="py-3 px-2.5 max-w-[130px]">
+                          <div className="truncate text-slate-200 font-medium" title={item.source}>
+                            {item.source}
                           </div>
-                        )}
-                      </td>
+                          <div className="text-[10px] text-slate-500 truncate" title={item.entity}>
+                            {item.cseId}
+                          </div>
+                        </td>
 
-                      {/* 2. Title & Artifact */}
-                      <td className="py-3 px-3.5 max-w-[280px]">
-                        <div className="font-semibold text-[#f1f5f9] truncate">
-                          {item.title}
-                        </div>
-                        <div className="text-[10px] text-[#8c90a0] font-mono truncate mt-0.5">
-                          Ref: {item.caseRef}
-                        </div>
-                      </td>
-
-                      {/* 3. CSE */}
-                      <td 
-                        className="py-3 px-3.5 whitespace-nowrap"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveCseId(item.cseId);
-                          navigate(`/supervision/cses/${item.cseId}`);
-                        }}
-                      >
-                        <div className="font-semibold text-[#f1f5f9] hover:text-[#60a5fa] flex items-center gap-1">
-                          <span>{item.cseId}</span>
-                          <ExternalLink className="w-3 h-3 text-[#64748b]" />
-                        </div>
-                        <div className="text-[10px] text-[#8c90a0] truncate max-w-[130px]">
-                          {item.entity.split('(')[1]?.replace(')', '') || item.entity}
-                        </div>
-                      </td>
-
-                      {/* 4. Category */}
-                      <td className="py-3 px-3.5 whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase font-semibold bg-[#182335] text-[#93c5fd] border border-[#263750]">
-                          {getCategoryLabel(item.recordType)}
-                        </span>
-                      </td>
-
-                      {/* 5. Status */}
-                      <td className="py-3 px-3.5 whitespace-nowrap">
-                        <StatusBadge status={item.status} />
-                      </td>
-
-                      {/* 6. Source Node */}
-                      <td className="py-3 px-3.5 whitespace-nowrap">
-                        <div className="text-[#cbd5e1] truncate max-w-[150px]">
-                          {item.source}
-                        </div>
-                        <div className="text-[10px] text-[#64748b] font-mono mt-0.5">
-                          {item.sourceSink}
-                        </div>
-                      </td>
-
-                      {/* 7. Related Finding */}
-                      <td 
-                        className="py-3 px-3.5 whitespace-nowrap"
-                        onClick={(e) => {
-                          if (hasFinding) {
-                            e.stopPropagation();
-                            handleOpenFinding(item.gapOrFinding);
-                          }
-                        }}
-                      >
-                        {hasFinding ? (
-                          <span className="font-mono text-[11px] font-bold text-amber-300 hover:underline flex items-center gap-1">
-                            <span>{item.gapOrFinding.split('/')[1]?.trim() || item.gapOrFinding}</span>
-                            <ArrowRight className="w-3 h-3 text-amber-400" />
+                        {/* 3. Type */}
+                        <td className="py-3 px-2 whitespace-nowrap font-mono text-[11px]">
+                          <span className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-300">
+                            {item.recordType}
                           </span>
-                        ) : (
-                          <span className="text-[11px] text-[#64748b] font-mono">None (Conformant)</span>
-                        )}
-                      </td>
+                        </td>
 
-                      {/* 8. Updated */}
-                      <td className="py-3 px-3.5 whitespace-nowrap font-mono text-[11px] text-[#8c90a0]">
-                        {item.timestampDate || '26 Sep 2026'}
-                      </td>
+                        {/* 4. Timestamp */}
+                        <td className="py-3 px-2.5 whitespace-nowrap font-mono text-[11px] text-slate-400">
+                          <div>{item.timestampDate || '26 Sep 2026'}</div>
+                          <div className="text-[10px] text-slate-500">{item.timestampTime || '09:12 IST'}</div>
+                        </td>
 
-                      {/* 9. Action */}
-                      <td 
-                        className="py-3 px-3.5 text-right whitespace-nowrap"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setInspectedEvidence(item);
-                              setDrawerTab('overview');
-                            }}
-                            className="p-1.5 rounded bg-[#161e29] border border-[#212c3d] text-[#8c90a0] hover:text-[#f1f5f9] transition-colors"
-                            title="Inspect Evidence Details"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
+                        {/* 5. Status */}
+                        <td className="py-3 px-2 whitespace-nowrap">
+                          <StatusBadge status={item.status} />
+                        </td>
 
-                          <Button
-                            size="sm"
-                            variant="primary"
-                            iconRight={<ArrowRight className="w-3 h-3" />}
-                            onClick={() => {
-                              setInspectedEvidence(item);
-                              setDrawerTab('overview');
-                            }}
-                            className="text-[10px] font-mono py-1 px-2.5 bg-[#1d4ed8] hover:bg-[#2563eb]"
-                          >
-                            Inspect
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
+                        {/* 6. Related Control */}
+                        <td className="py-3 px-2 whitespace-nowrap font-mono text-[11px]">
+                          <span className="text-emerald-400 font-semibold">
+                            {controlRef}
+                          </span>
+                        </td>
+
+                        {/* 7. Related Finding */}
+                        <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px]">
+                          {item.gapOrFinding || relFinding ? (
+                            <span className="text-amber-400 font-bold hover:underline flex items-center gap-1">
+                              <span>{findingLabel}</span>
+                              <ChevronRight className="w-3 h-3 text-amber-500" />
+                            </span>
+                          ) : (
+                            <span className="text-slate-500 text-[10px]">None</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
-        ) : (
-          /* Empty State (Section 21) */
-          <div className="p-8 text-center space-y-2.5">
-            <CheckCircle2 className="w-8 h-8 text-[#10b981] mx-auto" />
-            <h3 className="text-[14px] font-bold text-[#f1f5f9]">
-              No evidence matches the current filters.
-            </h3>
-            <p className="text-[11px] text-[#8c90a0] max-w-sm mx-auto font-mono">
-              Clear your search query, CSE selection, category, or status filter to view vault evidence.
-            </p>
-            <div className="pt-2 flex items-center justify-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={resetFilters}
-                className="text-[11px] font-mono"
-              >
-                Clear Filters
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => setIsImportModalOpen(true)}
-                className="text-[11px] font-mono bg-[#1d4ed8] hover:bg-[#2563eb]"
-              >
-                + Add Evidence
-              </Button>
-            </div>
-          </div>
-        )}
+        </div>
 
-        {/* Pagination Bar */}
-        {filteredEvidence.length > 0 && (
-          <div className="p-3 bg-[#111722] border-t border-[#212c3d] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-[#8c90a0]">
-            <div>
-              Showing {Math.min((currentPage - 1) * pageSize + 1, filteredEvidence.length)}–
-              {Math.min(currentPage * pageSize, filteredEvidence.length)} of {filteredEvidence.length} artifacts
-            </div>
-            <div className="flex items-center gap-1.5 self-end sm:self-auto">
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={currentPage <= 1}
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                className="text-[10px] py-0.5 px-2"
-              >
-                Previous
-              </Button>
-              <span className="px-2 text-[#cbd5e1]">
-                Page {currentPage} of {totalPages}
-              </span>
-              <Button
-                size="sm"
-                variant="outline"
-                disabled={currentPage >= totalPages}
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                className="text-[10px] py-0.5 px-2"
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
-      </Card>
-
-      {/* ========================================================================= */}
-      {/* 5. EVIDENCE DETAIL DRAWER (Sections 9, 10, 11, 12, 17)                    */}
-      {/* ========================================================================= */}
-      <Drawer
-        isOpen={Boolean(inspectedEvidence)}
-        onClose={() => setInspectedEvidence(null)}
-        title={inspectedEvidence ? `${inspectedEvidence.id} — ${getCategoryLabel(inspectedEvidence.recordType)}` : ''}
-        subtitle="Supervisory Evidence Dossier & Provenance Ledger"
-        width="md"
-      >
-        {inspectedEvidence && (
-          <div className="space-y-4 text-[12px]">
-            {/* Drawer Subtabs */}
-            <div className="flex border-b border-[#212c3d] text-[11px] font-mono">
-              <button
-                type="button"
-                onClick={() => setDrawerTab('overview')}
-                className={`py-2 px-3 border-b-2 font-medium transition-colors ${
-                  drawerTab === 'overview'
-                    ? 'border-[#3b82f6] text-[#60a5fa] font-bold'
-                    : 'border-transparent text-[#8c90a0] hover:text-[#dfe2eb]'
-                }`}
-              >
-                Overview
-              </button>
-              <button
-                type="button"
-                onClick={() => setDrawerTab('timeline')}
-                className={`py-2 px-3 border-b-2 font-medium transition-colors ${
-                  drawerTab === 'timeline'
-                    ? 'border-[#3b82f6] text-[#60a5fa] font-bold'
-                    : 'border-transparent text-[#8c90a0] hover:text-[#dfe2eb]'
-                }`}
-              >
-                Ingestion Timeline
-              </button>
-              <button
-                type="button"
-                onClick={() => setDrawerTab('provenance')}
-                className={`py-2 px-3 border-b-2 font-medium transition-colors ${
-                  drawerTab === 'provenance'
-                    ? 'border-[#3b82f6] text-[#60a5fa] font-bold'
-                    : 'border-transparent text-[#8c90a0] hover:text-[#dfe2eb]'
-                }`}
-              >
-                Provenance &amp; Custody
-              </button>
-            </div>
-
-            {/* TAB 1: OVERVIEW */}
-            {drawerTab === 'overview' && (
-              <div className="space-y-4">
-                {/* Header Badges */}
-                <div className="flex flex-wrap items-center gap-2">
-                  <StatusBadge status={inspectedEvidence.status} />
-                  <span className="px-2 py-0.5 rounded bg-[#182335] text-[#93c5fd] font-mono text-[10px] border border-[#263750] uppercase font-bold">
-                    {getCategoryLabel(inspectedEvidence.recordType)}
-                  </span>
-                  <span className="px-2 py-0.5 rounded bg-[#161e29] text-[#cbd5e1] font-mono text-[10px] border border-[#212c3d]">
-                    CSE: {inspectedEvidence.cseId}
-                  </span>
-                  <span className="px-2 py-0.5 rounded bg-[#161e29] text-[#cbd5e1] font-mono text-[10px] border border-[#212c3d]">
-                    Cycle: Q3 2026
-                  </span>
-                </div>
-
-                {/* Evidence Title & Summary */}
-                <div className="p-3.5 rounded bg-[#0e131b] border border-[#212c3d] space-y-1.5">
-                  <div className="text-[13px] font-bold text-[#f1f5f9]">
-                    {inspectedEvidence.title}
+        {/* RIGHT COLUMN: SELECTED EVIDENCE DETAILS PANEL (4 Cols) */}
+        <div className="lg:col-span-4 flex flex-col gap-4">
+          {activeRecord ? (
+            <div className="rounded-lg border border-[#212c3d] bg-[#111622] p-4 md:p-5 shadow-sm space-y-4 text-xs font-sans">
+              
+              {/* DETAIL HEADER */}
+              <div className="flex items-start justify-between gap-3 pb-3 border-b border-[#212c3d]">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-base font-bold text-[#60a5fa]">{activeRecord.id}</span>
+                    <span className="px-2 py-0.5 rounded bg-[#131922] font-mono text-[10px] uppercase font-bold text-[#cbd5e1] border border-[#212c3d]">
+                      {activeRecord.recordType}
+                    </span>
                   </div>
-                  <p className="text-[11px] text-[#94a3b8] leading-relaxed">
-                    {inspectedEvidence.gapNote || 'Cryptographically sealed regulatory artifact ingested into air-gapped supervisory enclave.'}
-                  </p>
-                </div>
-
-                {/* Evidence Readiness Checklist (Section 9) */}
-                <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] space-y-2">
-                  <div className="text-[10px] font-mono uppercase text-[#64748b]">Evidence Readiness Verification</div>
-                  <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
-                    <div className="flex items-center gap-1.5 text-[#10b981]">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Format: Valid</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[#10b981]">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Schema: OCSF v1.1.0</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[#10b981]">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Mapping: Canonical</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-[#10b981]">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Integrity: FIPS Hash Verified</span>
-                    </div>
+                  <h2 className="text-sm font-bold text-[#f1f5f9] mt-1 leading-snug">
+                    {activeRecord.title}
+                  </h2>
+                  <div className="text-[11px] text-[#94a3b8] mt-0.5 font-mono">
+                    CSE: {activeRecord.cseId} ({activeRecord.entity})
                   </div>
                 </div>
 
-                {/* Expected vs Observed Connection (Section 11) */}
-                {inspectedEvidence.gapOrFinding && (
-                  <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] space-y-2">
-                    <div className="text-[10px] font-mono uppercase text-[#60a5fa] font-bold flex items-center gap-1">
-                      <Workflow className="w-3.5 h-3.5" />
-                      <span>Expected vs Observed Discrepancy</span>
+                <div className="text-right shrink-0">
+                  <StatusBadge status={activeRecord.status} />
+                </div>
+              </div>
+
+              {/* 1. FULL METADATA */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-blue-400 tracking-wider">
+                  <Database className="w-3.5 h-3.5" />
+                  <span>Full Metadata</span>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 space-y-2 font-mono text-[11px]">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Source System:</span>
+                    <span className="text-slate-200">{activeRecord.source}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Ingestion Channel:</span>
+                    <span className="text-slate-200">{activeRecord.sourceSink}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Submission ID:</span>
+                    <span className="text-blue-400 font-bold">{activeRecord.submissionId || 'SUB-014-027'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Case Docket Ref:</span>
+                    <span className="text-slate-200 font-semibold">{activeRecord.caseRef}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Timestamp:</span>
+                    <span className="text-slate-300">{activeRecord.timestamp}</span>
+                  </div>
+                  {activeRecord.gapNote && (
+                    <div className="pt-2 border-t border-slate-800 text-slate-400 text-[11px] font-sans italic">
+                      "{activeRecord.gapNote}"
                     </div>
-                    <div className="space-y-1.5 text-[11px]">
-                      <div>
-                        <span className="text-[#10b981] font-mono font-semibold">Expected: </span>
-                        <span className="text-[#cbd5e1]">Regulatory protocol requires mandatory Tier-2 escalation telemetry before case closure.</span>
-                      </div>
-                      <div>
-                        <span className="text-rose-300 font-mono font-semibold">Observed: </span>
-                        <span className="text-[#cbd5e1]">Direct closure recorded without statutory escalation token.</span>
-                      </div>
-                      <div className="text-[10px] font-mono text-amber-300 pt-0.5">
-                        Difference: Execution Gap (GAP-0071)
-                      </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 2. PROVENANCE & VALIDATION */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-emerald-400 tracking-wider">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Provenance & Validation</span>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 space-y-2 font-mono text-[11px]">
+                  <div className="grid grid-cols-2 gap-2 pb-2 border-b border-slate-800/80">
+                    <div>
+                      <span className="text-[10px] text-slate-500 block">Integrity State:</span>
+                      <span className="text-emerald-400 font-bold">{activeRecord.integrity || 'VERIFIED (SHA-256)'}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-slate-500 block">Schema Conformity:</span>
+                      <span className="text-blue-400 font-bold">{activeRecord.provenance?.schemaVersion || 'OCSF-v1.1.0'}</span>
                     </div>
                   </div>
-                )}
-
-                {/* Related Finding Section (Section 9 & 12) */}
-                {inspectedEvidence.gapOrFinding && (
-                  <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono uppercase text-[#64748b]">Related Supervisory Finding</span>
-                      <PriorityBadge priority="CRITICAL" />
-                    </div>
-                    <div className="flex items-center justify-between text-[11px] font-mono">
-                      <div>
-                        <span className="font-bold text-[#60a5fa]">
-                          {inspectedEvidence.gapOrFinding.split('/')[1]?.trim() || inspectedEvidence.gapOrFinding}
-                        </span>
-                        <span className="text-[#8c90a0] block text-[10px]">Status: UNDER_REVIEW</span>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="primary"
-                        iconRight={<ArrowRight className="w-3 h-3" />}
-                        onClick={() => {
-                          const fid = inspectedEvidence.gapOrFinding;
-                          setInspectedEvidence(null);
-                          handleOpenFinding(fid);
-                        }}
-                        className="text-[10px] font-mono py-1 px-2.5 bg-[#1d4ed8] hover:bg-[#2563eb]"
-                      >
-                        Open Finding
-                      </Button>
-                    </div>
+                  <div className="flex justify-between pt-1">
+                    <span className="text-slate-500">Collector Version:</span>
+                    <span className="text-slate-300">{activeRecord.provenance?.collectorVersion || 'sat-collector-v2.8-fips'}</span>
                   </div>
-                )}
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Enclave Time:</span>
+                    <span className="text-slate-400">{activeRecord.provenance?.enclaveTimestamp || activeRecord.timestamp}</span>
+                  </div>
+                </div>
+              </div>
 
-                {/* Action Buttons */}
-                <div className="pt-2 flex flex-col gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const cid = inspectedEvidence.cseId;
-                      setInspectedEvidence(null);
-                      setActiveCseId(cid);
-                      navigate(`/supervision/cses/${cid}`);
-                    }}
-                    className="w-full justify-center text-[11px] font-mono"
+              {/* 3. CRYPTOGRAPHIC HASH */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-slate-400 tracking-wider">
+                    <Hash className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Cryptographic Digest (SHA-256)</span>
+                  </div>
+                  <button
+                    onClick={() => handleCopyHash(activeRecord.hash)}
+                    className="text-[10px] font-mono text-blue-400 hover:text-blue-300 flex items-center gap-1"
                   >
-                    View CSE Profile ({inspectedEvidence.cseId})
-                  </Button>
+                    {copiedHash ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <span>{copiedHash ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 text-[10px] font-mono text-emerald-400 break-all select-all">
+                  {activeRecord.hash}
                 </div>
               </div>
-            )}
 
-            {/* TAB 2: TIMELINE (Section 10) */}
-            {drawerTab === 'timeline' && (
-              <div className="space-y-3">
-                <div className="text-[11px] font-mono text-[#8c90a0]">
-                  Chronological ingestion & analysis lifecycle for {inspectedEvidence.id}:
+              {/* 4. CHAIN OF CUSTODY */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-amber-400 tracking-wider">
+                  <History className="w-3.5 h-3.5" />
+                  <span>Chain of Custody</span>
                 </div>
-                <Timeline events={getTimelineSteps(inspectedEvidence)} />
-              </div>
-            )}
-
-            {/* TAB 3: PROVENANCE (Section 9 & 17) */}
-            {drawerTab === 'provenance' && (
-              <div className="space-y-3 font-mono text-[11px]">
-                <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-[#64748b]">Source Node:</span>
-                    <span className="text-[#dfe2eb]">{inspectedEvidence.source}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#64748b]">Ingestion Channel:</span>
-                    <span className="text-[#cbd5e1]">{inspectedEvidence.sourceSink}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#64748b]">Submission ID:</span>
-                    <span className="text-[#60a5fa] font-bold">{inspectedEvidence.submissionId || 'SUB-014-027'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#64748b]">Collector Version:</span>
-                    <span className="text-[#cbd5e1]">{inspectedEvidence.provenance?.collectorVersion || 'sat-collector-v2.8-fips'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#64748b]">Schema Version:</span>
-                    <span className="text-[#10b981] font-bold">{inspectedEvidence.provenance?.schemaVersion || 'OCSF-1.1.0'}</span>
-                  </div>
-                </div>
-
-                {/* Cryptographic SHA-256 Digest */}
-                <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] space-y-1.5">
-                  <div className="flex items-center justify-between text-[10px] text-[#64748b] uppercase">
-                    <span>Cryptographic SHA-256 Digest:</span>
-                    <button
-                      onClick={() => handleCopyHash(inspectedEvidence.hash)}
-                      className="text-[#60a5fa] hover:text-[#93c5fd] flex items-center gap-1 font-mono"
-                    >
-                      {copiedHash ? <Check className="w-3 h-3 text-[#10b981]" /> : <Copy className="w-3 h-3" />}
-                      <span>{copiedHash ? 'Copied' : 'Copy'}</span>
-                    </button>
-                  </div>
-                  <div className="p-2 rounded bg-[#080c12] border border-[#212c3d] text-[#10b981] break-all select-all font-mono text-[10px]">
-                    {inspectedEvidence.hash}
-                  </div>
-                </div>
-
-                {/* Chain of Custody */}
-                <div className="p-3 rounded bg-[#0e131b] border border-[#212c3d] space-y-2">
-                  <div className="text-[10px] text-[#64748b] uppercase">Immutable Chain of Custody:</div>
-                  <div className="space-y-1">
-                    {(inspectedEvidence.provenance?.custodyChain || [
-                      `${inspectedEvidence.cseId} Submitting Liaison`,
-                      'Air-Gap SFTP Ingestion Drop',
-                      'NCIIPC Collector Gateway',
-                      'Supervisory Enclave Vault'
-                    ]).map((node, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-[10px]">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
-                        <span className="text-[#cbd5e1]">{node}</span>
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 space-y-2">
+                  {(activeRecord.provenance?.custodyChain || [
+                    `${activeRecord.cseId} Submitting Liaison`,
+                    'Air-Gap SFTP Ingestion Drop',
+                    'NCIIPC Collector Gateway',
+                    'Supervisory Enclave Vault'
+                  ]).map((node, idx) => (
+                    <div key={idx} className="flex items-start gap-2 text-[11px] font-mono">
+                      <div className="w-2 h-2 rounded-full bg-emerald-400 mt-1 shrink-0" />
+                      <div className="text-slate-300">
+                        <span className="text-slate-500 mr-1.5">Step {idx + 1}:</span>
+                        <span>{node}</span>
                       </div>
-                    ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* 5. CORRELATIONS & CROSS-NAVIGATION: SIGNALS, FINDINGS, CONTROLS, CASE */}
+              <div className="space-y-2 pt-2 border-t border-slate-800">
+                <div className="text-xs font-mono uppercase font-bold text-blue-400 tracking-wider">
+                  Correlated Entities & Cross-Navigation
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono">
+                  {/* Evidence → Finding */}
+                  <div className="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                    <span className="text-[10px] text-slate-500 uppercase">Related Finding:</span>
+                    <div className="mt-1 font-bold text-amber-300">
+                      {activeRelatedFinding ? activeRelatedFinding.id : activeRecord.gapOrFinding || 'None'}
+                    </div>
+                    {activeRelatedFinding ? (
+                      <Link
+                        to={`/findings?evidenceId=${activeRecord.id}`}
+                        onClick={() => setActiveFindingId(activeRelatedFinding.id)}
+                        className="mt-2 text-[10px] text-blue-400 hover:underline flex items-center gap-1"
+                      >
+                        <span>Inspect Finding</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </Link>
+                    ) : (
+                      <span className="mt-2 text-[10px] text-slate-600">No active finding link</span>
+                    )}
+                  </div>
+
+                  {/* Evidence → Control */}
+                  <div className="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                    <span className="text-[10px] text-slate-500 uppercase">Related Control:</span>
+                    <div className="mt-1 font-bold text-emerald-400">
+                      {activeRelatedFinding?.controlId || 'CTRL-07'}
+                    </div>
+                    <Link
+                      to={`/governance/controls`}
+                      className="mt-2 text-[10px] text-blue-400 hover:underline flex items-center gap-1"
+                    >
+                      <span>Control Definition</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+
+                  {/* Evidence → Signal */}
+                  <div className="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                    <span className="text-[10px] text-slate-500 uppercase">Related Signal:</span>
+                    <div className="mt-1 font-bold text-purple-300 truncate" title={activeRelatedFinding?.signalType}>
+                      {activeRelatedFinding?.signalType ? activeRelatedFinding.signalType.replace(/_/g, ' ') : 'EXECUTION_GAP'}
+                    </div>
+                    <Link
+                      to={`/analysis/execution-gap`}
+                      className="mt-2 text-[10px] text-purple-400 hover:underline flex items-center gap-1"
+                    >
+                      <span>Signal Analysis</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+
+                  {/* Evidence → Case */}
+                  <div className="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+                    <span className="text-[10px] text-slate-500 uppercase">Related Case:</span>
+                    <div className="mt-1 font-bold text-slate-200">
+                      {extractCaseId(activeRecord.caseRef) || 'CASE-1042'}
+                    </div>
+                    <Link
+                      to={`/supervision/cses/${activeRecord.cseId}`}
+                      onClick={() => setActiveCseId(activeRecord.cseId)}
+                      className="mt-2 text-[10px] text-blue-400 hover:underline flex items-center gap-1"
+                    >
+                      <span>CSE Case Dossier</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
                   </div>
                 </div>
               </div>
-            )}
-          </div>
-        )}
-      </Drawer>
 
-      {/* ========================================================================= */}
-      {/* 6. IMPORT EVIDENCE MODAL (Section 14 & 15)                                 */}
-      {/* ========================================================================= */}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-8 text-center text-slate-500 font-mono text-xs">
+              Select an evidence item from the results list to view details.
+            </div>
+          )}
+        </div>
+
+      </div>
+
+      {/* IMPORT EVIDENCE MODAL */}
       <ImportEvidenceModal
         isOpen={isImportModalOpen}
         onClose={() => setIsImportModalOpen(false)}
-        preselectedCseId={selectedCse !== 'ALL' ? selectedCse : 'CSE-014'}
+        preselectedCseId={filterCse !== 'ALL' ? filterCse : 'CSE-014'}
       />
+
     </PageContainer>
   );
 };

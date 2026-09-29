@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams, useParams, Link } from 'react-router-dom';
 import { useSupervisory } from '@/context/SupervisoryContext';
-import { RemediationMandate, VerificationRecord, RemediationRegression } from '@/data/mock/remediation';
+import { RemediationMandate, VerificationRecord } from '@/data/mock/remediation';
 import { Priority, RemediationStatus } from '@/types';
 import {
   Search,
@@ -13,42 +13,25 @@ import {
   Lock,
   ShieldCheck,
   FileText,
-  RefreshCw,
+  RotateCcw,
   ExternalLink,
   ChevronRight,
   Filter,
-  ArrowUpRight,
   Eye,
   Gavel,
   History,
   FileCheck,
-  Fingerprint,
   Building,
-  RotateCcw,
-  SlidersHorizontal,
-  XCircle,
+  User,
+  Check,
+  X,
+  Layers,
+  Activity,
+  ArrowRight,
   Copy,
-  Check
+  FolderGit2
 } from 'lucide-react';
-import {
-  PageContainer,
-  PageHeader,
-  KpiCard,
-  Input,
-  Select,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  StatusBadge,
-  PriorityBadge,
-  Tabs,
-  Modal,
-  Button,
-  Drawer,
-  Timeline,
-  ExpectedObservedCard
-} from '@/components/common';
+import { StatusBadge, PriorityBadge, Button, Modal, PageContainer } from '@/components/common';
 
 interface RemediationPageProps {
   defaultStage?: 'open' | 'verification' | 'regression';
@@ -64,1672 +47,1090 @@ export const RemediationPage: React.FC<RemediationPageProps> = ({ defaultStage }
     findings,
     remediations,
     verifications,
-    regressions,
     submitRemediationArtifact,
     verifyGate,
     sealVerification,
     reopenVerification
   } = useSupervisory();
 
-  // Active Lifecycle Stage (Tab) synced with URL query ?stage=
-  const stageFromUrl = searchParams.get('stage') as 'open' | 'verification' | 'regression' | null;
-  const initialStage = defaultStage || stageFromUrl || 'open';
-  const [activeTab, setActiveTab] = useState<string>(initialStage);
+  // Search & Filter State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCse, setFilterCse] = useState('ALL');
+  const [filterStatus, setFilterStatus] = useState('ALL');
+  const [filterPriority, setFilterPriority] = useState('ALL');
 
-  useEffect(() => {
-    if (stageFromUrl && ['open', 'verification', 'regression'].includes(stageFromUrl)) {
-      setActiveTab(stageFromUrl);
-    } else if (defaultStage) {
-      setActiveTab(defaultStage);
-    }
-  }, [stageFromUrl, defaultStage]);
-
-  const handleTabChange = (tabId: string) => {
-    setActiveTab(tabId);
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev);
-      next.set('stage', tabId);
-      return next;
-    });
-  };
-
-  // ---------------------------------------------------------------------------
-  // FILTER STATES (Per Tab)
-  // ---------------------------------------------------------------------------
-  // Tab 1 Filters
-  const [openSearch, setOpenSearch] = useState('');
-  const [openCseFilter, setOpenCseFilter] = useState('ALL');
-  const [openPriorityFilter, setOpenPriorityFilter] = useState('ALL');
-  const [openStatusFilter, setOpenStatusFilter] = useState('ALL');
-
-  // Tab 2 Filters
-  const [verifSearch, setVerifSearch] = useState('');
-  const [verifCseFilter, setVerifCseFilter] = useState('ALL');
-  const [verifVerdictFilter, setVerifVerdictFilter] = useState('ALL');
-
-  // Tab 3 Filters
-  const [regSearch, setRegSearch] = useState('');
-  const [regCseFilter, setRegCseFilter] = useState('ALL');
-  const [regStatusFilter, setRegStatusFilter] = useState('ALL');
-
-  // ---------------------------------------------------------------------------
-  // DETAIL DRAWERS
-  // ---------------------------------------------------------------------------
-  const [selectedRemediation, setSelectedRemediation] = useState<RemediationMandate | null>(null);
-  const [selectedVerification, setSelectedVerification] = useState<VerificationRecord | null>(null);
-  const [selectedRegression, setSelectedRegression] = useState<RemediationRegression | null>(null);
-
-  // If URL has /remediation/:remediationId, open drawer automatically
-  useEffect(() => {
-    if (urlRemediationId) {
-      const found = remediations.find(r => r.id.toLowerCase() === urlRemediationId.toLowerCase());
-      if (found) {
-        setSelectedRemediation(found);
-      }
-    }
-  }, [urlRemediationId, remediations]);
-
-  // Keep selected records updated when context updates
-  useEffect(() => {
-    if (selectedRemediation) {
-      const fresh = remediations.find(r => r.id === selectedRemediation.id);
-      if (fresh) setSelectedRemediation(fresh);
-    }
-  }, [remediations]);
-
-  useEffect(() => {
-    if (selectedVerification) {
-      const fresh = verifications.find(v => v.id === selectedVerification.id);
-      if (fresh) setSelectedVerification(fresh);
-    }
-  }, [verifications]);
-
-  useEffect(() => {
-    if (selectedRegression) {
-      const fresh = regressions.find(r => r.id === selectedRegression.id);
-      if (fresh) setSelectedRegression(fresh);
-    }
-  }, [regressions]);
-
-  // ---------------------------------------------------------------------------
-  // MODALS
-  // ---------------------------------------------------------------------------
-  const [uploadModalMandate, setUploadModalMandate] = useState<RemediationMandate | null>(null);
-  const [mockArtifactHash, setMockArtifactHash] = useState('c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2');
-  const [isAddRemediationOpen, setIsAddRemediationOpen] = useState(false);
-  const [newMandateForm, setNewMandateForm] = useState({
-    findingId: 'FND-0142',
-    cseId: 'CSE-014',
-    title: '',
-    actionSummary: '',
-    owner: 'CSE Evidence Team',
-    priority: 'HIGH' as Priority,
-    dueDate: '2026-10-15'
+  // Selected Remediation Record for Right-side Detail View
+  const [selectedRemediationId, setSelectedRemediationId] = useState<string>(() => {
+    return urlRemediationId || remediations[0]?.id || 'REM-0038';
   });
 
-  // Reopen prompt state for Examiner
-  const [reopenPromptVerif, setReopenPromptVerif] = useState<VerificationRecord | null>(null);
-  const [reopenReasonText, setReopenReasonText] = useState('Deficient proof submitted. Telemetry packet incomplete and failed mandatory process check.');
+  // Modals & Action States
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isSubmitEvidenceOpen, setIsSubmitEvidenceOpen] = useState(false);
+  const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false);
+  const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
+  const [isReopenModalOpen, setIsReopenModalOpen] = useState(false);
+  const [isAddMandateOpen, setIsAddMandateOpen] = useState(false);
 
-  // Copy hash indicator
-  const [copiedHash, setCopiedHash] = useState<string | null>(null);
-  const copyToClipboard = (hash: string) => {
-    navigator.clipboard.writeText(hash);
-    setCopiedHash(hash);
-    setTimeout(() => setCopiedHash(null), 2500);
+  // Form Inputs
+  const [formOwner, setFormOwner] = useState('');
+  const [formActionSummary, setFormActionSummary] = useState('');
+  const [formDueDate, setFormDueDate] = useState('');
+  const [formArtifactId, setFormArtifactId] = useState('ESC-221');
+  const [formArtifactHash, setFormArtifactHash] = useState('e81a3c77b919a99477e6f8812dd014a9ecba19001258d4a982141a0e1b239401');
+  const [formExaminerNotes, setFormExaminerNotes] = useState('');
+  const [reopenReason, setReopenReason] = useState('Verification gates deficient. Missing statutory Tier-2 escalation records.');
+
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  const showNotification = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3500);
   };
 
-  // ---------------------------------------------------------------------------
-  // FILTERED DATASETS
-  // ---------------------------------------------------------------------------
-  // Tab 1: Open Remediations
-  const filteredRemediations = useMemo(() => {
-    return remediations.filter(m => {
-      if (openSearch) {
-        const q = openSearch.toLowerCase();
-        const match =
-          m.id.toLowerCase().includes(q) ||
-          m.findingId.toLowerCase().includes(q) ||
-          m.cseName.toLowerCase().includes(q) ||
-          m.cseId.toLowerCase().includes(q) ||
-          m.controlRef.toLowerCase().includes(q) ||
-          m.mandateTitle.toLowerCase().includes(q);
-        if (!match) return false;
+  // Sync incoming URL param
+  useEffect(() => {
+    if (urlRemediationId) {
+      setSelectedRemediationId(urlRemediationId);
+    }
+  }, [urlRemediationId]);
+
+  // Actual Summary Metrics
+  const summaryCounts = useMemo(() => {
+    let openRemediation = 0;
+    let pendingVerification = 0;
+    let overdue = 0;
+    let closed = 0;
+    let reopened = 0;
+
+    remediations.forEach(r => {
+      if (r.status === 'CLOSED') {
+        closed += 1;
+      } else if (r.status === 'REOPENED') {
+        reopened += 1;
+      } else if (r.status === 'UNDER_VERIFICATION') {
+        pendingVerification += 1;
+      } else {
+        openRemediation += 1;
       }
-      if (openCseFilter !== 'ALL' && m.cseId !== openCseFilter) return false;
-      if (openPriorityFilter !== 'ALL' && m.priority !== openPriorityFilter) return false;
-      if (openStatusFilter !== 'ALL' && m.status !== openStatusFilter) return false;
-      return true;
-    });
-  }, [remediations, openSearch, openCseFilter, openPriorityFilter, openStatusFilter]);
 
-  // Tab 2: Verification Records
-  const filteredVerifications = useMemo(() => {
-    return verifications.filter(v => {
-      if (verifSearch) {
-        const q = verifSearch.toLowerCase();
-        const match =
-          v.id.toLowerCase().includes(q) ||
-          v.mandateId.toLowerCase().includes(q) ||
-          v.findingId.toLowerCase().includes(q) ||
-          v.cseName.toLowerCase().includes(q) ||
-          v.cseId.toLowerCase().includes(q) ||
-          v.controlId.toLowerCase().includes(q) ||
-          v.remedialSummary.toLowerCase().includes(q);
-        if (!match) return false;
+      if (r.daysRemaining <= 0 && r.status !== 'CLOSED') {
+        overdue += 1;
       }
-      if (verifCseFilter !== 'ALL' && v.cseId !== verifCseFilter) return false;
-      if (verifVerdictFilter !== 'ALL' && v.verificationVerdict !== verifVerdictFilter) return false;
-      return true;
     });
-  }, [verifications, verifSearch, verifCseFilter, verifVerdictFilter]);
 
-  // Tab 3: Regressions
-  const filteredRegressions = useMemo(() => {
-    return regressions.filter(r => {
-      if (regSearch) {
-        const q = regSearch.toLowerCase();
-        const match =
-          r.id.toLowerCase().includes(q) ||
-          r.findingId.toLowerCase().includes(q) ||
-          r.remediationId.toLowerCase().includes(q) ||
-          r.cseName.toLowerCase().includes(q) ||
-          r.cseId.toLowerCase().includes(q) ||
-          r.reason.toLowerCase().includes(q) ||
-          r.controlId.toLowerCase().includes(q);
-        if (!match) return false;
-      }
-      if (regCseFilter !== 'ALL' && r.cseId !== regCseFilter) return false;
-      if (regStatusFilter !== 'ALL' && r.status !== regStatusFilter) return false;
-      return true;
-    });
-  }, [regressions, regSearch, regCseFilter, regStatusFilter]);
-
-  // ---------------------------------------------------------------------------
-  // KPI DERIVATIONS (Max 4 cards per tab, derived dynamically)
-  // ---------------------------------------------------------------------------
-  // Tab 1 KPIs
-  const tab1Kpis = useMemo(() => {
-    const totalOpen = remediations.filter(r => r.status !== 'CLOSED').length;
-    const highCrit = remediations.filter(r => (r.priority === 'CRITICAL' || r.priority === 'HIGH') && r.status !== 'CLOSED').length;
-    const dueSoon = remediations.filter(r => r.daysRemaining > 0 && r.daysRemaining <= 14 && r.status !== 'CLOSED').length;
-    const overdueOrReopened = remediations.filter(r => (r.daysRemaining === 0 || r.status === 'REOPENED') && r.status !== 'CLOSED').length;
-
-    return { totalOpen, highCrit, dueSoon, overdueOrReopened };
+    return {
+      openRemediation,
+      pendingVerification,
+      overdue,
+      closed,
+      reopened
+    };
   }, [remediations]);
 
-  // Tab 2 KPIs
-  const tab2Kpis = useMemo(() => {
-    const awaiting = verifications.length;
-    const gatesPending = verifications.filter(v => v.gateChecklist.some(g => g.required && !g.verified)).length;
-    const verifiedSealed = verifications.filter(v => v.verificationVerdict === 'VERIFIED_SEALED').length;
-    const failedReopened = verifications.filter(v => v.verificationVerdict === 'DEFICIENT_REOPENED').length;
+  // Filtered Remediations
+  const filteredRemediations = useMemo(() => {
+    return remediations.filter(r => {
+      if (filterCse !== 'ALL' && r.cseId !== filterCse) return false;
+      if (filterPriority !== 'ALL' && r.priority !== filterPriority) return false;
 
-    return { awaiting, gatesPending, verifiedSealed, failedReopened };
-  }, [verifications]);
+      if (filterStatus !== 'ALL') {
+        if (filterStatus === 'OVERDUE') {
+          if (r.daysRemaining > 0 || r.status === 'CLOSED') return false;
+        } else if (r.status !== filterStatus) {
+          return false;
+        }
+      }
 
-  // Tab 3 KPIs
-  const tab3Kpis = useMemo(() => {
-    const totalReg = regressions.length;
-    const activeLoops = regressions.filter(r => r.status === 'ACTIVE_REGRESSION').length;
-    const failedVerifs = regressions.filter(r => r.reason.toLowerCase().includes('verification failed')).length;
-    const recurrentPatterns = regressions.filter(r => r.signalType === 'HISTORICAL_RECURRENCE').length;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matches =
+          r.id.toLowerCase().includes(q) ||
+          r.findingId.toLowerCase().includes(q) ||
+          r.mandateTitle.toLowerCase().includes(q) ||
+          r.actionSummary.toLowerCase().includes(q) ||
+          r.owner.toLowerCase().includes(q) ||
+          r.cseName.toLowerCase().includes(q) ||
+          r.cseId.toLowerCase().includes(q) ||
+          r.controlRef.toLowerCase().includes(q);
+        if (!matches) return false;
+      }
 
-    return { totalReg, activeLoops, failedVerifs, recurrentPatterns };
-  }, [regressions]);
+      return true;
+    });
+  }, [remediations, filterCse, filterPriority, filterStatus, searchQuery]);
 
-  // Handle Simulate Ingestion
-  const handleUploadSubmit = () => {
-    if (!uploadModalMandate) return;
-    submitRemediationArtifact(uploadModalMandate.id, 'ESC-221', mockArtifactHash);
-    setUploadModalMandate(null);
-  };
+  // Active Remediation Record for Detail View
+  const activeRemediation = useMemo(() => {
+    return remediations.find(r => r.id.toLowerCase() === selectedRemediationId.toLowerCase()) || filteredRemediations[0] || remediations[0];
+  }, [remediations, selectedRemediationId, filteredRemediations]);
 
-  // Handle Examiner Seal
-  const handleSealVerification = (vId: string) => {
-    sealVerification(vId);
-  };
+  // Linked Verification Record for Active Remediation
+  const activeVerification = useMemo(() => {
+    if (!activeRemediation) return undefined;
+    return verifications.find(v => v.mandateId?.toLowerCase() === activeRemediation.id.toLowerCase() || v.findingId?.toLowerCase() === activeRemediation.findingId.toLowerCase());
+  }, [verifications, activeRemediation]);
 
-  // Handle Examiner Reopen
-  const handleReopenSubmit = () => {
-    if (!reopenPromptVerif) return;
-    reopenVerification(reopenPromptVerif.id, reopenReasonText);
-    setReopenPromptVerif(null);
-  };
+  // Linked Finding Record
+  const activeFinding = useMemo(() => {
+    if (!activeRemediation) return undefined;
+    return findings.find(f => f.id.toLowerCase() === activeRemediation.findingId.toLowerCase());
+  }, [findings, activeRemediation]);
 
-  // Lifecycle Tabs (Section 7)
-  const tabs = [
-    {
-      id: 'open',
-      label: '1. Open Remediation',
-      count: remediations.filter(r => r.status !== 'CLOSED').length,
-      icon: <span className="material-symbols-outlined text-[15px]">published_with_changes</span>
-    },
-    {
-      id: 'verification',
-      label: '2. Verification Gates',
-      count: verifications.length,
-      icon: <span className="material-symbols-outlined text-[15px]">verified</span>
-    },
-    {
-      id: 'regression',
-      label: '3. Reopened / Regression',
-      count: regressions.length,
-      icon: <span className="material-symbols-outlined text-[15px]">history</span>
+  // Populate edit fields when activeRemediation changes
+  useEffect(() => {
+    if (activeRemediation) {
+      setFormOwner(activeRemediation.owner);
+      setFormActionSummary(activeRemediation.actionSummary);
+      setFormDueDate(activeRemediation.dueDate);
     }
-  ];
+  }, [activeRemediation]);
+
+  // Reset Filters
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setFilterCse('ALL');
+    setFilterStatus('ALL');
+    setFilterPriority('ALL');
+  };
+
+  // ACTION 1: ASSIGN OWNER
+  const handleAssignOwner = () => {
+    if (!activeRemediation || !formOwner.trim()) return;
+    activeRemediation.owner = formOwner;
+    showNotification(`Assigned owner updated to "${formOwner}" for ${activeRemediation.id}`);
+    setIsAssignModalOpen(false);
+  };
+
+  // ACTION 2: UPDATE REMEDIATION
+  const handleUpdateRemediation = () => {
+    if (!activeRemediation) return;
+    activeRemediation.actionSummary = formActionSummary;
+    activeRemediation.dueDate = formDueDate;
+    if (formOwner) activeRemediation.owner = formOwner;
+    showNotification(`Remediation details successfully updated for ${activeRemediation.id}`);
+    setIsUpdateModalOpen(false);
+  };
+
+  // ACTION 3: SUBMIT EVIDENCE
+  const handleSubmitEvidence = async () => {
+    if (!activeRemediation) return;
+    await submitRemediationArtifact(activeRemediation.id, formArtifactId, formArtifactHash);
+    showNotification(`Corrective telemetry artifact ${formArtifactId} submitted for ${activeRemediation.id}. State set to UNDER VERIFICATION.`);
+    setIsSubmitEvidenceOpen(false);
+  };
+
+  // ACTION 4: VERIFY GATES & CLOSE
+  const handleVerifyGateToggle = async (gateId: string, currentVal: boolean) => {
+    if (!activeVerification) return;
+    await verifyGate(activeVerification.id, gateId, !currentVal);
+    showNotification(`Verification gate ${gateId} updated to ${!currentVal ? 'PASSED' : 'PENDING'}.`);
+  };
+
+  // ACTION 5: CLOSE / SEAL
+  const handleCloseAndSeal = async () => {
+    if (!activeVerification) return;
+    await sealVerification(activeVerification.id);
+    if (activeRemediation) {
+      activeRemediation.status = 'CLOSED';
+    }
+    showNotification(`Remediation ${activeRemediation?.id} formally verified and SEALED as CLOSED.`);
+    setIsCloseModalOpen(false);
+  };
+
+  // ACTION 6: REOPEN
+  const handleReopen = async () => {
+    if (!activeVerification) return;
+    await reopenVerification(activeVerification.id, reopenReason);
+    if (activeRemediation) {
+      activeRemediation.status = 'REOPENED';
+    }
+    showNotification(`Remediation ${activeRemediation?.id} marked DEFICIENT and REOPENED.`);
+    setIsReopenModalOpen(false);
+  };
 
   return (
     <PageContainer>
-      {/* ========================================================================= */}
-      {/* 1. PAGE HEADER (Section 6)                                                */}
-      {/* ========================================================================= */}
-      <PageHeader
-        title="Remediation"
-        description="Track corrective actions, verification, and reopened findings."
-        badge={
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-mono text-[#38bdf8] bg-[#38bdf8]/10 px-2 py-0.5 rounded border border-[#38bdf8]/20 flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#38bdf8]" />
-              Supervisory Life Cycle
-            </span>
-          </div>
-        }
-        actions={
-          <div className="flex items-center gap-2.5">
-            <Button
-              variant="primary"
-              size="sm"
-              icon={<Plus className="w-3.5 h-3.5" />}
-              onClick={() => setIsAddRemediationOpen(true)}
-            >
-              Add Remediation
-            </Button>
-          </div>
-        }
-      />
+      {/* 1. STANDARDIZED SAT-SA PAGE HEADER */}
+      <div className="bg-[#111622] border border-[#212c3d] rounded-lg p-4 md:p-5 shadow-sm mb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1.5 min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-[18px] md:text-[20px] font-semibold text-[#f1f5f9] tracking-tight">
+                Remediation Lifecycle
+              </h1>
+              <span className="text-[#475569]">•</span>
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-[#1f6feb]/20 text-[#60a5fa] border border-[#1f6feb]/30">
+                {remediations.length} Active Mandates
+              </span>
+              <span className="font-mono text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
+                Lifecycle Verification
+              </span>
+            </div>
 
-      {/* ========================================================================= */}
-      {/* 2. LIFECYCLE TABS (Section 7: STAGE 1 → STAGE 2 → STAGE 3)                */}
-      {/* ========================================================================= */}
-      <div className="border-b border-[#212c3d] pb-1">
-        <Tabs
-          tabs={tabs}
-          activeTab={activeTab}
-          onChange={handleTabChange}
-        />
+            <p className="text-[12px] text-[#94a3b8]">
+              Corrective action tracking and verification gates. Primary question: <strong className="text-[#cbd5e1]">&ldquo;What is being done about confirmed findings, and has remediation been verified?&rdquo;</strong>
+            </p>
+
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-[#64748b] font-mono pt-0.5">
+              <span>Standard: <strong className="text-[#cbd5e1]">NCIIPC Mandatory Corrective Directives</strong></span>
+              <span>•</span>
+              <span>Scope: <strong className="text-[#60a5fa]">{cses.length} Critical Entities</strong></span>
+              <span>•</span>
+              <span>Audit Status: <strong className="text-emerald-400">Cryptographic Verification Active</strong></span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-[#212c3d]">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleResetFilters}
+              icon={<RotateCcw className="w-3.5 h-3.5" />}
+            >
+              Reset Filters
+            </Button>
+            <Link to="/findings">
+              <Button
+                variant="secondary"
+                size="sm"
+                iconRight={<ExternalLink className="w-3.5 h-3.5" />}
+              >
+                Findings Workspace
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* TAB 1: OPEN REMEDIATION (Section 8)                                       */}
-      {/* ========================================================================= */}
-      {activeTab === 'open' && (
-        <div className="space-y-4 min-w-0">
-          {/* Summary Cards (Max 4 KPI Cards) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard
-              title="Open Remediations"
-              value={tab1Kpis.totalOpen}
-              subtitle="Active statutory mandates"
-              semantic="blue"
-              icon={Clock}
-            />
-            <KpiCard
-              title="High Priority"
-              value={tab1Kpis.highCrit}
-              subtitle="Critical / High severity"
-              semantic="red"
-              icon={AlertTriangle}
-            />
-            <KpiCard
-              title="Due Soon"
-              value={tab1Kpis.dueSoon}
-              subtitle="SLA window < 14 days"
-              semantic="amber"
-              icon={Clock}
-            />
-            <KpiCard
-              title="Overdue / Reopened"
-              value={tab1Kpis.overdueOrReopened}
-              subtitle="Failed gates or SLA elapsed"
-              semantic="purple"
-              icon={RotateCcw}
-            />
+      {/* 2. ACTUAL SUMMARY STRIP */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
+        {/* Open remediation */}
+        <div
+          onClick={() => setFilterStatus(filterStatus === 'OPEN' ? 'ALL' : 'OPEN')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterStatus === 'OPEN'
+              ? 'bg-[#1d4ed8]/20 border-[#3b82f6]'
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">Open Remediation</span>
+            <Clock className="w-3.5 h-3.5 text-[#60a5fa]" />
+          </div>
+          <div className="text-xl font-bold font-mono text-[#60a5fa]">{summaryCounts.openRemediation}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">Active remedial action</div>
+        </div>
+
+        {/* Pending verification */}
+        <div
+          onClick={() => setFilterStatus(filterStatus === 'UNDER_VERIFICATION' ? 'ALL' : 'UNDER_VERIFICATION')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterStatus === 'UNDER_VERIFICATION'
+              ? 'bg-purple-500/15 border-purple-500/40 text-purple-300'
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">Pending Verification</span>
+            <Activity className="w-3.5 h-3.5 text-purple-400" />
+          </div>
+          <div className="text-xl font-bold font-mono text-purple-400">{summaryCounts.pendingVerification}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">Evidence submitted</div>
+        </div>
+
+        {/* Overdue */}
+        <div
+          onClick={() => setFilterStatus(filterStatus === 'OVERDUE' ? 'ALL' : 'OVERDUE')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterStatus === 'OVERDUE'
+              ? 'bg-rose-500/15 border-rose-500/40 text-rose-300'
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">Overdue</span>
+            <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+          </div>
+          <div className="text-xl font-bold font-mono text-rose-400">{summaryCounts.overdue}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">SLA deadline passed</div>
+        </div>
+
+        {/* Closed */}
+        <div
+          onClick={() => setFilterStatus(filterStatus === 'CLOSED' ? 'ALL' : 'CLOSED')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterStatus === 'CLOSED'
+              ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300'
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">Closed</span>
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+          </div>
+          <div className="text-xl font-bold font-mono text-emerald-400">{summaryCounts.closed}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">Verified & sealed</div>
+        </div>
+
+        {/* Reopened */}
+        <div
+          onClick={() => setFilterStatus(filterStatus === 'REOPENED' ? 'ALL' : 'REOPENED')}
+          className={`p-3 rounded-lg border cursor-pointer transition-all ${
+            filterStatus === 'REOPENED'
+              ? 'bg-amber-500/15 border-amber-500/40 text-amber-300'
+              : 'bg-[#111622] border-[#212c3d] hover:border-[#3b414d]'
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs text-[#94a3b8] mb-1">
+            <span className="font-mono uppercase font-semibold text-[10px]">Reopened</span>
+            <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
+          </div>
+          <div className="text-xl font-bold font-mono text-amber-400">{summaryCounts.reopened}</div>
+          <div className="text-[11px] text-[#64748b] mt-0.5">Deficient or regression</div>
+        </div>
+      </div>
+
+      {/* 3. LIFECYCLE PROGRESSION BANNER */}
+      <div className="p-4 rounded-xl bg-slate-900/70 border border-slate-800 mb-6">
+        <div className="text-xs font-mono uppercase font-bold text-slate-400 mb-2.5 flex items-center gap-2">
+          <Layers className="w-4 h-4 text-blue-400" />
+          <span>Statutory Supervisory Remediation Lifecycle</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-2 text-center text-xs font-mono">
+          <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex flex-col items-center justify-center">
+            <span className="text-[10px] text-slate-500 uppercase">Stage 1</span>
+            <span className="text-blue-400 font-bold mt-0.5">Finding</span>
+            <span className="text-[10px] text-slate-400 mt-0.5">Adjudicated Lead Record</span>
           </div>
 
-          {/* Filter Bar */}
-          <div className="p-3 rounded-lg bg-[#111622] border border-[#212c3d] flex flex-wrap items-center justify-between gap-3 text-[12px]">
-            <div className="flex items-center gap-2 flex-1 min-w-[240px] max-w-md">
-              <Input
-                icon={<Search className="w-4 h-4 text-[#64748b]" />}
-                value={openSearch}
-                onChange={(e) => setOpenSearch(e.target.value)}
-                placeholder="Search finding ID, mandate, entity, control..."
-                sizeVariant="sm"
-              />
-            </div>
-
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <Select
-                sizeVariant="sm"
-                value={openCseFilter}
-                onChange={(e) => setOpenCseFilter(e.target.value)}
-                options={[
-                  { value: 'ALL', label: 'All CSEs' },
-                  ...cses.map(c => ({ value: c.cseId, label: `${c.cseId} - ${c.cseName}` }))
-                ]}
-              />
-
-              <Select
-                sizeVariant="sm"
-                value={openPriorityFilter}
-                onChange={(e) => setOpenPriorityFilter(e.target.value)}
-                options={[
-                  { value: 'ALL', label: 'All Priorities' },
-                  { value: 'CRITICAL', label: 'Critical' },
-                  { value: 'HIGH', label: 'High' },
-                  { value: 'MEDIUM', label: 'Medium' },
-                  { value: 'LOW', label: 'Low' }
-                ]}
-              />
-
-              <Select
-                sizeVariant="sm"
-                value={openStatusFilter}
-                onChange={(e) => setOpenStatusFilter(e.target.value)}
-                options={[
-                  { value: 'ALL', label: 'All Statuses' },
-                  { value: 'OPEN', label: 'Open' },
-                  { value: 'IN_PROGRESS', label: 'In Progress' },
-                  { value: 'SUBMITTED', label: 'Submitted' },
-                  { value: 'UNDER_VERIFICATION', label: 'Under Verification' },
-                  { value: 'CLOSED', label: 'Closed' },
-                  { value: 'REOPENED', label: 'Reopened' }
-                ]}
-              />
-
-              {(openSearch || openCseFilter !== 'ALL' || openPriorityFilter !== 'ALL' || openStatusFilter !== 'ALL') && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setOpenSearch('');
-                    setOpenCseFilter('ALL');
-                    setOpenPriorityFilter('ALL');
-                    setOpenStatusFilter('ALL');
-                  }}
-                  className="text-[#94a3b8] hover:text-[#e2e8f0]"
-                >
-                  Reset
-                </Button>
-              )}
-            </div>
+          <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex flex-col items-center justify-center">
+            <span className="text-[10px] text-slate-500 uppercase">Stage 2</span>
+            <span className="text-amber-400 font-bold mt-0.5">Action Required</span>
+            <span className="text-[10px] text-slate-400 mt-0.5">Formal Mandate Assigned</span>
           </div>
 
-          {/* Main Remediation Table */}
-          <div className="rounded-lg bg-[#111622] border border-[#212c3d] overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-[12px]">
-                <thead>
-                  <tr className="border-b border-[#212c3d] bg-[#161e29]/70 text-[#94a3b8] font-mono text-[11px] uppercase tracking-wider">
-                    <th className="py-2.5 px-3 font-semibold">Finding</th>
-                    <th className="py-2.5 px-3 font-semibold">CSE</th>
-                    <th className="py-2.5 px-3 font-semibold">Issue</th>
-                    <th className="py-2.5 px-3 font-semibold">Priority</th>
-                    <th className="py-2.5 px-3 font-semibold">Owner</th>
-                    <th className="py-2.5 px-3 font-semibold">Due Date</th>
-                    <th className="py-2.5 px-3 font-semibold">Status</th>
-                    <th className="py-2.5 px-3 font-semibold text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#212c3d]/60 font-sans">
-                  {filteredRemediations.length === 0 ? (
-                    <tr>
-                      <td colSpan={8} className="py-12 text-center text-[#64748b]">
-                        <Clock className="w-8 h-8 mx-auto mb-2 text-[#475569] opacity-60" />
-                        <p className="text-[13px] font-medium text-[#94a3b8]">No remediation records match the current filters.</p>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="mt-2 text-[#38bdf8]"
-                          onClick={() => {
-                            setOpenSearch('');
-                            setOpenCseFilter('ALL');
-                            setOpenPriorityFilter('ALL');
-                            setOpenStatusFilter('ALL');
-                          }}
-                        >
-                          Clear Filters
-                        </Button>
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredRemediations.map((m) => (
-                      <tr
-                        key={m.id}
-                        onClick={() => setSelectedRemediation(m)}
-                        className="hover:bg-[#161e29]/50 transition-colors cursor-pointer group"
-                      >
-                        {/* Finding */}
-                        <td className="py-3 px-3">
-                          <div className="flex flex-col">
-                            <span className="font-mono text-[11px] font-bold text-[#38bdf8] group-hover:underline">
-                              {m.findingId}
-                            </span>
-                            <span className="font-mono text-[10px] text-[#64748b]">
-                              {m.id}
-                            </span>
-                          </div>
-                        </td>
+          <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex flex-col items-center justify-center">
+            <span className="text-[10px] text-slate-500 uppercase">Stage 3</span>
+            <span className="text-purple-400 font-bold mt-0.5">Remediation Evidence</span>
+            <span className="text-[10px] text-slate-400 mt-0.5">Corrective Telemetry Ingest</span>
+          </div>
 
-                        {/* CSE */}
-                        <td className="py-3 px-3">
-                          <div className="flex flex-col max-w-[160px]">
-                            <span className="font-medium text-[#e2e8f0] truncate">{m.cseName}</span>
-                            <span className="font-mono text-[10px] text-[#64748b]">{m.cseId} • {m.controlRef}</span>
-                          </div>
-                        </td>
+          <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex flex-col items-center justify-center">
+            <span className="text-[10px] text-slate-500 uppercase">Stage 4</span>
+            <span className="text-emerald-400 font-bold mt-0.5">Verification</span>
+            <span className="text-[10px] text-slate-400 mt-0.5">Examiner Gate Attestation</span>
+          </div>
 
-                        {/* Issue */}
-                        <td className="py-3 px-3">
-                          <div className="max-w-md">
-                            <span className="font-medium text-[#e2e8f0] block truncate">{m.mandateTitle}</span>
-                            <span className="text-[11px] text-[#94a3b8] line-clamp-1 mt-0.5">{m.actionSummary}</span>
-                          </div>
-                        </td>
-
-                        {/* Priority */}
-                        <td className="py-3 px-3 whitespace-nowrap">
-                          <PriorityBadge priority={m.priority} />
-                        </td>
-
-                        {/* Owner */}
-                        <td className="py-3 px-3 whitespace-nowrap text-[#94a3b8] text-[11px] font-mono">
-                          {m.owner}
-                        </td>
-
-                        {/* Due Date */}
-                        <td className="py-3 px-3 whitespace-nowrap">
-                          <div className="flex flex-col">
-                            <span className="text-[#e2e8f0] font-mono text-[11px]">{m.dueDate}</span>
-                            <span className={`text-[10px] font-mono ${
-                              m.daysRemaining <= 0
-                                ? 'text-rose-400 font-bold'
-                                : m.daysRemaining <= 7
-                                ? 'text-amber-400'
-                                : 'text-[#64748b]'
-                            }`}>
-                              {m.daysRemaining <= 0 ? 'SLA Elapsed' : `${m.daysRemaining} days left`}
-                            </span>
-                          </div>
-                        </td>
-
-                        {/* Status */}
-                        <td className="py-3 px-3 whitespace-nowrap">
-                          <StatusBadge status={m.status} />
-                        </td>
-
-                        {/* Action */}
-                        <td className="py-3 px-3 text-right whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-1.5">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              icon={<Eye className="w-3.5 h-3.5" />}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedRemediation(m);
-                              }}
-                            >
-                              View
-                            </Button>
-                            {m.status !== 'CLOSED' && (
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                icon={<Send className="w-3 h-3 text-[#38bdf8]" />}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setUploadModalMandate(m);
-                                }}
-                                title="Simulate Evidence Ingestion"
-                              >
-                                Ingest
-                              </Button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+          <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex flex-col items-center justify-center">
+            <span className="text-[10px] text-slate-500 uppercase">Stage 5</span>
+            <span className="text-white font-bold mt-0.5">Closed / Reopened</span>
+            <span className="text-[10px] text-slate-400 mt-0.5">Cryptographic Seal or Deficient</span>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* ========================================================================= */}
-      {/* TAB 2: VERIFICATION GATES (Section 11)                                    */}
-      {/* ========================================================================= */}
-      {activeTab === 'verification' && (
-        <div className="space-y-4 min-w-0">
-          {/* Summary Cards (Max 4 KPI Cards) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard
-              title="Awaiting Verification"
-              value={tab2Kpis.awaiting}
-              subtitle="Verification dossiers"
-              semantic="blue"
-              icon={ShieldCheck}
+      {/* FILTER BAR */}
+      <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 mb-6 flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-2 flex-1 min-w-[220px] max-w-sm">
+          <div className="relative w-full">
+            <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-500" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search finding ID, mandate, owner, CSE..."
+              className="w-full pl-8 pr-3 py-1.5 bg-slate-950 border border-slate-800 rounded-md text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-blue-500 font-mono"
             />
-            <KpiCard
-              title="Gates Pending"
-              value={tab2Kpis.gatesPending}
-              subtitle="Unverified gate conditions"
-              semantic="amber"
-              icon={Clock}
-            />
-            <KpiCard
-              title="Statutorily Sealed"
-              value={tab2Kpis.verifiedSealed}
-              subtitle="FIPS-140-2 Level 3 Hash"
-              semantic="green"
-              icon={Lock}
-            />
-            <KpiCard
-              title="Failed / Reopened"
-              value={tab2Kpis.failedReopened}
-              subtitle="Deficient proof flagged"
-              semantic="red"
-              icon={XCircle}
-            />
-          </div>
-
-          {/* Filter Bar */}
-          <div className="p-3 rounded-lg bg-[#111622] border border-[#212c3d] flex flex-wrap items-center justify-between gap-3 text-[12px]">
-            <div className="flex items-center gap-2 flex-1 min-w-[240px] max-w-md">
-              <Input
-                icon={<Search className="w-4 h-4 text-[#64748b]" />}
-                value={verifSearch}
-                onChange={(e) => setVerifSearch(e.target.value)}
-                placeholder="Search verification ID, mandate, finding, CSE..."
-                sizeVariant="sm"
-              />
-            </div>
-
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <Select
-                sizeVariant="sm"
-                value={verifCseFilter}
-                onChange={(e) => setVerifCseFilter(e.target.value)}
-                options={[
-                  { value: 'ALL', label: 'All CSEs' },
-                  ...cses.map(c => ({ value: c.cseId, label: `${c.cseId} - ${c.cseName}` }))
-                ]}
-              />
-
-              <Select
-                sizeVariant="sm"
-                value={verifVerdictFilter}
-                onChange={(e) => setVerifVerdictFilter(e.target.value)}
-                options={[
-                  { value: 'ALL', label: 'All Verdicts' },
-                  { value: 'UNDER_SUPERVISORY_REVIEW', label: 'Under Review' },
-                  { value: 'EVIDENCE_LOCKED', label: 'Evidence Locked' },
-                  { value: 'VERIFIED_SEALED', label: 'Verified & Sealed' },
-                  { value: 'DEFICIENT_REOPENED', label: 'Deficient (Reopened)' }
-                ]}
-              />
-
-              {(verifSearch || verifCseFilter !== 'ALL' || verifVerdictFilter !== 'ALL') && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setVerifSearch('');
-                    setVerifCseFilter('ALL');
-                    setVerifVerdictFilter('ALL');
-                  }}
-                  className="text-[#94a3b8] hover:text-[#e2e8f0]"
-                >
-                  Reset
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* Verification Table */}
-          <div className="rounded-lg bg-[#111622] border border-[#212c3d] overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-[12px]">
-                <thead>
-                  <tr className="border-b border-[#212c3d] bg-[#161e29]/70 text-[#94a3b8] font-mono text-[11px] uppercase tracking-wider">
-                    <th className="py-2.5 px-3 font-semibold">Finding</th>
-                    <th className="py-2.5 px-3 font-semibold">CSE</th>
-                    <th className="py-2.5 px-3 font-semibold">Remediation</th>
-                    <th className="py-2.5 px-3 font-semibold">Verification Standard</th>
-                    <th className="py-2.5 px-3 font-semibold">Gates</th>
-                    <th className="py-2.5 px-3 font-semibold">Status</th>
-                    <th className="py-2.5 px-3 font-semibold text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#212c3d]/60 font-sans">
-                  {filteredVerifications.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} className="py-12 text-center text-[#64748b]">
-                        <ShieldCheck className="w-8 h-8 mx-auto mb-2 text-[#475569] opacity-60" />
-                        <p className="text-[13px] font-medium text-[#94a3b8]">No verification dossiers match the current filters.</p>
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredVerifications.map((v) => {
-                      const verifiedCount = v.gateChecklist.filter(g => g.verified).length;
-                      const totalCount = v.gateChecklist.length;
-                      return (
-                        <tr
-                          key={v.id}
-                          onClick={() => setSelectedVerification(v)}
-                          className="hover:bg-[#161e29]/50 transition-colors cursor-pointer group"
-                        >
-                          {/* Finding */}
-                          <td className="py-3 px-3">
-                            <span className="font-mono text-[11px] font-bold text-[#38bdf8] group-hover:underline block">
-                              {v.findingId}
-                            </span>
-                            <span className="font-mono text-[10px] text-[#64748b]">{v.id}</span>
-                          </td>
-
-                          {/* CSE */}
-                          <td className="py-3 px-3">
-                            <div className="flex flex-col max-w-[160px]">
-                              <span className="font-medium text-[#e2e8f0] truncate">{v.cseName}</span>
-                              <span className="font-mono text-[10px] text-[#64748b]">{v.cseId} • {v.controlId}</span>
-                            </div>
-                          </td>
-
-                          {/* Remediation */}
-                          <td className="py-3 px-3 whitespace-nowrap">
-                            <span className="font-mono text-[11px] font-bold text-[#7bdb80] bg-[#7bdb80]/10 px-2 py-0.5 rounded border border-[#7bdb80]/20">
-                              {v.mandateId}
-                            </span>
-                          </td>
-
-                          {/* Verification */}
-                          <td className="py-3 px-3">
-                            <div className="max-w-md">
-                              <span className="font-medium text-[#e2e8f0] block truncate">{v.statutoryStandard}</span>
-                              <span className="text-[11px] text-[#94a3b8] line-clamp-1 mt-0.5">{v.remedialSummary}</span>
-                            </div>
-                          </td>
-
-                          {/* Gates */}
-                          <td className="py-3 px-3 whitespace-nowrap">
-                            <div className="flex items-center gap-2">
-                              <span className={`font-mono text-[11px] font-bold ${
-                                verifiedCount === totalCount ? 'text-[#7bdb80]' : 'text-amber-400'
-                              }`}>
-                                {verifiedCount}/{totalCount}
-                              </span>
-                              <div className="w-16 h-1.5 rounded-full bg-[#1e293b] overflow-hidden">
-                                <div
-                                  className={`h-full transition-all duration-300 ${
-                                    verifiedCount === totalCount ? 'bg-[#7bdb80]' : 'bg-amber-400'
-                                  }`}
-                                  style={{ width: `${(verifiedCount / totalCount) * 100}%` }}
-                                />
-                              </div>
-                            </div>
-                          </td>
-
-                          {/* Status */}
-                          <td className="py-3 px-3 whitespace-nowrap">
-                            <StatusBadge status={v.verificationVerdict} />
-                          </td>
-
-                          {/* Action */}
-                          <td className="py-3 px-3 text-right whitespace-nowrap">
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              icon={<Eye className="w-3.5 h-3.5" />}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedVerification(v);
-                              }}
-                            >
-                              Review
-                            </Button>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
-            </div>
           </div>
         </div>
-      )}
 
-      {/* ========================================================================= */}
-      {/* TAB 3: REOPENED / REGRESSION (Section 15)                                  */}
-      {/* ========================================================================= */}
-      {activeTab === 'regression' && (
-        <div className="space-y-4 min-w-0">
-          {/* Summary Cards (Max 4 KPI Cards) */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard
-              title="Total Regressions"
-              value={tab3Kpis.totalReg}
-              subtitle="Multi-cycle recurrence"
-              semantic="red"
-              icon={RotateCcw}
-            />
-            <KpiCard
-              title="Active Reopened Loops"
-              value={tab3Kpis.activeLoops}
-              subtitle="Pending re-remediation"
-              semantic="amber"
-              icon={Clock}
-            />
-            <KpiCard
-              title="Verification Failures"
-              value={tab3Kpis.failedVerifs}
-              subtitle="Deficient proof rejections"
-              semantic="purple"
-              icon={XCircle}
-            />
-            <KpiCard
-              title="Recurrent Pattern Signals"
-              value={tab3Kpis.recurrentPatterns}
-              subtitle="Cross-cycle persistence"
-              semantic="blue"
-              icon={History}
-            />
-          </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <select
+            value={filterCse}
+            onChange={(e) => setFilterCse(e.target.value)}
+            className="h-8 px-2.5 bg-slate-950 border border-slate-800 rounded text-xs text-slate-300 focus:outline-none focus:border-blue-500"
+          >
+            <option value="ALL">All CSEs</option>
+            {cses.map(c => (
+              <option key={c.cseId} value={c.cseId}>{c.cseId} - {c.cseName.split(' ')[0]}</option>
+            ))}
+          </select>
 
-          {/* Filter Bar */}
-          <div className="p-3 rounded-lg bg-[#111622] border border-[#212c3d] flex flex-wrap items-center justify-between gap-3 text-[12px]">
-            <div className="flex items-center gap-2 flex-1 min-w-[240px] max-w-md">
-              <Input
-                icon={<Search className="w-4 h-4 text-[#64748b]" />}
-                value={regSearch}
-                onChange={(e) => setRegSearch(e.target.value)}
-                placeholder="Search regression ID, finding ID, entity, reason..."
-                sizeVariant="sm"
-              />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="h-8 px-2.5 bg-slate-950 border border-slate-800 rounded text-xs text-slate-300 focus:outline-none focus:border-blue-500"
+          >
+            <option value="ALL">All Statuses</option>
+            <option value="OPEN">Open</option>
+            <option value="IN_PROGRESS">In Progress</option>
+            <option value="UNDER_VERIFICATION">Under Verification</option>
+            <option value="CLOSED">Closed</option>
+            <option value="REOPENED">Reopened</option>
+            <option value="OVERDUE">Overdue</option>
+          </select>
+
+          <select
+            value={filterPriority}
+            onChange={(e) => setFilterPriority(e.target.value)}
+            className="h-8 px-2.5 bg-slate-950 border border-slate-800 rounded text-xs text-slate-300 focus:outline-none focus:border-blue-500"
+          >
+            <option value="ALL">All Priorities</option>
+            <option value="CRITICAL">Critical</option>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
+          </select>
+        </div>
+      </div>
+
+      {/* TWO-COLUMN PRODUCTION VIEW: TABLE (Left 7 cols) & DETAIL VIEW (Right 5 cols) */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+        
+        {/* ========================================================================= */}
+        {/* 2. REMEDIATION TABLE (7 Cols)                                             */}
+        {/* Columns: Finding | Required Action | Owner | Due Date | Evidence Submitted | Verification | Status */}
+        {/* ========================================================================= */}
+        <div className="xl:col-span-7 flex flex-col gap-3">
+          <div className="flex items-center justify-between px-1 text-xs font-mono text-slate-400">
+            <div>
+              Showing <span className="text-white font-bold">{filteredRemediations.length}</span> Remediation Mandates
             </div>
-
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <Select
-                sizeVariant="sm"
-                value={regCseFilter}
-                onChange={(e) => setRegCseFilter(e.target.value)}
-                options={[
-                  { value: 'ALL', label: 'All CSEs' },
-                  ...cses.map(c => ({ value: c.cseId, label: `${c.cseId} - ${c.cseName}` }))
-                ]}
-              />
-
-              <Select
-                sizeVariant="sm"
-                value={regStatusFilter}
-                onChange={(e) => setRegStatusFilter(e.target.value)}
-                options={[
-                  { value: 'ALL', label: 'All Statuses' },
-                  { value: 'ACTIVE_REGRESSION', label: 'Active Regression' },
-                  { value: 'UNDER_REMEDIAL_ACTION', label: 'Under Remedial Action' },
-                  { value: 'RESOLVED', label: 'Resolved' }
-                ]}
-              />
-
-              {(regSearch || regCseFilter !== 'ALL' || regStatusFilter !== 'ALL') && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setRegSearch('');
-                    setRegCseFilter('ALL');
-                    setRegStatusFilter('ALL');
-                  }}
-                  className="text-[#94a3b8] hover:text-[#e2e8f0]"
-                >
-                  Reset
-                </Button>
-              )}
+            <div className="text-[11px] text-slate-500">
+              Click row to inspect details &amp; verify
             </div>
           </div>
 
-          {/* Main Regression Table */}
-          <div className="rounded-lg bg-[#111622] border border-[#212c3d] overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-[12px]">
-                <thead>
-                  <tr className="border-b border-[#212c3d] bg-[#161e29]/70 text-[#94a3b8] font-mono text-[11px] uppercase tracking-wider">
-                    <th className="py-2.5 px-3 font-semibold">Finding</th>
-                    <th className="py-2.5 px-3 font-semibold">CSE</th>
-                    <th className="py-2.5 px-3 font-semibold">Previous Remediation</th>
-                    <th className="py-2.5 px-3 font-semibold">Reason Reopened</th>
-                    <th className="py-2.5 px-3 font-semibold">Priority</th>
-                    <th className="py-2.5 px-3 font-semibold">Status</th>
-                    <th className="py-2.5 px-3 font-semibold text-right">Action</th>
+          <div className="overflow-x-auto rounded-xl border border-[#212c3d] bg-[#111622] shadow-sm">
+            <table className="w-full text-left text-xs font-sans">
+              <thead className="bg-[#0c1017] text-[#94a3b8] font-mono text-[10px] uppercase border-b border-[#212c3d] select-none">
+                <tr>
+                  <th className="py-3 px-3">Finding</th>
+                  <th className="py-3 px-3">Required Action</th>
+                  <th className="py-3 px-2.5">Owner</th>
+                  <th className="py-3 px-2.5">Due Date</th>
+                  <th className="py-3 px-2 text-center">Evidence Submitted</th>
+                  <th className="py-3 px-2.5">Verification</th>
+                  <th className="py-3 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#212c3d]/70">
+                {filteredRemediations.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-12 text-center text-[#94a3b8] font-mono text-xs">
+                      No remediation records match the current criteria.
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-[#212c3d]/60 font-sans">
-                  {filteredRegressions.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} className="py-12 text-center text-[#64748b]">
-                        <History className="w-8 h-8 mx-auto mb-2 text-[#475569] opacity-60" />
-                        <p className="text-[13px] font-medium text-[#94a3b8]">No regression records match the current filters.</p>
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredRegressions.map((r) => (
+                ) : (
+                  filteredRemediations.map((r) => {
+                    const isSelected = activeRemediation && r.id === activeRemediation.id;
+                    const linkedVerif = verifications.find(v => v.mandateId?.toLowerCase() === r.id.toLowerCase() || v.findingId?.toLowerCase() === r.findingId.toLowerCase());
+                    const verifiedGates = linkedVerif ? linkedVerif.gateChecklist.filter(g => g.verified).length : 0;
+                    const totalGates = linkedVerif ? linkedVerif.gateChecklist.length : 0;
+
+                    return (
                       <tr
                         key={r.id}
-                        onClick={() => setSelectedRegression(r)}
-                        className="hover:bg-[#161e29]/50 transition-colors cursor-pointer group"
+                        onClick={() => setSelectedRemediationId(r.id)}
+                        className={`cursor-pointer transition-colors ${
+                          isSelected
+                            ? 'bg-[#1f6feb]/15 text-[#f1f5f9] font-medium border-l-2 border-l-[#1f6feb]'
+                            : 'hover:bg-[#18202f] text-[#cbd5e1]'
+                        }`}
                       >
-                        {/* Finding */}
-                        <td className="py-3 px-3">
-                          <span className="font-mono text-[11px] font-bold text-[#38bdf8] group-hover:underline block">
+                        {/* 1. Finding */}
+                        <td className="py-3 px-3 whitespace-nowrap">
+                          <div className="font-mono font-bold text-[#60a5fa]">
                             {r.findingId}
-                          </span>
-                          <span className="font-mono text-[10px] text-[#64748b]">{r.id}</span>
-                        </td>
-
-                        {/* CSE */}
-                        <td className="py-3 px-3">
-                          <div className="flex flex-col max-w-[160px]">
-                            <span className="font-medium text-[#e2e8f0] truncate">{r.cseName}</span>
-                            <span className="font-mono text-[10px] text-[#64748b]">{r.cseId} • {r.controlId}</span>
+                          </div>
+                          <div className="text-[10px] font-mono text-[#94a3b8]">
+                            {r.id} • {r.cseId}
                           </div>
                         </td>
 
-                        {/* Previous Remediation */}
-                        <td className="py-3 px-3 whitespace-nowrap">
-                          <span className="font-mono text-[11px] font-bold text-[#7bdb80] bg-[#7bdb80]/10 px-2 py-0.5 rounded border border-[#7bdb80]/20">
-                            {r.remediationId}
+                        {/* 2. Required Action */}
+                        <td className="py-3 px-3 max-w-[200px]">
+                          <div className="font-semibold text-[#f1f5f9] truncate" title={r.mandateTitle}>
+                            {r.mandateTitle}
+                          </div>
+                          <div className="text-[11px] text-[#94a3b8] line-clamp-1 mt-0.5" title={r.actionSummary}>
+                            {r.actionSummary}
+                          </div>
+                        </td>
+
+                        {/* 3. Owner */}
+                        <td className="py-3 px-2.5 font-mono text-[11px] text-[#cbd5e1] whitespace-nowrap">
+                          {r.owner}
+                        </td>
+
+                        {/* 4. Due Date */}
+                        <td className="py-3 px-2.5 font-mono text-[11px] whitespace-nowrap">
+                          <div className="text-[#cbd5e1]">{r.dueDate}</div>
+                          <div className={`text-[10px] ${
+                            r.daysRemaining <= 0
+                              ? 'text-rose-400 font-bold'
+                              : r.daysRemaining <= 7
+                              ? 'text-amber-400'
+                              : 'text-[#94a3b8]'
+                          }`}>
+                            {r.daysRemaining <= 0 ? 'OVERDUE' : `${r.daysRemaining}d left`}
+                          </div>
+                        </td>
+
+                        {/* 5. Evidence Submitted */}
+                        <td className="py-3 px-2 text-center font-mono text-xs whitespace-nowrap">
+                          <span className="px-2 py-0.5 rounded bg-[#18202f] text-emerald-400 font-bold border border-[#212c3d]">
+                            {r.evidenceProgress}
                           </span>
-                          {r.verificationId && (
-                            <span className="block font-mono text-[10px] text-[#64748b] mt-0.5">
-                              via {r.verificationId}
-                            </span>
+                        </td>
+
+                        {/* 6. Verification */}
+                        <td className="py-3 px-2.5 whitespace-nowrap font-mono text-[11px]">
+                          {linkedVerif ? (
+                            <div>
+                              <span className={`font-bold ${
+                                linkedVerif.verificationVerdict === 'VERIFIED_SEALED'
+                                  ? 'text-emerald-400'
+                                  : linkedVerif.verificationVerdict === 'DEFICIENT_REOPENED'
+                                  ? 'text-rose-400'
+                                  : 'text-amber-400'
+                              }`}>
+                                {linkedVerif.verificationVerdict.replace(/_/g, ' ')}
+                              </span>
+                              <div className="text-[10px] text-[#94a3b8]">
+                                Gates: {verifiedGates}/{totalGates}
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-[#94a3b8] text-[10px]">AWAITING INGEST</span>
                           )}
                         </td>
 
-                        {/* Reason */}
-                        <td className="py-3 px-3">
-                          <div className="max-w-md">
-                            <span className="font-medium text-rose-300 block truncate">{r.reason}</span>
-                            <span className="text-[11px] text-[#94a3b8] line-clamp-1 mt-0.5">
-                              {r.originalFindingSummary}
-                            </span>
-                          </div>
-                        </td>
-
-                        {/* Priority */}
-                        <td className="py-3 px-3 whitespace-nowrap">
-                          <PriorityBadge priority={r.priority} />
-                        </td>
-
-                        {/* Status */}
+                        {/* 7. Status */}
                         <td className="py-3 px-3 whitespace-nowrap">
                           <StatusBadge status={r.status} />
                         </td>
-
-                        {/* Action */}
-                        <td className="py-3 px-3 text-right whitespace-nowrap">
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            icon={<Eye className="w-3.5 h-3.5" />}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedRegression(r);
-                            }}
-                          >
-                            Inspect
-                          </Button>
-                        </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
-      )}
 
-      {/* ========================================================================= */}
-      {/* DRAWER 1: REMEDIATION DETAIL DRAWER (Section 10)                          */}
-      {/* ========================================================================= */}
-      <Drawer
-        isOpen={!!selectedRemediation}
-        onClose={() => setSelectedRemediation(null)}
-        title={selectedRemediation?.mandateTitle || 'Remediation Mandate'}
-        subtitle={
-          selectedRemediation
-            ? `Mandate ${selectedRemediation.id} • Ref ${selectedRemediation.findingId}`
-            : ''
-        }
-        width="md"
-        footer={
-          selectedRemediation && (
-            <div className="flex items-center justify-between w-full">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => navigate(`/supervision/cses/${selectedRemediation.cseId}`)}
-              >
-                View CSE Profile
-              </Button>
-              <div className="flex items-center gap-2">
-                {selectedRemediation.status !== 'CLOSED' && (
+        {/* ========================================================================= */}
+        {/* 4. DETAIL VIEW (5 Cols)                                                   */}
+        {/* Finding | Required Action | Assigned Owner | Evidence | Verification Result | Examiner Notes | History */}
+        {/* ========================================================================= */}
+        <div className="xl:col-span-5 flex flex-col gap-4">
+          {activeRemediation ? (
+            <div className="rounded-xl border border-[#212c3d] bg-[#111622] p-5 shadow-sm space-y-4 text-xs font-sans">
+              
+              {/* DETAIL HEADER */}
+              <div className="flex items-start justify-between gap-3 pb-3 border-b border-[#212c3d]">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-base font-bold text-[#60a5fa]">{activeRemediation.id}</span>
+                    <span className="px-2 py-0.5 rounded bg-[#18202f] font-mono text-[10px] text-[#cbd5e1] border border-[#212c3d]">
+                      Finding: {activeRemediation.findingId}
+                    </span>
+                    <PriorityBadge priority={activeRemediation.priority} />
+                  </div>
+                  <h2 className="text-sm font-bold text-white mt-1 leading-snug">
+                    {activeRemediation.mandateTitle}
+                  </h2>
+                  <div className="text-[11px] text-slate-400 mt-0.5 font-mono">
+                    CSE: {activeRemediation.cseName} ({activeRemediation.cseId}) • {activeRemediation.controlRef}
+                  </div>
+                </div>
+
+                <div className="text-right shrink-0">
+                  <StatusBadge status={activeRemediation.status} />
+                  <div className="text-[10px] font-mono text-slate-500 mt-1">
+                    Due: {activeRemediation.dueDate}
+                  </div>
+                </div>
+              </div>
+
+              {/* 1. FINDING & REQUIRED ACTION */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-blue-400 tracking-wider">
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Finding &amp; Required Action</span>
+                  </div>
+                  <Link
+                    to={`/findings?findingId=${activeRemediation.findingId}`}
+                    className="text-[10px] font-mono text-blue-400 hover:underline flex items-center gap-1"
+                  >
+                    <span>Inspect Finding</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                </div>
+
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 space-y-1.5">
+                  <div className="text-white font-medium">
+                    {activeFinding ? activeFinding.title : activeRemediation.mandateTitle}
+                  </div>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">
+                    {activeRemediation.actionSummary}
+                  </p>
+                </div>
+              </div>
+
+              {/* 2. ASSIGNED OWNER & SLA */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-slate-400 tracking-wider">
+                    <User className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Assigned Owner &amp; Commitment</span>
+                  </div>
+                  <button
+                    onClick={() => setIsAssignModalOpen(true)}
+                    className="text-[10px] font-mono text-blue-400 hover:underline"
+                  >
+                    Reassign Owner
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 p-3 rounded-lg bg-slate-950/70 border border-slate-800 font-mono text-[11px]">
+                  <div>
+                    <span className="text-[10px] text-slate-500 block uppercase">Appointed Owner:</span>
+                    <span className="text-white font-semibold">{activeRemediation.owner}</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500 block uppercase">SLA Window:</span>
+                    <span className={activeRemediation.daysRemaining <= 0 ? 'text-rose-400 font-bold' : 'text-slate-300'}>
+                      {activeRemediation.dueDate} ({activeRemediation.daysRemaining}d remaining)
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. EVIDENCE */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-emerald-400 tracking-wider">
+                    <FileCheck className="w-3.5 h-3.5" />
+                    <span>Remediation Evidence ({activeRemediation.evidenceProgress})</span>
+                  </div>
+                  <button
+                    onClick={() => setIsSubmitEvidenceOpen(true)}
+                    className="text-[10px] font-mono text-emerald-400 hover:underline"
+                  >
+                    + Submit Evidence
+                  </button>
+                </div>
+
+                <div className="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 space-y-2">
+                  {activeRemediation.artifacts && activeRemediation.artifacts.length > 0 ? (
+                    activeRemediation.artifacts.map((art) => (
+                      <div key={art.id} className="p-2 rounded bg-slate-900 border border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
+                        <div>
+                          <span className="text-blue-400 font-bold mr-2">{art.id}</span>
+                          <span className="text-slate-200">{art.name}</span>
+                        </div>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                          art.status === 'PRESENT_VERIFIED'
+                            ? 'bg-emerald-500/20 text-emerald-300'
+                            : 'bg-rose-500/20 text-rose-300'
+                        }`}>
+                          {art.status}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-slate-500 font-mono text-[11px] text-center py-2">
+                      No artifacts submitted yet.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 4. VERIFICATION RESULT */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-purple-400 tracking-wider">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Verification Result &amp; Gates</span>
+                  </div>
+                  {activeVerification && (
+                    <span className="text-[10px] font-mono text-slate-500">
+                      {activeVerification.statutoryStandard}
+                    </span>
+                  )}
+                </div>
+
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 space-y-2.5">
+                  {activeVerification ? (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono text-xs font-bold text-white">Verdict:</span>
+                        <StatusBadge status={activeVerification.verificationVerdict} />
+                      </div>
+
+                      {/* Interactive Gate Checklist */}
+                      <div className="space-y-1.5 pt-1">
+                        <div className="text-[10px] font-mono uppercase text-slate-500">
+                          Mandatory Verification Gates (Examiner Checklist):
+                        </div>
+                        {activeVerification.gateChecklist.map((gate) => (
+                          <div
+                            key={gate.id}
+                            onClick={() => handleVerifyGateToggle(gate.id, gate.verified)}
+                            className="p-2 rounded bg-slate-900 border border-slate-800/80 flex items-center justify-between cursor-pointer hover:bg-slate-850 text-[11px]"
+                          >
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={gate.verified}
+                                onChange={() => {}}
+                                className="cursor-pointer rounded border-slate-700 text-blue-500"
+                              />
+                              <span className={gate.verified ? 'text-slate-200' : 'text-slate-400'}>
+                                {gate.label}
+                              </span>
+                            </div>
+                            <span className={`font-mono text-[10px] font-bold ${
+                              gate.verified ? 'text-emerald-400' : 'text-rose-400'
+                            }`}>
+                              {gate.verified ? 'PASSED' : 'PENDING'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-slate-500 font-mono text-[11px] text-center py-2">
+                      Verification dossier not yet generated. Awaiting corrective evidence.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 5. EXAMINER NOTES */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-slate-400 tracking-wider">
+                  <Gavel className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Examiner Rationale &amp; Notes</span>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 text-[11px] text-slate-300 font-sans leading-relaxed">
+                  {activeVerification?.supervisoryRationale || 'Examiner review pending. Statutory verification requires cryptographic evidence verification prior to closure.'}
+                </div>
+              </div>
+
+              {/* 6. HISTORY / TIMELINE */}
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-mono uppercase font-bold text-slate-400 tracking-wider">
+                  <History className="w-3.5 h-3.5 text-blue-400" />
+                  <span>History &amp; Milestones</span>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-950/70 border border-slate-800 space-y-2">
+                  {activeRemediation.milestones && activeRemediation.milestones.length > 0 ? (
+                    activeRemediation.milestones.map((m, idx) => (
+                      <div key={idx} className="flex items-start gap-2.5 text-[11px] font-mono">
+                        <div className="w-2 h-2 rounded-full bg-emerald-400 mt-1 shrink-0" />
+                        <div>
+                          <div className="text-slate-200 font-medium">{m.title} ({m.date})</div>
+                          <div className="text-slate-500 text-[10px]">{m.actor} • {m.detail}</div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-slate-500 font-mono text-[11px] text-center py-1">
+                      No milestones recorded.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 5. PRESERVED ACTIONS STRIP: Assign | Update | Submit Evidence | Verify | Close | Reopen */}
+              <div className="space-y-2 pt-3 border-t border-slate-800">
+                <div className="text-xs font-mono uppercase font-bold text-blue-400 tracking-wider">
+                  Supervisory Actions
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {/* Action 1: Assign */}
                   <Button
-                    variant="primary"
+                    variant="outline"
                     size="sm"
-                    icon={<Send className="w-3.5 h-3.5" />}
+                    className="justify-center border-slate-700 text-slate-300 text-xs font-mono"
+                    onClick={() => setIsAssignModalOpen(true)}
+                  >
+                    Assign Owner
+                  </Button>
+
+                  {/* Action 2: Update */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="justify-center border-slate-700 text-slate-300 text-xs font-mono"
+                    onClick={() => setIsUpdateModalOpen(true)}
+                  >
+                    Update Details
+                  </Button>
+
+                  {/* Action 3: Submit Evidence */}
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="justify-center bg-blue-600 hover:bg-blue-500 text-white text-xs font-mono"
+                    onClick={() => setIsSubmitEvidenceOpen(true)}
+                  >
+                    Submit Evidence
+                  </Button>
+
+                  {/* Action 4: Verify Gates */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="justify-center border-purple-500/50 text-purple-300 hover:bg-purple-500/10 text-xs font-mono"
                     onClick={() => {
-                      setUploadModalMandate(selectedRemediation);
-                      setSelectedRemediation(null);
+                      if (activeVerification) {
+                        const allPassed = activeVerification.gateChecklist.every(g => g.verified);
+                        activeVerification.gateChecklist.forEach(g => {
+                          verifyGate(activeVerification.id, g.id, !allPassed);
+                        });
+                        showNotification(`All verification gates marked ${!allPassed ? 'PASSED' : 'PENDING'}.`);
+                      }
                     }}
                   >
-                    Ingest Telemetry
+                    Verify All Gates
                   </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedRemediation(null)}
-                >
-                  Close
-                </Button>
-              </div>
-            </div>
-          )
-        }
-      >
-        {selectedRemediation && (
-          <div className="space-y-5 text-[12px]">
-            {/* Metadata Grid */}
-            <div className="p-3.5 rounded-lg bg-[#161e29]/70 border border-[#212c3d] grid grid-cols-2 gap-3 font-mono">
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Remediation ID</span>
-                <span className="text-[#38bdf8] font-bold text-[13px]">{selectedRemediation.id}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Status</span>
-                <div className="mt-0.5"><StatusBadge status={selectedRemediation.status} /></div>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Target Entity</span>
-                <span className="text-[#e2e8f0] font-sans font-medium text-[12px]">{selectedRemediation.cseName}</span>
-                <span className="text-[#64748b] block text-[10px]">({selectedRemediation.cseId})</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Control Reference</span>
-                <span className="text-[#e2e8f0]">{selectedRemediation.controlRef}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Assigned Owner</span>
-                <span className="text-[#e2e8f0]">{selectedRemediation.owner}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">SLA Due Date</span>
-                <span className="text-[#e2e8f0]">{selectedRemediation.dueDate} ({selectedRemediation.daysRemaining}d left)</span>
-              </div>
-            </div>
 
-            {/* Finding Summary & Link to Examiner Workspace */}
-            <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono text-[#94a3b8] uppercase font-semibold">
-                  Underlying Supervisory Finding
-                </span>
-                <Link
-                  to={`/review/${selectedRemediation.findingId}`}
-                  className="text-[11px] font-mono text-[#38bdf8] hover:underline flex items-center gap-1"
-                >
-                  <span>Open Finding in Examiner Workspace</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </Link>
-              </div>
-              <p className="text-[#e2e8f0] text-[12px] leading-relaxed">
-                {selectedRemediation.actionSummary}
-              </p>
-            </div>
-
-            {/* Expected vs Observed Discrepancy Connection (Section 19) */}
-            <ExpectedObservedCard
-              title="Supervisory Traceability Matrix"
-              expected="CTRL-07 escalation procedure fully followed with cryptographic SOAR telemetry proof."
-              observed="Escalation evidence omitted for incident INV-338; discrepancy indicates execution gap."
-              difference="Execution Gap / Unrecorded Tier-2 Escalation"
-              signal="EXECUTION_GAP"
-              priority={selectedRemediation.priority as any}
-            />
-
-            {/* Lifecycle Progress Bar (Section 17) */}
-            <div className="space-y-1.5">
-              <span className="text-[11px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                Remediation Lifecycle Progression
-              </span>
-              <div className="grid grid-cols-5 gap-1 text-center font-mono text-[10px]">
-                <div className="p-1.5 rounded bg-[#161e29] text-[#7bdb80] border border-[#212c3d] font-semibold">
-                  1. Flagged
-                </div>
-                <div className="p-1.5 rounded bg-[#161e29] text-[#7bdb80] border border-[#212c3d] font-semibold">
-                  2. Plan Formulated
-                </div>
-                <div className={`p-1.5 rounded font-semibold border ${
-                  selectedRemediation.artifacts.some(a => a.status === 'PRESENT_VERIFIED')
-                    ? 'bg-[#161e29] text-[#7bdb80] border-[#212c3d]'
-                    : 'bg-amber-950/30 text-amber-300 border-amber-800/40'
-                }`}>
-                  3. Evidence ({selectedRemediation.evidenceProgress})
-                </div>
-                <div className={`p-1.5 rounded font-semibold border ${
-                  selectedRemediation.status === 'UNDER_VERIFICATION'
-                    ? 'bg-[#38bdf8]/15 text-[#38bdf8] border-[#38bdf8]/40'
-                    : selectedRemediation.status === 'CLOSED'
-                    ? 'bg-[#161e29] text-[#7bdb80] border-[#212c3d]'
-                    : 'bg-[#111622] text-[#64748b] border-[#212c3d]'
-                }`}>
-                  4. Verification Gate
-                </div>
-                <div className={`p-1.5 rounded font-semibold border ${
-                  selectedRemediation.status === 'CLOSED'
-                    ? 'bg-emerald-950/40 text-[#7bdb80] border-emerald-800/50'
-                    : 'bg-[#111622] text-[#64748b] border-[#212c3d]'
-                }`}>
-                  5. Sealed Closure
-                </div>
-              </div>
-            </div>
-
-            {/* Required Corrective Evidence */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono text-[#94a3b8] uppercase font-semibold">
-                  Required Corrective Evidence ({selectedRemediation.evidenceProgress})
-                </span>
-                <Link
-                  to="/evidence"
-                  className="text-[11px] font-mono text-[#38bdf8] hover:underline flex items-center gap-1"
-                >
-                  <span>Evidence Explorer</span>
-                  <ExternalLink className="w-3 h-3" />
-                </Link>
-              </div>
-
-              <div className="space-y-2">
-                {selectedRemediation.artifacts.map((art) => (
-                  <div
-                    key={art.id}
-                    className="p-2.5 rounded-lg bg-[#111622] border border-[#212c3d] flex items-center justify-between text-[12px]"
-                  >
-                    <div className="flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-[#94a3b8]" />
-                      <div>
-                        <span className="font-mono text-[11px] font-bold text-[#e2e8f0]">{art.id}</span>
-                        <span className="text-[#94a3b8] ml-2 text-[11px]">{art.name}</span>
-                      </div>
-                    </div>
-
-                    <span
-                      className={`px-2 py-0.5 rounded font-mono text-[10px] font-bold ${
-                        art.status === 'PRESENT_VERIFIED'
-                          ? 'bg-[#7bdb80]/10 text-[#7bdb80] border border-[#7bdb80]/20'
-                          : 'bg-rose-500/10 text-rose-300 border border-rose-500/20'
-                      }`}
-                    >
-                      {art.status === 'PRESENT_VERIFIED' ? 'VERIFIED' : 'PENDING'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Verification Gate Shortcut */}
-            <div className="p-3 rounded-lg bg-[#161e29]/50 border border-[#212c3d] flex items-center justify-between">
-              <div>
-                <span className="text-[11px] font-mono text-[#94a3b8] uppercase block">Verification Gate</span>
-                <span className="text-[12px] text-[#e2e8f0]">
-                  {selectedRemediation.status === 'UNDER_VERIFICATION'
-                    ? 'Artifacts submitted — awaiting human verification sign-off'
-                    : selectedRemediation.status === 'CLOSED'
-                    ? 'Verification sealed & closed'
-                    : 'Pending prerequisite evidence upload'}
-                </span>
-              </div>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  setSelectedRemediation(null);
-                  handleTabChange('verification');
-                }}
-              >
-                Open Verification
-              </Button>
-            </div>
-          </div>
-        )}
-      </Drawer>
-
-      {/* ========================================================================= */}
-      {/* DRAWER 2: VERIFICATION DETAIL DRAWER (Section 13)                         */}
-      {/* ========================================================================= */}
-      <Drawer
-        isOpen={!!selectedVerification}
-        onClose={() => setSelectedVerification(null)}
-        title={selectedVerification ? `Verification Dossier ${selectedVerification.id}` : 'Verification'}
-        subtitle={
-          selectedVerification
-            ? `Mandate ${selectedVerification.mandateId} • Ref ${selectedVerification.findingId}`
-            : ''
-        }
-        width="md"
-        footer={
-          selectedVerification && (
-            <div className="flex items-center justify-between w-full">
-              <Button
-                variant="danger"
-                size="sm"
-                icon={<XCircle className="w-3.5 h-3.5" />}
-                onClick={() => setReopenPromptVerif(selectedVerification)}
-                disabled={selectedVerification.verificationVerdict === 'VERIFIED_SEALED'}
-              >
-                Reopen Remediation
-              </Button>
-
-              <div className="flex items-center gap-2">
-                {selectedVerification.verificationVerdict !== 'VERIFIED_SEALED' && (
+                  {/* Action 5: Close / Seal */}
                   <Button
                     variant="primary"
                     size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold"
-                    icon={<Lock className="w-3.5 h-3.5" />}
-                    onClick={() => handleSealVerification(selectedVerification.id)}
+                    className="justify-center bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono"
+                    onClick={() => setIsCloseModalOpen(true)}
                   >
-                    Mark Verified &amp; Seal
+                    Close &amp; Seal
                   </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedVerification(null)}
-                >
-                  Close
-                </Button>
-              </div>
-            </div>
-          )
-        }
-      >
-        {selectedVerification && (
-          <div className="space-y-5 text-[12px]">
-            {/* Non-Automatic Closure Barrier Banner */}
-            <div className="p-3 rounded-lg bg-amber-950/20 border border-amber-500/30 flex items-start gap-2.5">
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-              <div className="space-y-0.5 text-[11px] leading-relaxed">
-                <span className="font-bold text-amber-300 font-mono uppercase">
-                  Human-in-the-Loop Statutory Rule 4.8.2:
-                </span>
-                <p className="text-[#94a3b8]">
-                  Status change to CLOSED requires independent evidence-backed examiner review. Telemetry ingestion does <strong className="text-[#e2e8f0]">NOT</strong> automatically imply verification.
-                </p>
-              </div>
-            </div>
 
-            {/* Metadata Grid */}
-            <div className="p-3.5 rounded-lg bg-[#161e29]/70 border border-[#212c3d] grid grid-cols-2 gap-3 font-mono">
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Verification ID</span>
-                <span className="text-[#38bdf8] font-bold text-[13px]">{selectedVerification.id}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Verdict</span>
-                <div className="mt-0.5"><StatusBadge status={selectedVerification.verificationVerdict} /></div>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Entity</span>
-                <span className="text-[#e2e8f0] font-sans font-medium text-[12px]">{selectedVerification.cseName}</span>
-                <span className="text-[#64748b] block text-[10px]">({selectedVerification.cseId})</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Statutory Standard</span>
-                <span className="text-[#e2e8f0] font-sans text-[11px]">{selectedVerification.statutoryStandard}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Lead Examiner</span>
-                <span className="text-[#e2e8f0]">{selectedVerification.leadExaminer}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Submitted At</span>
-                <span className="text-[#e2e8f0]">{selectedVerification.submittedAt}</span>
-              </div>
-            </div>
-
-            {/* Verification Checklist (Interactive Gates) */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-mono text-[#94a3b8] uppercase font-semibold">
-                  Mandatory Verification Checklist ({selectedVerification.gateChecklist.filter(g => g.verified).length}/{selectedVerification.gateChecklist.length})
-                </span>
-                <span className="text-[10px] font-mono text-[#64748b]">
-                  Toggle to update verification state
-                </span>
-              </div>
-
-              <div className="space-y-2">
-                {selectedVerification.gateChecklist.map((gate) => (
-                  <div
-                    key={gate.id}
-                    className="p-3 rounded-lg bg-[#111622] border border-[#212c3d] flex items-start justify-between gap-3 text-[12px]"
+                  {/* Action 6: Reopen */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="justify-center border-rose-500/50 text-rose-300 hover:bg-rose-500/10 text-xs font-mono"
+                    onClick={() => setIsReopenModalOpen(true)}
                   >
-                    <div className="flex items-start gap-2.5">
-                      <input
-                        type="checkbox"
-                        checked={gate.verified}
-                        onChange={(e) => verifyGate(selectedVerification.id, gate.id, e.target.checked)}
-                        disabled={selectedVerification.verificationVerdict === 'VERIFIED_SEALED'}
-                        className="mt-0.5 cursor-pointer rounded border-[#212c3d] text-[#38bdf8] focus:ring-0"
-                      />
-                      <div>
-                        <span className={`font-medium ${gate.verified ? 'text-[#e2e8f0]' : 'text-[#94a3b8]'}`}>
-                          {gate.label}
-                        </span>
-                        {gate.note && (
-                          <span className="text-[10px] font-mono text-rose-400 block mt-0.5">
-                            {gate.note}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <span className={`font-mono text-[10px] font-bold shrink-0 ${
-                      gate.verified ? 'text-[#7bdb80]' : 'text-rose-400'
-                    }`}>
-                      {gate.verified ? 'PASSED' : 'PENDING'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Submitted Artifacts */}
-            <div className="space-y-2">
-              <span className="text-[11px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                Submitted Verification Artifacts ({selectedVerification.submittedArtifacts.length})
-              </span>
-              <div className="space-y-2">
-                {selectedVerification.submittedArtifacts.map((art) => (
-                  <div
-                    key={art.id}
-                    className="p-2.5 rounded-lg bg-[#111622] border border-[#212c3d] flex items-center justify-between text-[11px]"
-                  >
-                    <div className="flex items-center gap-2">
-                      <FileCheck className="w-4 h-4 text-[#38bdf8]" />
-                      <div>
-                        <span className="font-mono font-bold text-[#e2e8f0]">{art.id}</span>
-                        <span className="text-[#94a3b8] ml-2">{art.name}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 font-mono text-[10px]">
-                      <span className="text-[#64748b] truncate max-w-[120px]">{art.hash}</span>
-                      <span className={`px-1.5 py-0.5 rounded ${
-                        art.verified ? 'text-[#7bdb80] bg-[#7bdb80]/10' : 'text-rose-400 bg-rose-500/10'
-                      }`}>
-                        {art.verified ? 'VALID' : 'UNVERIFIED'}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Examiner Rationale */}
-            <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-1.5">
-              <span className="text-[10px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                Supervisory Rationale:
-              </span>
-              <p className="text-[#e2e8f0] text-[12px] leading-relaxed font-sans">
-                {selectedVerification.supervisoryRationale}
-              </p>
-            </div>
-
-            {/* Merkle Root Digest */}
-            <div className="p-3 rounded-lg bg-[#161e29]/70 border border-[#212c3d] flex items-center justify-between font-mono text-[11px]">
-              <div className="flex items-center gap-2">
-                <Fingerprint className="w-4 h-4 text-[#38bdf8]" />
-                <span className="text-[#94a3b8]">Merkle Root:</span>
-                <span className="text-[#7bdb80] truncate max-w-[200px]">{selectedVerification.merkleRootHash}</span>
-              </div>
-              <button
-                onClick={() => copyToClipboard(selectedVerification.merkleRootHash)}
-                className="text-[#94a3b8] hover:text-[#e2e8f0]"
-                title="Copy hash"
-              >
-                {copiedHash === selectedVerification.merkleRootHash ? (
-                  <Check className="w-3.5 h-3.5 text-[#7bdb80]" />
-                ) : (
-                  <Copy className="w-3.5 h-3.5" />
-                )}
-              </button>
-            </div>
-          </div>
-        )}
-      </Drawer>
-
-      {/* ========================================================================= */}
-      {/* DRAWER 3: REGRESSION DETAIL DRAWER (Section 16)                           */}
-      {/* ========================================================================= */}
-      <Drawer
-        isOpen={!!selectedRegression}
-        onClose={() => setSelectedRegression(null)}
-        title={selectedRegression ? `Regression Audit ${selectedRegression.id}` : 'Regression'}
-        subtitle={
-          selectedRegression
-            ? `Finding ${selectedRegression.findingId} • Remediation ${selectedRegression.remediationId}`
-            : ''
-        }
-        width="md"
-        footer={
-          selectedRegression && (
-            <div className="flex items-center justify-between w-full">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  setSelectedRegression(null);
-                  handleTabChange('open');
-                }}
-              >
-                Return to Open Remediation
-              </Button>
-
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={() => navigate(`/review/${selectedRegression.findingId}`)}
-                  icon={<ArrowUpRight className="w-3.5 h-3.5" />}
-                >
-                  Open Finding
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedRegression(null)}
-                >
-                  Close
-                </Button>
-              </div>
-            </div>
-          )
-        }
-      >
-        {selectedRegression && (
-          <div className="space-y-5 text-[12px]">
-            {/* Metadata Grid */}
-            <div className="p-3.5 rounded-lg bg-[#161e29]/70 border border-[#212c3d] grid grid-cols-2 gap-3 font-mono">
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Regression ID</span>
-                <span className="text-rose-400 font-bold text-[13px]">{selectedRegression.id}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Status</span>
-                <div className="mt-0.5"><StatusBadge status={selectedRegression.status} /></div>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">CSE</span>
-                <span className="text-[#e2e8f0] font-sans font-medium text-[12px]">{selectedRegression.cseName}</span>
-                <span className="text-[#64748b] block text-[10px]">({selectedRegression.cseId})</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Control</span>
-                <span className="text-[#e2e8f0]">{selectedRegression.controlId}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Reopened Date</span>
-                <span className="text-[#e2e8f0]">{selectedRegression.reopenedDate}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-[#64748b] uppercase block">Signal Type</span>
-                <span className="text-rose-300 font-bold">{selectedRegression.signalType}</span>
-              </div>
-            </div>
-
-            {/* Reopening Rationale */}
-            <div className="p-3.5 rounded-lg bg-[#111622] border border-[#212c3d] space-y-2">
-              <span className="text-[11px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                Reason Reopened / Regression Trigger
-              </span>
-              <p className="text-rose-300 font-medium text-[12px]">
-                {selectedRegression.reason}
-              </p>
-              <p className="text-[#94a3b8] text-[12px] leading-relaxed">
-                {selectedRegression.originalFindingSummary}
-              </p>
-            </div>
-
-            {/* New Evidence Flagged */}
-            <div className="p-3 rounded-lg bg-[#161e29]/50 border border-[#212c3d] flex items-center justify-between text-[12px]">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-[#38bdf8]" />
-                <div>
-                  <span className="text-[10px] text-[#64748b] uppercase block font-mono">New Correlated Evidence</span>
-                  <span className="font-mono text-[#e2e8f0]">{selectedRegression.newEvidenceRecord}</span>
+                    Reopen Mandate
+                  </Button>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/evidence')}
-                className="text-[#38bdf8]"
-              >
-                Inspect Telemetry
-              </Button>
+
             </div>
-
-            {/* Historical Remediation Timeline (Section 16) */}
-            <div className="space-y-2">
-              <span className="text-[11px] font-mono text-[#94a3b8] uppercase font-semibold block">
-                Multi-Cycle Lifecycle Chronology
-              </span>
-              <Timeline
-                events={selectedRegression.historyTimeline.map((item, idx) => ({
-                  id: String(idx),
-                  timestamp: item.date,
-                  title: item.title,
-                  actor: item.actor,
-                  description: item.detail,
-                  status: idx === selectedRegression.historyTimeline.length - 1 ? 'error' : 'neutral'
-                }))}
-              />
+          ) : (
+            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-8 text-center text-slate-500 font-mono text-xs">
+              Select a remediation mandate to inspect.
             </div>
-          </div>
-        )}
-      </Drawer>
-
-      {/* ========================================================================= */}
-      {/* MODAL 1: ADD REMEDIATION MANDATE                                          */}
-      {/* ========================================================================= */}
-      <Modal
-        isOpen={isAddRemediationOpen}
-        onClose={() => setIsAddRemediationOpen(false)}
-        title="Add Remediation Mandate"
-        description="Instantiate a formal statutory remediation mandate against an adjudicated supervisory finding."
-        footer={
-          <>
-            <Button variant="secondary" size="sm" onClick={() => setIsAddRemediationOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => {
-                setIsAddRemediationOpen(false);
-              }}
-            >
-              Issue Mandate
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-3 text-[12px]">
-          <div>
-            <label className="text-[11px] font-mono text-[#94a3b8] uppercase block mb-1">
-              Adjudicated Finding:
-            </label>
-            <Select
-              sizeVariant="sm"
-              value={newMandateForm.findingId}
-              onChange={(e) => setNewMandateForm({ ...newMandateForm, findingId: e.target.value })}
-              options={findings.map(f => ({
-                value: f.id,
-                label: `${f.id} - ${f.cseName} (${f.controlId})`
-              }))}
-            />
-          </div>
-
-          <div>
-            <label className="text-[11px] font-mono text-[#94a3b8] uppercase block mb-1">
-              Mandate Title:
-            </label>
-            <Input
-              value={newMandateForm.title}
-              onChange={(e) => setNewMandateForm({ ...newMandateForm, title: e.target.value })}
-              placeholder="e.g. Implement Hardware MFA Enforcement on SCADA Gateway"
-              sizeVariant="sm"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[11px] font-mono text-[#94a3b8] uppercase block mb-1">
-                Priority:
-              </label>
-              <Select
-                sizeVariant="sm"
-                value={newMandateForm.priority}
-                onChange={(e) => setNewMandateForm({ ...newMandateForm, priority: e.target.value as Priority })}
-                options={[
-                  { value: 'CRITICAL', label: 'CRITICAL' },
-                  { value: 'HIGH', label: 'HIGH' },
-                  { value: 'MEDIUM', label: 'MEDIUM' },
-                  { value: 'LOW', label: 'LOW' }
-                ]}
-              />
-            </div>
-
-            <div>
-              <label className="text-[11px] font-mono text-[#94a3b8] uppercase block mb-1">
-                SLA Due Date:
-              </label>
-              <Input
-                type="date"
-                value={newMandateForm.dueDate}
-                onChange={(e) => setNewMandateForm({ ...newMandateForm, dueDate: e.target.value })}
-                sizeVariant="sm"
-              />
-            </div>
-          </div>
-
-          <div className="p-2.5 rounded bg-[#161e29] border border-[#212c3d] text-[11px] text-[#94a3b8]">
-            Notice: Mandates instantiated by supervisory examiners generate an immutable entry in the audit trail and start the statutory SLA clock.
-          </div>
+          )}
         </div>
-      </Modal>
+
+      </div>
 
       {/* ========================================================================= */}
-      {/* MODAL 2: SIMULATE EVIDENCE INGESTION                                      */}
+      {/* MODAL 1: ASSIGN OWNER                                                     */}
       {/* ========================================================================= */}
       <Modal
-        isOpen={!!uploadModalMandate}
-        onClose={() => setUploadModalMandate(null)}
-        title="Simulate Corrective Evidence Ingestion"
-        description={
-          uploadModalMandate
-            ? `Simulate ingestion of required corrective telemetry packet ESC-221 for mandate ${uploadModalMandate.id}`
-            : ''
-        }
+        isOpen={isAssignModalOpen}
+        onClose={() => setIsAssignModalOpen(false)}
+        title={`Assign Remediation Owner: ${activeRemediation?.id}`}
+        description="Designate the responsible CSE operational officer or liaison team."
         footer={
           <>
-            <Button variant="secondary" size="sm" onClick={() => setUploadModalMandate(null)}>
+            <Button variant="secondary" size="sm" onClick={() => setIsAssignModalOpen(false)}>
               Cancel
             </Button>
-            <Button variant="primary" size="sm" onClick={handleUploadSubmit}>
-              Ingest &amp; Transition to Verification
+            <Button variant="primary" size="sm" onClick={handleAssignOwner}>
+              Save Assignment
             </Button>
           </>
         }
       >
-        <div className="space-y-3 text-[12px]">
+        <div className="space-y-3 font-sans text-xs">
           <div className="space-y-1">
-            <label className="text-[11px] font-mono text-[#94a3b8] uppercase block">
-              Cryptographic SHA-256 Digest:
+            <label className="text-[11px] font-mono text-slate-400 uppercase">
+              Assigned Owner / Entity Liaison:
             </label>
             <input
               type="text"
-              value={mockArtifactHash}
-              onChange={(e) => setMockArtifactHash(e.target.value)}
-              className="w-full h-9 px-3 rounded-md bg-[#161e29] border border-[#212c3d] font-mono text-[12px] text-[#7bdb80] focus:outline-none focus:border-[#38bdf8]"
+              value={formOwner}
+              onChange={(e) => setFormOwner(e.target.value)}
+              className="w-full h-8 px-3 rounded bg-slate-950 border border-slate-800 font-mono text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+              placeholder="e.g. CSE-014 Forensics Team Lead"
             />
-          </div>
-
-          <div className="p-2.5 rounded-md bg-[#161e29] border border-[#212c3d] text-[11px] text-[#94a3b8] leading-relaxed">
-            Ingesting this artifact automatically transitions the mandate status to <strong className="text-[#38bdf8]">UNDER_VERIFICATION</strong>. Human examiner verification remains strictly required before closure can be granted.
           </div>
         </div>
       </Modal>
 
       {/* ========================================================================= */}
-      {/* MODAL 3: EXAMINER REOPEN VERIFICATION PROMPT                              */}
+      {/* MODAL 2: UPDATE DETAILS                                                   */}
       {/* ========================================================================= */}
       <Modal
-        isOpen={!!reopenPromptVerif}
-        onClose={() => setReopenPromptVerif(null)}
-        title="Reopen Remediation Mandate"
-        description={
-          reopenPromptVerif
-            ? `Mark verification ${reopenPromptVerif.id} as deficient and re-open mandate ${reopenPromptVerif.mandateId}`
-            : ''
-        }
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        title={`Update Remediation Details: ${activeRemediation?.id}`}
+        description="Update remediation action summary, owner, or SLA due date."
         footer={
           <>
-            <Button variant="secondary" size="sm" onClick={() => setReopenPromptVerif(null)}>
+            <Button variant="secondary" size="sm" onClick={() => setIsUpdateModalOpen(false)}>
               Cancel
             </Button>
-            <Button variant="danger" size="sm" onClick={handleReopenSubmit}>
+            <Button variant="primary" size="sm" onClick={handleUpdateRemediation}>
+              Commit Updates
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3 font-sans text-xs">
+          <div className="space-y-1">
+            <label className="text-[11px] font-mono text-slate-400 uppercase">
+              Action Summary:
+            </label>
+            <textarea
+              rows={3}
+              value={formActionSummary}
+              onChange={(e) => setFormActionSummary(e.target.value)}
+              className="w-full p-2.5 rounded bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-blue-500 resize-none font-mono"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[11px] font-mono text-slate-400 uppercase">
+              SLA Due Date:
+            </label>
+            <input
+              type="text"
+              value={formDueDate}
+              onChange={(e) => setFormDueDate(e.target.value)}
+              className="w-full h-8 px-3 rounded bg-slate-950 border border-slate-800 font-mono text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+              placeholder="e.g. 14 Oct 2026"
+            />
+          </div>
+        </div>
+      </Modal>
+
+      {/* ========================================================================= */}
+      {/* MODAL 3: SUBMIT EVIDENCE                                                  */}
+      {/* ========================================================================= */}
+      <Modal
+        isOpen={isSubmitEvidenceOpen}
+        onClose={() => setIsSubmitEvidenceOpen(false)}
+        title={`Submit Remediation Evidence: ${activeRemediation?.id}`}
+        description="Ingest corrective telemetry records into the supervisory verification gateway."
+        footer={
+          <>
+            <Button variant="secondary" size="sm" onClick={() => setIsSubmitEvidenceOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" onClick={handleSubmitEvidence}>
+              Ingest Artifact &amp; Advance Stage
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3 font-sans text-xs">
+          <div className="space-y-1">
+            <label className="text-[11px] font-mono text-slate-400 uppercase">
+              Artifact ID:
+            </label>
+            <input
+              type="text"
+              value={formArtifactId}
+              onChange={(e) => setFormArtifactId(e.target.value)}
+              className="w-full h-8 px-3 rounded bg-slate-950 border border-slate-800 font-mono text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[11px] font-mono text-slate-400 uppercase">
+              SHA-256 Digest:
+            </label>
+            <input
+              type="text"
+              value={formArtifactHash}
+              onChange={(e) => setFormArtifactHash(e.target.value)}
+              className="w-full h-8 px-3 rounded bg-slate-950 border border-slate-800 font-mono text-xs text-slate-200 focus:outline-none focus:border-blue-500"
+            />
+          </div>
+        </div>
+      </Modal>
+
+      {/* ========================================================================= */}
+      {/* MODAL 4: CLOSE & SEAL                                                     */}
+      {/* ========================================================================= */}
+      <Modal
+        isOpen={isCloseModalOpen}
+        onClose={() => setIsCloseModalOpen(false)}
+        title={`Seal Verification & Close Remediation: ${activeRemediation?.id}`}
+        description="Human-in-the-loop statutory closure seals the mandate into the permanent audit record."
+        footer={
+          <>
+            <Button variant="secondary" size="sm" onClick={() => setIsCloseModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" onClick={handleCloseAndSeal} className="bg-emerald-600 hover:bg-emerald-500 text-white">
+              Confirm Closure &amp; Seal
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3 font-sans text-xs">
+          <div className="p-3 rounded bg-emerald-950/30 border border-emerald-500/30 text-emerald-300">
+            Closure confirmation requires all statutory verification gates to be confirmed. Mandate will transition to CLOSED.
+          </div>
+          <div className="p-2 rounded bg-slate-950 border border-slate-800 text-[11px] text-slate-400 font-mono flex items-center justify-between">
+            <span>Attesting Examiner:</span>
+            <span className="text-white font-semibold">NC-8802 (Lead Examiner, NCIIPC)</span>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ========================================================================= */}
+      {/* MODAL 5: REOPEN MANDATE                                                   */}
+      {/* ========================================================================= */}
+      <Modal
+        isOpen={isReopenModalOpen}
+        onClose={() => setIsReopenModalOpen(false)}
+        title={`Reopen Mandate: ${activeRemediation?.id}`}
+        description="Mark evidence deficient or flag regression, reverting mandate to REOPENED."
+        footer={
+          <>
+            <Button variant="secondary" size="sm" onClick={() => setIsReopenModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="danger" size="sm" onClick={handleReopen} className="bg-rose-600 hover:bg-rose-500 text-white">
               Confirm Reopen
             </Button>
           </>
         }
       >
-        <div className="space-y-3 text-[12px]">
-          <div>
-            <label className="text-[11px] font-mono text-[#94a3b8] uppercase block mb-1">
+        <div className="space-y-3 font-sans text-xs">
+          <div className="space-y-1">
+            <label className="text-[11px] font-mono text-slate-400 uppercase">
               Examiner Deficient Rationale:
             </label>
             <textarea
               rows={3}
-              value={reopenReasonText}
-              onChange={(e) => setReopenReasonText(e.target.value)}
-              className="w-full p-2.5 rounded bg-[#161e29] border border-[#212c3d] text-[#e2e8f0] font-sans text-[12px] focus:outline-none focus:border-rose-500"
+              value={reopenReason}
+              onChange={(e) => setReopenReason(e.target.value)}
+              className="w-full p-2.5 rounded bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-rose-500 resize-none font-mono"
             />
-          </div>
-
-          <div className="p-2.5 rounded bg-rose-500/10 border border-rose-500/20 text-[11px] text-rose-300">
-            Reopening this mandate will revert its status to <strong>REOPENED</strong>, log a new entry in the Reopened / Regression tab, and flag the finding for supervisory re-evaluation.
           </div>
         </div>
       </Modal>
+
+      {/* TOAST CONFIRMATION */}
+      {toastMsg && (
+        <div className="fixed bottom-6 right-6 bg-[#111622] border border-emerald-500/40 text-[#f1f5f9] px-4 py-2.5 rounded-lg shadow-xl text-xs font-mono flex items-center gap-2 z-50 animate-in fade-in slide-in-from-bottom-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <span>{toastMsg}</span>
+        </div>
+      )}
+
     </PageContainer>
   );
 };

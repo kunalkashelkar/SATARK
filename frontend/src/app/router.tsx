@@ -6,12 +6,23 @@ import { DashboardOverviewPage } from '@/pages/Dashboard/OverviewPage';
 import { CSEAssessmentsListPage } from '@/pages/CSEAssessments/CSEAssessmentsListPage';
 import { CSEDetailPage } from '@/pages/CSEAssessments/CSEDetailPage';
 import { ReviewQueuePage } from '@/pages/ReviewQueue/ReviewQueuePage';
+import { FindingsListPage } from '@/pages/Findings/FindingsListPage';
 import { FindingDetailPage } from '@/pages/Findings/FindingDetailPage';
 import { EvidenceExplorerPage } from '@/pages/EvidenceExplorer/EvidenceExplorerPage';
 import { RemediationPage } from '@/pages/Remediation/RemediationPage';
 import { GovernanceHubPage } from '@/pages/Governance/GovernanceHubPage';
 import { AnalysisHubPage } from '@/pages/Analysis/AnalysisHubPage';
 import { EngineDetailPage } from '@/pages/Analysis/EngineDetailPage';
+import { ExecutionGapPage } from '@/pages/Analysis/ExecutionGapPage';
+import { NegativeSpacePage } from '@/pages/Analysis/NegativeSpacePage';
+import { CoverageBlindSpotsPage } from '@/pages/Analysis/CoverageBlindSpotsPage';
+import { ProcessConformancePage } from '@/pages/Analysis/ProcessConformancePage';
+import { InvestigationQualityPage } from '@/pages/Analysis/InvestigationQualityPage';
+import { BehaviouralDeviationPage } from '@/pages/Analysis/BehaviouralDeviationPage';
+import { HistoricalComparisonPage } from '@/pages/Analysis/HistoricalComparisonPage';
+import { PeerBenchmarkingPage } from '@/pages/Analysis/PeerBenchmarkingPage';
+import { CrossSourceConsistencyPage } from '@/pages/Analysis/CrossSourceConsistencyPage';
+import { MetricIntegrityPage } from '@/pages/Analysis/MetricIntegrityPage';
 
 import { SupervisoryEvidenceGraphPage } from '@/pages/Graph/SupervisoryEvidenceGraphPage';
 import { SamplingPage } from '@/pages/Sampling/SamplingPage';
@@ -32,11 +43,16 @@ export const AppRouter: React.FC = () => {
           <Route path="/supervision/cses" element={<CSEAssessmentsListPage />} />
           <Route path="/supervision/cses/:cseId" element={<CSEDetailPage />} />
           <Route path="/supervision/cses/:cseId/assessments/:assessmentId" element={<CSEDetailPage />} />
-          <Route path="/supervision/cses/:cseId/execution-gap" element={<EngineDetailPage forcedSlug="execution-gap" />} />
-          <Route path="/supervision/cses/:cseId/negative-space" element={<EngineDetailPage forcedSlug="negative-space" />} />
-          <Route path="/supervision/cses/:cseId/process" element={<EngineDetailPage forcedSlug="process" />} />
-          <Route path="/supervision/cses/:cseId/history" element={<EngineDetailPage forcedSlug="historical" />} />
-          <Route path="/supervision/cses/:cseId/peer" element={<EngineDetailPage forcedSlug="peer" />} />
+          <Route path="/supervision/cses/:cseId/execution-gap" element={<ExecutionGapPage />} />
+          <Route path="/supervision/cses/:cseId/negative-space" element={<NegativeSpacePage />} />
+          <Route path="/supervision/cses/:cseId/coverage" element={<CoverageBlindSpotsPage />} />
+          <Route path="/supervision/cses/:cseId/process" element={<ProcessConformancePage />} />
+          <Route path="/supervision/cses/:cseId/investigation-quality" element={<InvestigationQualityPage />} />
+          <Route path="/supervision/cses/:cseId/behavioural" element={<BehaviouralDeviationPage />} />
+          <Route path="/supervision/cses/:cseId/history" element={<HistoricalComparisonPage />} />
+          <Route path="/supervision/cses/:cseId/peer" element={<PeerBenchmarkingPage />} />
+          <Route path="/supervision/cses/:cseId/consistency" element={<CrossSourceConsistencyPage />} />
+          <Route path="/supervision/cses/:cseId/metric-integrity" element={<MetricIntegrityPage />} />
           <Route path="/assessments" element={<CSEAssessmentsListPage />} />
           <Route path="/assessments/:cseId" element={<CSEDetailPage />} />
 
@@ -46,7 +62,7 @@ export const AppRouter: React.FC = () => {
           <Route path="/review/findings/:findingId" element={<FindingDetailPage />} />
           <Route path="/review/:findingId" element={<FindingDetailPage />} />
           <Route path="/examiner/findings/:findingId" element={<FindingDetailPage />} />
-          <Route path="/findings" element={<ReviewQueuePage />} />
+          <Route path="/findings" element={<FindingsListPage />} />
           <Route path="/findings/:findingId" element={<FindingDetailPage />} />
 
           {/* 3. Supervisory Evidence Graph */}
@@ -83,16 +99,16 @@ export const AppRouter: React.FC = () => {
 
           {/* 8. Authoritative Analysis Hub & 10 Nested Engine Routes */}
           <Route path="/analysis" element={<AnalysisHubPage />} />
-          <Route path="/analysis/execution-gap" element={<EngineDetailPage forcedSlug="execution-gap" />} />
-          <Route path="/analysis/negative-space" element={<EngineDetailPage forcedSlug="negative-space" />} />
-          <Route path="/analysis/coverage" element={<EngineDetailPage forcedSlug="coverage" />} />
-          <Route path="/analysis/process" element={<EngineDetailPage forcedSlug="process" />} />
-          <Route path="/analysis/investigation-quality" element={<EngineDetailPage forcedSlug="investigation-quality" />} />
-          <Route path="/analysis/behavioural" element={<EngineDetailPage forcedSlug="behavioural" />} />
-          <Route path="/analysis/historical" element={<EngineDetailPage forcedSlug="historical" />} />
-          <Route path="/analysis/peer" element={<EngineDetailPage forcedSlug="peer" />} />
-          <Route path="/analysis/consistency" element={<EngineDetailPage forcedSlug="consistency" />} />
-          <Route path="/analysis/metric-integrity" element={<EngineDetailPage forcedSlug="metric-integrity" />} />
+          <Route path="/analysis/execution-gap" element={<ExecutionGapPage />} />
+          <Route path="/analysis/negative-space" element={<NegativeSpacePage />} />
+          <Route path="/analysis/coverage" element={<CoverageBlindSpotsPage />} />
+          <Route path="/analysis/process" element={<ProcessConformancePage />} />
+          <Route path="/analysis/investigation-quality" element={<InvestigationQualityPage />} />
+          <Route path="/analysis/behavioural" element={<BehaviouralDeviationPage />} />
+          <Route path="/analysis/historical" element={<HistoricalComparisonPage />} />
+          <Route path="/analysis/peer" element={<PeerBenchmarkingPage />} />
+          <Route path="/analysis/consistency" element={<CrossSourceConsistencyPage />} />
+          <Route path="/analysis/metric-integrity" element={<MetricIntegrityPage />} />
           <Route path="/analysis/:engineSlug" element={<EngineDetailPage />} />
 
           {/* Legacy / Alternate Path Aliases */}
